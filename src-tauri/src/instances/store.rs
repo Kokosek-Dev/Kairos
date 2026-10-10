@@ -42,6 +42,22 @@ fn clean_name(name: &str) -> AppResult<String> {
     Ok(name.to_owned())
 }
 
+fn clean_loader(loader: LoaderKind, loader_version: Option<String>) -> AppResult<Option<String>> {
+    match (loader, loader_version.map(|version| version.trim().to_owned())) {
+        (LoaderKind::Vanilla, _) => Ok(None),
+        (_, Some(version)) if is_version_label(&version) => Ok(Some(version)),
+        _ => Err(invalid("choose a loader version")),
+    }
+}
+
+fn is_version_label(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 64
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b'+'))
+}
+
 fn validate_settings(settings: &InstanceSettings) -> AppResult<String> {
     if settings.game_version.trim().is_empty() {
         return Err(invalid("choose a game version"));
@@ -126,6 +142,7 @@ pub fn create(paths: &DataPaths, new: NewInstance) -> AppResult<Instance> {
     if new.game_version.trim().is_empty() {
         return Err(invalid("choose a game version"));
     }
+    let loader_version = clean_loader(new.loader, new.loader_version.clone())?;
     let id = claim_directory(paths, &name)?;
 
     let build = || -> AppResult<Instance> {
@@ -137,7 +154,8 @@ pub fn create(paths: &DataPaths, new: NewInstance) -> AppResult<Instance> {
             name,
             icon,
             game_version: new.game_version.clone(),
-            loader: LoaderKind::Vanilla,
+            loader: new.loader,
+            loader_version,
             memory_mb: DEFAULT_MEMORY_MB,
             jvm_args: Vec::new(),
             java_path: None,
@@ -155,6 +173,8 @@ pub fn create(paths: &DataPaths, new: NewInstance) -> AppResult<Instance> {
 pub fn update(paths: &DataPaths, id: &str, settings: InstanceSettings) -> AppResult<Instance> {
     let mut instance = get(paths, id)?;
     instance.name = validate_settings(&settings)?;
+    instance.loader_version = clean_loader(settings.loader, settings.loader_version.clone())?;
+    instance.loader = settings.loader;
     instance.game_version = settings.game_version.trim().to_owned();
     instance.memory_mb = settings.memory_mb;
     instance.jvm_args = settings.jvm_args;
@@ -281,6 +301,8 @@ mod tests {
             name: name.into(),
             game_version: "1.21.1".into(),
             icon: IconInput::Preset { key: "cube".into() },
+            loader: LoaderKind::Vanilla,
+            loader_version: None,
         }
     }
 
@@ -288,6 +310,8 @@ mod tests {
         InstanceSettings {
             name: name.into(),
             game_version: "1.20.4".into(),
+            loader: LoaderKind::Vanilla,
+            loader_version: None,
             memory_mb: 4096,
             jvm_args: vec!["-XX:+UseG1GC".into()],
             java_path: Some("C:\\java\\bin\\java.exe".into()),
@@ -412,6 +436,40 @@ mod tests {
         let _ = fs::remove_dir_all(paths.instances());
     }
 
+    #[test]
+    fn loader_instances_need_a_loader_version_and_vanilla_ones_drop_it() {
+        let paths = scratch("loader");
+
+        let missing = NewInstance { loader: LoaderKind::Fabric, loader_version: None, ..new("Modded") };
+        assert!(matches!(create(&paths, missing), Err(AppError::InvalidInput(_))));
+        let unsafe_version = NewInstance { loader: LoaderKind::Forge, loader_version: Some("../x".into()), ..new("Modded") };
+        assert!(matches!(create(&paths, unsafe_version), Err(AppError::InvalidInput(_))));
+        assert!(!paths.instance_dir("modded").exists());
+
+        let fabric = NewInstance { loader: LoaderKind::Fabric, loader_version: Some("0.16.14".into()), ..new("Modded") };
+        let instance = create(&paths, fabric).unwrap();
+        assert_eq!(instance.loader_version.as_deref(), Some("0.16.14"));
+
+        let to_vanilla = InstanceSettings { loader: LoaderKind::Vanilla, loader_version: Some("0.16.14".into()), ..settings("Modded") };
+        let updated = update(&paths, &instance.id, to_vanilla).unwrap();
+        assert_eq!((updated.loader, updated.loader_version), (LoaderKind::Vanilla, None));
+        let _ = fs::remove_dir_all(paths.instances());
+    }
+
+    #[test]
+    fn instances_saved_before_loaders_existed_still_load() {
+        let paths = scratch("legacy-json");
+        fs::create_dir_all(paths.instance_dir("old")).unwrap();
+        let json = r#"{"schemaVersion":1,"id":"old","name":"Old","icon":{"kind":"preset","key":"cube"},
+            "gameVersion":"1.20.4","loader":"vanilla","memoryMb":2048,"jvmArgs":[],"javaPath":null,
+            "createdAt":"2026-01-01T00:00:00Z","lastPlayedAt":null}"#;
+        fs::write(paths.instance_json("old"), json).unwrap();
+
+        let instance = get(&paths, "old").unwrap();
+
+        assert_eq!((instance.loader, instance.loader_version), (LoaderKind::Vanilla, None));
+        let _ = fs::remove_dir_all(paths.instances());
+    }
     #[test]
     fn failed_creation_leaves_no_directory_behind() {
         let paths = scratch("rollback");

@@ -7,10 +7,13 @@ pub mod session;
 
 use crate::error::{AppError, AppResult};
 use crate::install::{self, InstallProgress};
-use crate::instances::model::Instance;
+use crate::download::download_with_progress;
+use crate::instances::model::{Instance, LoaderKind};
 use crate::java;
 use crate::mojang::assets::AssetIndex;
-use crate::mojang::version::VersionJson;
+use crate::loaders::{self, InstallContext};
+use crate::mojang::plan::core_items;
+use crate::mojang::profile;
 use crate::paths::DataPaths;
 use crate::state::RunRegistry;
 use command::{build_command, LaunchSpec};
@@ -32,6 +35,7 @@ pub enum LogStream {
 #[serde(rename_all = "snake_case")]
 pub enum PrepareStep {
     Version,
+    Loader,
     Java,
     Files,
 }
@@ -72,7 +76,7 @@ pub async fn start(
         .await?;
     }
 
-    let version: VersionJson = serde_json::from_slice(&fs::read(paths.version_json(version_id)).await?)?;
+    let vanilla = profile::load_resolved(paths, version_id).await?;
 
     emit(preparing(PrepareStep::Java, 0, 0));
     let java = match &instance.java_path {
@@ -84,10 +88,29 @@ pub async fn start(
             custom
         }
         None => {
-            java::ensure(client, paths, version.java_major(), &token, |done, total| {
+            java::ensure(client, paths, vanilla.java_major(), &token, |done, total| {
                 emit(preparing(PrepareStep::Java, done, total));
             })
             .await?
+        }
+    };
+
+    let version = match instance.loader {
+        LoaderKind::Vanilla => vanilla,
+        kind => {
+            emit(preparing(PrepareStep::Loader, 0, 0));
+            let loader_version = loaders::require_version(kind, instance.loader_version.as_deref())?;
+            let context = InstallContext { client, paths, java: &java, cancel: &token };
+            let launch_id = loaders::ensure_installed(&context, kind, version_id, loader_version, &|line| {
+                emit(LaunchEvent::Log { stream: LogStream::Stdout, level: None, line });
+            })
+            .await?;
+            let merged = profile::load_resolved(paths, &launch_id).await?;
+            download_with_progress(client, core_items(&merged, paths), &token, |counters| {
+                emit(preparing(PrepareStep::Loader, counters.bytes(), 0));
+            })
+            .await?;
+            merged
         }
     };
 
@@ -133,7 +156,8 @@ mod tests {
 
     fn test_instance(paths: &DataPaths, version: &str) -> Instance {
         let icon = IconInput::Preset { key: "cube".into() };
-        store::create(paths, NewInstance { name: "test".into(), game_version: version.into(), icon }).unwrap()
+        let new = NewInstance { name: "test".into(), game_version: version.into(), icon, loader: LoaderKind::Vanilla, loader_version: None };
+        store::create(paths, new).unwrap()
     }
 
     #[tokio::test]
@@ -238,4 +262,116 @@ mod tests {
         assert!(paths.instance_game_dir("test").join("resources").exists(), "resources were not mapped");
         assert!(!exited_early, "the legacy game exited right after starting");
         let _ = std::fs::remove_dir_all(root);
+    }
+    fn shared_paths() -> DataPaths {
+        DataPaths::new(std::env::temp_dir().join("zenith-e2e-shared"))
+    }
+
+    async fn launch_and_collect_log(loader: LoaderKind, game_version: &str, loader_version: &str) -> Vec<String> {
+        let paths = shared_paths();
+        let name = format!("e2e-{loader:?}").to_lowercase();
+        let _ = std::fs::remove_dir_all(paths.instance_dir(&name));
+        let icon = IconInput::Preset { key: "cube".into() };
+        let new = NewInstance {
+            name,
+            game_version: game_version.into(),
+            icon,
+            loader,
+            loader_version: Some(loader_version.into()),
+        };
+        let instance = store::create(&paths, new).unwrap();
+
+        let client = build_client().unwrap();
+        let runs = RunRegistry::default();
+        let (run_id, token) = runs.register(&instance.id);
+        let events: Arc<Mutex<Vec<LaunchEvent>>> = Arc::default();
+        let sink = events.clone();
+        start(
+            LaunchRequest {
+                client: &client,
+                paths: &paths,
+                runs: &runs,
+                session: GameSession::development(),
+                instance,
+                run_id,
+                token,
+            },
+            move |event| sink.lock().unwrap().push(event),
+        )
+        .await
+        .unwrap();
+
+        let lines = |events: &Mutex<Vec<LaunchEvent>>| -> Vec<String> {
+            events
+                .lock()
+                .unwrap()
+                .iter()
+                .filter_map(|event| match event {
+                    LaunchEvent::Log { line, .. } => Some(line.clone()),
+                    _ => None,
+                })
+                .collect()
+        };
+        for _ in 0..360 {
+            tokio::time::sleep(Duration::from_millis(500)).await;
+            let exited = events.lock().unwrap().iter().any(|event| matches!(event, LaunchEvent::Exited { .. }));
+            if exited || lines(&events).iter().any(|line| line.contains("Setting user: ZenithDev")) {
+                break;
+            }
+        }
+        runs.stop(run_id);
+        tokio::time::sleep(Duration::from_secs(3)).await;
+        let log = lines(&events);
+        println!("--- {loader:?} log (first 40 of {}) ---\n{}", log.len(), log.iter().take(40).cloned().collect::<Vec<_>>().join("\n"));
+        log
+    }
+
+    fn assert_reached_the_game(log: &[String], loader_word: &str) {
+        let joined = log.join("\n").to_lowercase();
+        assert!(joined.contains(loader_word), "the log never mentions {loader_word}");
+        assert!(joined.contains("setting user: zenithdev"), "the game never reached Minecraft's main");
+    }
+
+    #[tokio::test]
+    #[ignore = "downloads the game and Fabric, then starts the game"]
+    async fn launches_a_fabric_instance() {
+        let versions = crate::loaders::list_versions(&build_client().unwrap(), LoaderKind::Fabric, "1.21.1").await.unwrap();
+        let recommended = versions.iter().find(|version| version.recommended).unwrap();
+        let log = launch_and_collect_log(LoaderKind::Fabric, "1.21.1", &recommended.version).await;
+        assert_reached_the_game(&log, "fabric");
+    }
+
+    #[tokio::test]
+    #[ignore = "downloads the game and Quilt, then starts the game"]
+    async fn launches_a_quilt_instance() {
+        let versions = crate::loaders::list_versions(&build_client().unwrap(), LoaderKind::Quilt, "1.21.1").await.unwrap();
+        let recommended = versions.iter().find(|version| version.recommended).unwrap();
+        let log = launch_and_collect_log(LoaderKind::Quilt, "1.21.1", &recommended.version).await;
+        assert_reached_the_game(&log, "quilt");
+    }
+
+    #[tokio::test]
+    #[ignore = "downloads the game and runs the Forge installer, then starts the game"]
+    async fn launches_a_forge_instance() {
+        let versions = crate::loaders::list_versions(&build_client().unwrap(), LoaderKind::Forge, "1.20.1").await.unwrap();
+        let recommended = versions.iter().find(|version| version.recommended).unwrap();
+        let log = launch_and_collect_log(LoaderKind::Forge, "1.20.1", &recommended.version).await;
+        assert_reached_the_game(&log, "forge");
+    }
+
+    #[tokio::test]
+    #[ignore = "downloads the game and runs the NeoForge installer, then starts the game"]
+    async fn launches_a_neoforge_instance() {
+        let versions = crate::loaders::list_versions(&build_client().unwrap(), LoaderKind::NeoForge, "1.21.1").await.unwrap();
+        let recommended = versions.iter().find(|version| version.recommended).unwrap();
+        let log = launch_and_collect_log(LoaderKind::NeoForge, "1.21.1", &recommended.version).await;
+        assert_reached_the_game(&log, "neoforge");
+    }
+    #[tokio::test]
+    #[ignore = "downloads Java 8, an old game and the legacy Forge installer, then starts the game"]
+    async fn launches_a_legacy_forge_instance() {
+        let versions = crate::loaders::list_versions(&build_client().unwrap(), LoaderKind::Forge, "1.12.2").await.unwrap();
+        let recommended = versions.iter().find(|version| version.recommended).unwrap();
+        let log = launch_and_collect_log(LoaderKind::Forge, "1.12.2", &recommended.version).await;
+        assert_reached_the_game(&log, "forge");
     }}

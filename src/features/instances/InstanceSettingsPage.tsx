@@ -17,10 +17,12 @@ import {
   updateInstance,
   type IconInput,
   type Instance,
+  type LoaderKind,
 } from "@/lib/tauri/instances";
 import { DeleteInstanceDialog } from "./DeleteInstanceDialog";
 import { IconPicker } from "./IconPicker";
 import { InstanceIcon } from "./InstanceIcon";
+import { LoaderPicker } from "./LoaderPicker";
 import { INSTANCES_KEY, useInstance } from "./useInstances";
 import { VersionPicker } from "./VersionPicker";
 
@@ -64,6 +66,8 @@ function SettingsForm({ instance }: { instance: Instance }) {
 
   const [name, setName] = useState(instance.name);
   const [gameVersion, setGameVersion] = useState(instance.gameVersion);
+  const [loader, setLoader] = useState<LoaderKind>(instance.loader);
+  const [loaderVersion, setLoaderVersion] = useState(instance.loaderVersion);
   const [memoryMb, setMemoryMb] = useState(instance.memoryMb);
   const [jvmText, setJvmText] = useState(joinArgs(instance.jvmArgs));
   const [javaPath, setJavaPath] = useState(instance.javaPath);
@@ -73,6 +77,8 @@ function SettingsForm({ instance }: { instance: Instance }) {
   const dirty =
     name !== instance.name ||
     gameVersion !== instance.gameVersion ||
+    loader !== instance.loader ||
+    loaderVersion !== instance.loaderVersion ||
     memoryMb !== instance.memoryMb ||
     jvmText !== joinArgs(instance.jvmArgs) ||
     javaPath !== instance.javaPath;
@@ -84,7 +90,15 @@ function SettingsForm({ instance }: { instance: Instance }) {
 
   const save = useMutation({
     mutationFn: () =>
-      updateInstance(instance.id, { name, gameVersion, memoryMb, jvmArgs: splitArgs(jvmText), javaPath }),
+      updateInstance(instance.id, {
+        name,
+        gameVersion,
+        loader,
+        loaderVersion: loader === "vanilla" ? null : loaderVersion,
+        memoryMb,
+        jvmArgs: splitArgs(jvmText),
+        javaPath,
+      }),
     onSuccess: refresh,
   });
 
@@ -107,6 +121,8 @@ function SettingsForm({ instance }: { instance: Instance }) {
   const reset = () => {
     setName(instance.name);
     setGameVersion(instance.gameVersion);
+    setLoader(instance.loader);
+    setLoaderVersion(instance.loaderVersion);
     setMemoryMb(instance.memoryMb);
     setJvmText(joinArgs(instance.jvmArgs));
     setJavaPath(instance.javaPath);
@@ -134,6 +150,7 @@ function SettingsForm({ instance }: { instance: Instance }) {
           <h1 className="truncate text-2xl font-bold tracking-tight">{instance.name}</h1>
           <p className="text-muted">
             {instance.gameVersion} · {t(`instances.loader.${instance.loader}`)}
+            {instance.loaderVersion ? ` ${instance.loaderVersion}` : ""}
           </p>
         </div>
         {thisRunning ? (
@@ -158,6 +175,17 @@ function SettingsForm({ instance }: { instance: Instance }) {
         </Field>
         <Field label={t("instances.gameVersion")} hint={t("instances.versionWarning")}>
           <VersionPicker value={gameVersion} onChange={setGameVersion} />
+        </Field>
+        <Field label={t("instances.loaderLabel")} hint={t("instances.loaderWarning")}>
+          <LoaderPicker
+            gameVersion={gameVersion}
+            kind={loader}
+            version={loaderVersion}
+            onChange={(kind, version) => {
+              setLoader(kind);
+              setLoaderVersion(version);
+            }}
+          />
         </Field>
       </Section>
 
@@ -239,7 +267,11 @@ function SettingsForm({ instance }: { instance: Instance }) {
           <Button variant="ghost" size="sm" onClick={reset}>
             {t("instances.discard")}
           </Button>
-          <Button size="sm" disabled={save.isPending || !name.trim()} onClick={() => save.mutate()}>
+          <Button
+            size="sm"
+            disabled={save.isPending || !name.trim() || (loader !== "vanilla" && !loaderVersion)}
+            onClick={() => save.mutate()}
+          >
             <Save size={14} />
             {t("instances.save")}
           </Button>

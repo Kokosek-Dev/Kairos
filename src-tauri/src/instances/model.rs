@@ -8,6 +8,11 @@ pub const DEFAULT_MEMORY_MB: u32 = 2048;
 #[serde(rename_all = "snake_case")]
 pub enum LoaderKind {
     Vanilla,
+    Fabric,
+    Quilt,
+    Forge,
+    #[serde(rename = "neoforge")]
+    NeoForge,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -26,6 +31,8 @@ pub struct Instance {
     pub icon: InstanceIcon,
     pub game_version: String,
     pub loader: LoaderKind,
+    #[serde(default)]
+    pub loader_version: Option<String>,
     pub memory_mb: u32,
     #[serde(default)]
     pub jvm_args: Vec<String>,
@@ -47,6 +54,8 @@ pub struct NewInstance {
     pub name: String,
     pub game_version: String,
     pub icon: IconInput,
+    pub loader: LoaderKind,
+    pub loader_version: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -54,6 +63,8 @@ pub struct NewInstance {
 pub struct InstanceSettings {
     pub name: String,
     pub game_version: String,
+    pub loader: LoaderKind,
+    pub loader_version: Option<String>,
     pub memory_mb: u32,
     pub jvm_args: Vec<String>,
     pub java_path: Option<String>,

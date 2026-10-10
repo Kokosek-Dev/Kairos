@@ -3,13 +3,21 @@ import { invoke } from "@tauri-apps/api/core";
 export type InstanceIcon = { kind: "preset"; key: string } | { kind: "custom"; file: string };
 export type IconInput = { kind: "preset"; key: string } | { kind: "custom"; path: string };
 
+export type LoaderKind = "vanilla" | "fabric" | "quilt" | "forge" | "neoforge";
+
+export interface LoaderVersion {
+  version: string;
+  recommended: boolean;
+}
+
 export interface Instance {
   schemaVersion: number;
   id: string;
   name: string;
   icon: InstanceIcon;
   gameVersion: string;
-  loader: "vanilla";
+  loader: LoaderKind;
+  loaderVersion: string | null;
   memoryMb: number;
   jvmArgs: string[];
   javaPath: string | null;
@@ -21,16 +29,22 @@ export interface NewInstance {
   name: string;
   gameVersion: string;
   icon: IconInput;
+  loader: LoaderKind;
+  loaderVersion: string | null;
 }
 
 export interface InstanceSettings {
   name: string;
   gameVersion: string;
+  loader: LoaderKind;
+  loaderVersion: string | null;
   memoryMb: number;
   jvmArgs: string[];
   javaPath: string | null;
 }
 
+export const listLoaderVersions = (loader: LoaderKind, gameVersion: string) =>
+  invoke<LoaderVersion[]>("list_loader_versions", { loader, gameVersion });
 export const listInstances = () => invoke<Instance[]>("list_instances");
 export const getInstance = (instanceId: string) => invoke<Instance>("get_instance", { instanceId });
 export const createInstance = (newInstance: NewInstance) => invoke<Instance>("create_instance", { new: newInstance });

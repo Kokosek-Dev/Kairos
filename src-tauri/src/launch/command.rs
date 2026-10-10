@@ -46,9 +46,9 @@ fn classpath(spec: &LaunchSpec) -> String {
         .libraries
         .iter()
         .filter(|library| library.applies())
-        .filter_map(|library| library.downloads.as_ref()?.artifact.as_ref())
+        .filter_map(|library| library.main_artifact())
         .map(|artifact| spec.paths.libraries().join(&artifact.path));
-    for path in libraries.chain([spec.paths.client_jar(&spec.version.id)]) {
+    for path in libraries.chain([spec.paths.client_jar(spec.version.jar_id())]) {
         if !entries.contains(&path) {
             entries.push(path);
         }
@@ -75,7 +75,7 @@ fn variables(spec: &LaunchSpec) -> HashMap<&'static str, String> {
         ("clientid", session.client_id.clone()),
         ("user_type", session.user_type.clone()),
         ("user_properties", "{}".into()),
-        ("version_name", spec.version.id.clone()),
+        ("version_name", spec.version.jar_id().to_owned()),
         ("version_type", spec.version.kind.clone()),
         ("game_directory", path(spec.game_dir.clone())),
         ("assets_root", path(spec.paths.assets())),
@@ -152,9 +152,9 @@ mod tests {
         "assetIndex": {"id": "17", "sha1": "a", "size": 1, "url": "u"},
         "downloads": {"client": {"sha1": "a", "size": 1, "url": "u"}},
         "libraries": [
-            {"downloads": {"artifact": {"path": "a/a.jar", "sha1": "a", "size": 1, "url": "u"}}},
-            {"downloads": {"artifact": {"path": "a/a.jar", "sha1": "a", "size": 1, "url": "u"}}},
-            {"downloads": {"artifact": {"path": "mac/m.jar", "sha1": "a", "size": 1, "url": "u"}},
+            {"name": "g:a:1", "downloads": {"artifact": {"path": "a/a.jar", "sha1": "a", "size": 1, "url": "u"}}},
+            {"name": "g:a:1", "downloads": {"artifact": {"path": "a/a.jar", "sha1": "a", "size": 1, "url": "u"}}},
+            {"name": "g:m:1", "downloads": {"artifact": {"path": "mac/m.jar", "sha1": "a", "size": 1, "url": "u"}},
              "rules": [{"action": "allow", "os": {"name": "osx"}}]}
         ],
         "logging": {"client": {"argument": "-Dlog4j.configurationFile=${path}",

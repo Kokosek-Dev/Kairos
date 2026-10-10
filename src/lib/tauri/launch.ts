@@ -1,7 +1,7 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
 
 export type LogStream = "stdout" | "stderr";
-export type PrepareStep = "version" | "java" | "files";
+export type PrepareStep = "version" | "loader" | "java" | "files";
 
 export type LaunchEvent =
   | { type: "queued"; runId: number }

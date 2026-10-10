@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Field, Input } from "@/components/ui/input";
 import { errorMessage } from "@/lib/tauri/errors";
-import { createInstance, type IconInput } from "@/lib/tauri/instances";
+import { createInstance, type IconInput, type LoaderKind } from "@/lib/tauri/instances";
 import { PlaceholderTile, PresetTile } from "./InstanceIcon";
 import { IconPicker } from "./IconPicker";
+import { LoaderPicker } from "./LoaderPicker";
 import { DEFAULT_PRESET } from "./presets";
 import { useVersionManifest, VersionPicker } from "./VersionPicker";
 
@@ -30,6 +31,8 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
   const [nameEdited, setNameEdited] = useState(false);
   const [gameVersion, setGameVersion] = useState("");
   const [icon, setIcon] = useState<IconInput>(DEFAULT_ICON);
+  const [loader, setLoader] = useState<LoaderKind>("vanilla");
+  const [loaderVersion, setLoaderVersion] = useState<string | null>(null);
 
   const latestRelease = manifest.data?.latest.release;
   useEffect(() => {
@@ -45,11 +48,13 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
     setNameEdited(false);
     setGameVersion("");
     setIcon(DEFAULT_ICON);
+    setLoader("vanilla");
+    setLoaderVersion(null);
     create.reset();
   };
 
   const create = useMutation({
-    mutationFn: () => createInstance({ name, gameVersion, icon }),
+    mutationFn: () => createInstance({ name, gameVersion, icon, loader, loaderVersion }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["instances"] });
       onOpenChange(false);
@@ -91,6 +96,18 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
           <Field label={t("instances.gameVersion")}>
             <VersionPicker value={gameVersion} onChange={setGameVersion} />
           </Field>
+
+          <Field label={t("instances.loaderLabel")}>
+            <LoaderPicker
+              gameVersion={gameVersion}
+              kind={loader}
+              version={loaderVersion}
+              onChange={(kind, version) => {
+                setLoader(kind);
+                setLoaderVersion(version);
+              }}
+            />
+          </Field>
         </div>
 
         {create.isError && <p className="mt-3 text-sm text-danger">{errorMessage(t, create.error)}</p>}
@@ -99,7 +116,10 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
-          <Button disabled={!name.trim() || !gameVersion || create.isPending} onClick={() => create.mutate()}>
+          <Button
+            disabled={!name.trim() || !gameVersion || (loader !== "vanilla" && !loaderVersion) || create.isPending}
+            onClick={() => create.mutate()}
+          >
             {t("instances.create")}
           </Button>
         </div>

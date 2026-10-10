@@ -62,6 +62,18 @@ impl DataPaths {
         self.root.join("settings.json")
     }
 
+    pub fn launcher_profiles(&self) -> PathBuf {
+        self.root.join("launcher_profiles.json")
+    }
+
+    pub fn installers(&self) -> PathBuf {
+        self.root.join("installers")
+    }
+
+    pub fn loader_records(&self) -> PathBuf {
+        self.root.join("loaders")
+    }
+
     pub fn instances(&self) -> PathBuf {
         self.root.join("instances")
     }

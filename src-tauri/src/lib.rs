@@ -7,6 +7,7 @@ mod install;
 mod instances;
 mod java;
 mod launch;
+mod loaders;
 mod mojang;
 mod paths;
 mod settings;
@@ -51,6 +52,7 @@ pub fn run() {
             commands::open_instance_folder,
             commands::pick_icon_file,
             commands::pick_java_file,
+            commands::list_loader_versions,
             commands::get_accounts,
             commands::sign_in,
             commands::cancel_sign_in,

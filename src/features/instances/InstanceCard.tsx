@@ -57,6 +57,7 @@ export function InstanceCard({ instance, onDelete }: InstanceCardProps) {
             <h3 className="truncate font-semibold">{instance.name}</h3>
             <p className="text-xs text-muted">
               {instance.gameVersion} · {t(`instances.loader.${instance.loader}`)}
+              {instance.loaderVersion ? ` ${instance.loaderVersion}` : ""}
             </p>
             <p className="mt-0.5 text-xs text-muted">
               {instance.lastPlayedAt
