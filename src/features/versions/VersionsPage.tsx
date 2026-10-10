@@ -10,7 +10,7 @@ import {
   type VersionKind,
 } from "@/lib/tauri/versions";
 import { cn } from "@/lib/utils";
-import { isBusy, useGameStore } from "@/features/launch/gameStore";
+
 import { useInstallStore } from "./installStore";
 import { VersionRow } from "./VersionRow";
 
@@ -31,8 +31,6 @@ export function VersionsPage() {
   const [filter, setFilter] = useState<Filter>("release");
   const [search, setSearch] = useState("");
   const { progress, errors, start, cancel } = useInstallStore();
-  const play = useGameStore((state) => state.play);
-  const gameBusy = useGameStore((state) => isBusy(state.phase));
 
   const manifest = useQuery({ queryKey: ["version-manifest"], queryFn: getVersionManifest, staleTime: 5 * 60_000 });
   const installed = useQuery({ queryKey: INSTALLED_KEY, queryFn: listInstalledVersions });
@@ -106,8 +104,6 @@ export function VersionsPage() {
               installed={installedSet.has(entry.id)}
               progress={progress[entry.id]}
               error={errors[entry.id]}
-              playDisabled={gameBusy}
-              onPlay={() => void play(entry.id)}
               onInstall={() => void start(entry.id, refreshInstalled)}
               onCancel={() => void cancel(entry.id)}
             />

@@ -23,14 +23,6 @@ export interface InstallProgress {
   totalBytes: number;
 }
 
-export interface LauncherError {
-  code: string;
-  message: string;
-}
-
-export function isLauncherError(value: unknown): value is LauncherError {
-  return typeof value === "object" && value !== null && "code" in value && "message" in value;
-}
 
 export const getVersionManifest = () => invoke<VersionManifest>("get_version_manifest");
 

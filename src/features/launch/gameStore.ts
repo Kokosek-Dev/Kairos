@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import { isLauncherError } from "@/lib/tauri/versions";
+import { isLauncherError } from "@/lib/tauri/errors";
 import {
-  launchGame,
+  launchInstance,
   stopGame,
   type LaunchEvent,
   type LogStream,
@@ -15,7 +15,7 @@ export type GamePhase =
   | { kind: "preparing"; step: PrepareStep; doneBytes: number; totalBytes: number }
   | { kind: "running"; pid: number | null }
   | { kind: "exited"; code: number | null }
-  | { kind: "failed"; message: string };
+  | { kind: "failed"; error: unknown };
 
 export interface LogLine {
   id: number;
@@ -25,12 +25,13 @@ export interface LogLine {
 }
 
 interface GameState {
-  versionId: string | null;
+  instanceId: string | null;
+  title: string | null;
   runId: number | null;
   phase: GamePhase;
   lines: LogLine[];
   consoleOpen: boolean;
-  play: (versionId: string) => Promise<void>;
+  play: (instanceId: string, title: string) => Promise<void>;
   stop: () => Promise<void>;
   clear: () => void;
   setConsoleOpen: (open: boolean) => void;
@@ -66,29 +67,30 @@ export const useGameStore = create<GameState>((set, get) => {
   };
 
   return {
-    versionId: null,
+    instanceId: null,
+    title: null,
     runId: null,
     phase: { kind: "idle" },
     lines: [],
     consoleOpen: false,
 
-    play: async (versionId) => {
+    play: async (instanceId, title) => {
       if (isBusy(get().phase)) return;
       set({
-        versionId,
+        instanceId,
+        title,
         runId: null,
         lines: [],
         consoleOpen: true,
         phase: { kind: "preparing", step: "version", doneBytes: 0, totalBytes: 0 },
       });
       try {
-        await launchGame(versionId, handle);
+        await launchInstance(instanceId, handle);
       } catch (error) {
         if (isLauncherError(error) && error.code === "cancelled") {
           set({ phase: { kind: "idle" }, runId: null });
         } else {
-          const message = isLauncherError(error) ? error.message : String(error);
-          set({ phase: { kind: "failed", message }, runId: null });
+          set({ phase: { kind: "failed", error }, runId: null });
         }
       }
     },

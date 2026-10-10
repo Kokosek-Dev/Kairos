@@ -6,18 +6,28 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use tokio_util::sync::CancellationToken;
 
+struct ActiveRun {
+    instance_id: String,
+    token: CancellationToken,
+}
+
 #[derive(Clone, Default)]
 pub struct RunRegistry {
-    active: Arc<Mutex<HashMap<u64, CancellationToken>>>,
+    active: Arc<Mutex<HashMap<u64, ActiveRun>>>,
     next_id: Arc<AtomicU64>,
 }
 
 impl RunRegistry {
-    pub fn register(&self) -> (u64, CancellationToken) {
+    pub fn register(&self, instance_id: &str) -> (u64, CancellationToken) {
         let id = self.next_id.fetch_add(1, Ordering::Relaxed) + 1;
         let token = CancellationToken::new();
-        self.lock().insert(id, token.clone());
+        let run = ActiveRun { instance_id: instance_id.to_owned(), token: token.clone() };
+        self.lock().insert(id, run);
         (id, token)
+    }
+
+    pub fn is_instance_running(&self, instance_id: &str) -> bool {
+        self.lock().values().any(|run| run.instance_id == instance_id)
     }
 
     pub fn finish(&self, run_id: u64) {
@@ -25,12 +35,12 @@ impl RunRegistry {
     }
 
     pub fn stop(&self, run_id: u64) {
-        if let Some(token) = self.lock().get(&run_id) {
-            token.cancel();
+        if let Some(run) = self.lock().get(&run_id) {
+            run.token.cancel();
         }
     }
 
-    fn lock(&self) -> MutexGuard<'_, HashMap<u64, CancellationToken>> {
+    fn lock(&self) -> MutexGuard<'_, HashMap<u64, ActiveRun>> {
         self.active.lock().unwrap_or_else(PoisonError::into_inner)
     }
 }

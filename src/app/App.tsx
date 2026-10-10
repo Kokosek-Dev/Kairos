@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TitleBar } from "@/components/shell/TitleBar";
 import { DiscoverPage } from "@/features/discover/DiscoverPage";
+import { InstanceSettingsPage } from "@/features/instances/InstanceSettingsPage";
 import { LibraryPage } from "@/features/library/LibraryPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
@@ -28,6 +29,7 @@ export function App() {
             >
               <Routes location={location}>
                 <Route path="/" element={<LibraryPage />} />
+                <Route path="/instances/:id" element={<InstanceSettingsPage />} />
                 <Route path="/versions" element={<VersionsPage />} />
                 <Route path="/discover" element={<DiscoverPage />} />
                 <Route path="/settings" element={<SettingsPage />} />

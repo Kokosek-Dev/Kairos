@@ -50,8 +50,20 @@ impl DataPaths {
         self.version_dir(version_id).join("natives")
     }
 
-    pub fn game_dir(&self, version_id: &str) -> PathBuf {
-        self.root.join("game").join(version_id)
+    pub fn instances(&self) -> PathBuf {
+        self.root.join("instances")
+    }
+
+    pub fn instance_dir(&self, id: &str) -> PathBuf {
+        self.instances().join(id)
+    }
+
+    pub fn instance_json(&self, id: &str) -> PathBuf {
+        self.instance_dir(id).join("instance.json")
+    }
+
+    pub fn instance_game_dir(&self, id: &str) -> PathBuf {
+        self.instance_dir(id).join("minecraft")
     }
 
     pub fn runtimes(&self) -> PathBuf {

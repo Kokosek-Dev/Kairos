@@ -7,6 +7,7 @@ pub mod session;
 
 use crate::error::{AppError, AppResult};
 use crate::install::{self, InstallProgress};
+use crate::instances::model::Instance;
 use crate::java;
 use crate::mojang::assets::AssetIndex;
 use crate::mojang::version::VersionJson;
@@ -15,11 +16,10 @@ use crate::state::RunRegistry;
 use command::{build_command, LaunchSpec};
 use reqwest::Client;
 use serde::Serialize;
+use std::path::PathBuf;
 use session::GameSession;
 use tokio::fs;
 use tokio_util::sync::CancellationToken;
-
-const DEFAULT_MEMORY_MB: u32 = 2048;
 
 #[derive(Debug, Clone, Copy, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -51,7 +51,7 @@ pub struct LaunchRequest<'a> {
     pub paths: &'a DataPaths,
     pub runs: &'a RunRegistry,
     pub session: GameSession,
-    pub version_id: &'a str,
+    pub instance: Instance,
     pub run_id: u64,
     pub token: CancellationToken,
 }
@@ -60,7 +60,8 @@ pub async fn start(
     request: LaunchRequest<'_>,
     emit: impl Fn(LaunchEvent) + Clone + Send + Sync + 'static,
 ) -> AppResult<()> {
-    let LaunchRequest { client, paths, runs, session, version_id, run_id, token } = request;
+    let LaunchRequest { client, paths, runs, session, instance, run_id, token } = request;
+    let version_id = instance.game_version.as_str();
     let preparing = |step, done_bytes, total_bytes| LaunchEvent::Preparing { step, done_bytes, total_bytes };
 
     if !install::list_installed(paths).await?.iter().any(|id| id == version_id) {
@@ -74,13 +75,24 @@ pub async fn start(
     let version: VersionJson = serde_json::from_slice(&fs::read(paths.version_json(version_id)).await?)?;
 
     emit(preparing(PrepareStep::Java, 0, 0));
-    let java = java::ensure(client, paths, version.java_major(), &token, |done, total| {
-        emit(preparing(PrepareStep::Java, done, total));
-    })
-    .await?;
+    let java = match &instance.java_path {
+        Some(custom) => {
+            let custom = PathBuf::from(custom);
+            if !fs::try_exists(&custom).await? {
+                return Err(AppError::InvalidInput(format!("Java was not found at {}", custom.display())));
+            }
+            custom
+        }
+        None => {
+            java::ensure(client, paths, version.java_major(), &token, |done, total| {
+                emit(preparing(PrepareStep::Java, done, total));
+            })
+            .await?
+        }
+    };
 
     emit(preparing(PrepareStep::Files, 0, 0));
-    let game_dir = paths.game_dir(version_id);
+    let game_dir = paths.instance_game_dir(&instance.id);
     fs::create_dir_all(&game_dir).await?;
     let index: AssetIndex = serde_json::from_slice(&fs::read(paths.asset_index(&version.asset_index.id)).await?)?;
     let game_assets = {
@@ -103,8 +115,8 @@ pub async fn start(
         java,
         game_dir,
         game_assets,
-        memory_mb: DEFAULT_MEMORY_MB,
-        extra_jvm_args: Vec::new(),
+        memory_mb: instance.memory_mb,
+        extra_jvm_args: instance.jvm_args.clone(),
         session: &session,
     });
     process::spawn(&command, run_id, token, runs.clone(), emit)
@@ -114,8 +126,15 @@ pub async fn start(
 mod tests {
     use super::*;
     use crate::http::build_client;
+    use crate::instances::model::{IconInput, NewInstance};
+    use crate::instances::store;
     use std::sync::{Arc, Mutex};
     use std::time::Duration;
+
+    fn test_instance(paths: &DataPaths, version: &str) -> Instance {
+        let icon = IconInput::Preset { key: "cube".into() };
+        store::create(paths, NewInstance { name: "test".into(), game_version: version.into(), icon }).unwrap()
+    }
 
     #[tokio::test]
     #[ignore = "downloads the game and a Java runtime, then starts the game"]
@@ -125,7 +144,7 @@ mod tests {
         let paths = DataPaths::new(root.clone());
         let client = build_client().unwrap();
         let runs = RunRegistry::default();
-        let (run_id, token) = runs.register();
+        let (run_id, token) = runs.register("test");
         let events: Arc<Mutex<Vec<LaunchEvent>>> = Arc::default();
         let sink = events.clone();
 
@@ -135,7 +154,7 @@ mod tests {
                 paths: &paths,
                 runs: &runs,
                 session: GameSession::development(),
-                version_id: "1.21.1",
+                instance: test_instance(&paths, "1.21.1"),
                 run_id,
                 token,
             },
@@ -180,7 +199,7 @@ mod tests {
         let paths = DataPaths::new(root.clone());
         let client = build_client().unwrap();
         let runs = RunRegistry::default();
-        let (run_id, token) = runs.register();
+        let (run_id, token) = runs.register("test");
         let events: Arc<Mutex<Vec<LaunchEvent>>> = Arc::default();
         let sink = events.clone();
 
@@ -190,7 +209,7 @@ mod tests {
                 paths: &paths,
                 runs: &runs,
                 session: GameSession::development(),
-                version_id: "1.0",
+                instance: test_instance(&paths, "1.0"),
                 run_id,
                 token,
             },
@@ -216,7 +235,7 @@ mod tests {
 
         let natives: Vec<_> = std::fs::read_dir(paths.natives_dir("1.0")).unwrap().flatten().collect();
         assert!(!natives.is_empty(), "natives were not extracted");
-        assert!(paths.game_dir("1.0").join("resources").exists(), "resources were not mapped");
+        assert!(paths.instance_game_dir("test").join("resources").exists(), "resources were not mapped");
         assert!(!exited_early, "the legacy game exited right after starting");
         let _ = std::fs::remove_dir_all(root);
     }}

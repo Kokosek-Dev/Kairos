@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, Download, Play, X } from "lucide-react";
+import { Check, Download, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { formatBytes, formatDate } from "@/lib/format";
@@ -11,8 +11,6 @@ interface VersionRowProps {
   installed: boolean;
   progress?: InstallProgress;
   error?: string;
-  playDisabled: boolean;
-  onPlay: () => void;
   onInstall: () => void;
   onCancel: () => void;
 }
@@ -22,8 +20,6 @@ export function VersionRow({
   installed,
   progress,
   error,
-  playDisabled,
-  onPlay,
   onInstall,
   onCancel,
 }: VersionRowProps) {
@@ -54,16 +50,10 @@ export function VersionRow({
             {t("versions.cancel")}
           </Button>
         ) : installed ? (
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 text-xs font-medium text-success">
-              <Check size={14} />
-              {t("versions.installed")}
-            </span>
-            <Button size="sm" disabled={playDisabled} onClick={onPlay}>
-              <Play size={14} />
-              {t("versions.play")}
-            </Button>
-          </div>
+          <span className="flex items-center gap-1.5 text-xs font-medium text-success">
+            <Check size={14} />
+            {t("versions.installed")}
+          </span>
         ) : (
           <Button size="sm" onClick={onInstall}>
             <Download size={14} />

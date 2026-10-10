@@ -19,6 +19,12 @@ pub enum AppError {
     #[error("you need to sign in with a Microsoft account to play")]
     #[cfg_attr(debug_assertions, allow(dead_code))]
     NotSignedIn,
+    #[error("instance {0} was not found")]
+    InstanceNotFound(String),
+    #[error("{0}")]
+    InvalidInput(String),
+    #[error("the instance is currently running")]
+    InstanceRunning,
     #[error("operation cancelled")]
     Cancelled,
     #[error("{0}")]
@@ -36,6 +42,9 @@ impl AppError {
             Self::HttpStatus { .. } => "http_status",
             Self::JavaUnavailable(_) => "java_unavailable",
             Self::NotSignedIn => "not_signed_in",
+            Self::InstanceNotFound(_) => "instance_not_found",
+            Self::InvalidInput(_) => "invalid_input",
+            Self::InstanceRunning => "instance_running",
             Self::Cancelled => "cancelled",
             Self::Internal(_) => "internal",
         }

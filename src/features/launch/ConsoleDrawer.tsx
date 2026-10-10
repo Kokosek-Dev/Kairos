@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { formatBytes } from "@/lib/format";
+import { errorMessage } from "@/lib/tauri/errors";
 import { cn } from "@/lib/utils";
 import { isBusy, useGameStore, type GamePhase, type LogLine } from "./gameStore";
 
@@ -32,13 +33,13 @@ function useStatusText(phase: GamePhase): string {
     case "exited":
       return t("console.exited", { code: phase.code ?? "?" });
     case "failed":
-      return phase.message;
+      return errorMessage(t, phase.error);
   }
 }
 
 export function ConsoleDrawer() {
   const { t } = useTranslation();
-  const { consoleOpen, phase, lines, versionId, stop, clear, setConsoleOpen } = useGameStore();
+  const { consoleOpen, phase, lines, title, stop, clear, setConsoleOpen } = useGameStore();
   const status = useStatusText(phase);
   const scroller = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
@@ -77,7 +78,7 @@ export function ConsoleDrawer() {
                 (phase.kind === "exited" || phase.kind === "idle") && "bg-muted",
               )}
             />
-            <span className="font-semibold">{versionId ?? t("console.title")}</span>
+            <span className="font-semibold">{title ?? t("console.title")}</span>
             <span className={cn("min-w-0 flex-1 truncate text-xs", phase.kind === "failed" ? "text-danger" : "text-muted")}>
               {status}
             </span>

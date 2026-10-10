@@ -1,10 +1,6 @@
 import { create } from "zustand";
-import {
-  cancelInstall,
-  installVersion,
-  isLauncherError,
-  type InstallProgress,
-} from "@/lib/tauri/versions";
+import { isLauncherError } from "@/lib/tauri/errors";
+import { cancelInstall, installVersion, type InstallProgress } from "@/lib/tauri/versions";
 
 interface InstallState {
   progress: Record<string, InstallProgress>;
