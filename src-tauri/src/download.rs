@@ -1,10 +1,13 @@
-﻿use crate::error::{AppError, AppResult};
+use crate::error::{AppError, AppResult};
 use futures_util::{StreamExt, TryStreamExt};
 use reqwest::{header::RANGE, Client, StatusCode};
 use sha1::{Digest, Sha1};
+use sha2::Sha256;
+use std::collections::HashSet;
 use std::path::{Component, Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
+use std::time::Duration;
 use tokio::fs::{self, File, OpenOptions};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio_util::sync::CancellationToken;
@@ -13,10 +16,16 @@ const CONCURRENCY: usize = 16;
 const MAX_ATTEMPTS: u32 = 3;
 
 #[derive(Debug, Clone)]
+pub enum Checksum {
+    Sha1(String),
+    Sha256(String),
+}
+
+#[derive(Debug, Clone)]
 pub struct DownloadItem {
     pub url: String,
     pub path: PathBuf,
-    pub sha1: Option<String>,
+    pub checksum: Option<Checksum>,
     pub size: Option<u64>,
 }
 
@@ -42,12 +51,37 @@ pub async fn download_all(
     cancel: &CancellationToken,
     counters: &Arc<Counters>,
 ) -> AppResult<()> {
+    let mut seen = HashSet::new();
+    let items: Vec<DownloadItem> = items.into_iter().filter(|item| seen.insert(item.path.clone())).collect();
+
     futures_util::stream::iter(items)
         .map(|item| async move { ensure_file(client, &item, cancel, counters).await })
         .buffer_unordered(CONCURRENCY)
         .try_collect::<Vec<()>>()
         .await
         .map(drop)
+}
+
+pub async fn download_with_progress(
+    client: &Client,
+    items: Vec<DownloadItem>,
+    cancel: &CancellationToken,
+    mut on_tick: impl FnMut(&Counters),
+) -> AppResult<()> {
+    let counters = Arc::new(Counters::default());
+    let download = download_all(client, items, cancel, &counters);
+    tokio::pin!(download);
+    let mut ticker = tokio::time::interval(Duration::from_millis(100));
+    loop {
+        tokio::select! {
+            result = &mut download => {
+                result?;
+                on_tick(&counters);
+                return Ok(());
+            }
+            _ = ticker.tick() => on_tick(&counters),
+        }
+    }
 }
 
 async fn ensure_file(
@@ -174,19 +208,27 @@ async fn is_valid(path: &Path, item: &DownloadItem) -> AppResult<bool> {
     if item.size.is_some_and(|size| size != meta.len()) {
         return Ok(false);
     }
-    match &item.sha1 {
-        Some(expected) => Ok(sha1_file(path).await?.eq_ignore_ascii_case(expected)),
+    match &item.checksum {
+        Some(checksum) => matches_checksum(path, checksum).await,
         None => Ok(true),
     }
+}
+
+async fn matches_checksum(path: &Path, checksum: &Checksum) -> AppResult<bool> {
+    let (actual, expected) = match checksum {
+        Checksum::Sha1(expected) => (hash_file::<Sha1>(path).await?, expected),
+        Checksum::Sha256(expected) => (hash_file::<Sha256>(path).await?, expected),
+    };
+    Ok(actual.eq_ignore_ascii_case(expected))
 }
 
 pub fn sha1_bytes(data: &[u8]) -> String {
     hex::encode(Sha1::digest(data))
 }
 
-pub async fn sha1_file(path: &Path) -> AppResult<String> {
+async fn hash_file<D: Digest>(path: &Path) -> AppResult<String> {
     let mut file = File::open(path).await?;
-    let mut hasher = Sha1::new();
+    let mut hasher = D::new();
     let mut buffer = vec![0u8; 64 * 1024];
     loop {
         let read = file.read(&mut buffer).await?;
@@ -252,7 +294,7 @@ mod tests {
     }
 
     fn scratch(name: &str) -> PathBuf {
-        let dir = std::env::temp_dir().join(format!("voidlight-test-{name}-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("zenith-test-{name}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         dir
     }
@@ -261,7 +303,7 @@ mod tests {
         DownloadItem {
             url,
             path,
-            sha1: Some(sha1_bytes(body)),
+            checksum: Some(Checksum::Sha1(sha1_bytes(body))),
             size: Some(body.len() as u64),
         }
     }
@@ -330,13 +372,31 @@ mod tests {
         let dir = scratch("badsum");
         let target = dir.join("file.bin");
         let mut wrong = item(url, target.clone(), &body);
-        wrong.sha1 = Some("0".repeat(40));
+        wrong.checksum = Some(Checksum::Sha1("0".repeat(40)));
 
         let (result, counters) = run(wrong).await;
 
         assert!(matches!(result, Err(AppError::Checksum(_))));
         assert!(!target.exists());
         assert_eq!(counters.bytes(), 0);
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[tokio::test]
+    async fn downloads_a_file_listed_twice_only_once() {
+        let body = payload();
+        let url = serve(body.clone(), Arc::default()).await;
+        let dir = scratch("duplicate");
+        let target = dir.join("file.bin");
+        let duplicate = item(url, target.clone(), &body);
+        let counters = Arc::new(Counters::default());
+
+        download_all(&Client::new(), vec![duplicate.clone(), duplicate], &CancellationToken::new(), &counters)
+            .await
+            .unwrap();
+
+        assert_eq!(std::fs::read(&target).unwrap(), body);
+        assert_eq!((counters.files(), counters.bytes()), (1, body.len() as u64));
         let _ = std::fs::remove_dir_all(dir);
     }
 

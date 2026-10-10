@@ -37,7 +37,7 @@ export function TitleBar() {
       <div data-tauri-drag-region className="flex h-full flex-1 items-center gap-2 px-4">
         <span className="pointer-events-none size-2.5 rounded-full bg-accent shadow-glow" />
         <span className="pointer-events-none text-xs font-semibold tracking-[0.2em] text-muted">
-          VOIDLIGHT
+          ZENITH
         </span>
       </div>
       <Control label={t("window.minimize")} onClick={() => void appWindow.minimize()}>

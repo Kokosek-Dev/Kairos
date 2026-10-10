@@ -1,4 +1,4 @@
-use crate::download::{download_all, sha1_bytes, Counters, DownloadItem};
+use crate::download::{download_all, download_with_progress, sha1_bytes, Checksum, DownloadItem};
 use crate::error::{AppError, AppResult};
 use crate::mojang::assets::AssetIndex;
 use crate::mojang::manifest::fetch_manifest;
@@ -8,7 +8,6 @@ use crate::paths::DataPaths;
 use reqwest::Client;
 use serde::Serialize;
 use std::sync::Arc;
-use std::time::Duration;
 use tokio::fs;
 use tokio_util::sync::CancellationToken;
 
@@ -63,7 +62,7 @@ pub async fn install_version(
     let index_item = DownloadItem {
         url: version.asset_index.url.clone(),
         path: index_path.clone(),
-        sha1: Some(version.asset_index.sha1.clone()),
+        checksum: Some(Checksum::Sha1(version.asset_index.sha1.clone())),
         size: Some(version.asset_index.size),
     };
     download_all(client, vec![index_item], cancel, &Arc::default()).await?;
@@ -74,30 +73,25 @@ pub async fn install_version(
     let total_files = items.len() as u64;
     let total_bytes = items.iter().filter_map(|item| item.size).sum();
 
-    let counters = Arc::new(Counters::default());
-    let snapshot = |stage| InstallProgress {
-        stage,
-        done_files: counters.files(),
-        total_files,
-        done_bytes: counters.bytes(),
-        total_bytes,
-    };
-
-    let download = download_all(client, items, cancel, &counters);
-    tokio::pin!(download);
-    let mut ticker = tokio::time::interval(Duration::from_millis(100));
-    loop {
-        tokio::select! {
-            result = &mut download => {
-                result?;
-                break;
-            }
-            _ = ticker.tick() => on_progress(snapshot(InstallStage::Downloading)),
-        }
-    }
+    download_with_progress(client, items, cancel, |counters| {
+        on_progress(InstallProgress {
+            stage: InstallStage::Downloading,
+            done_files: counters.files(),
+            total_files,
+            done_bytes: counters.bytes(),
+            total_bytes,
+        });
+    })
+    .await?;
 
     write_version_json(paths, version_id, &raw).await?;
-    on_progress(snapshot(InstallStage::Done));
+    on_progress(InstallProgress {
+        stage: InstallStage::Done,
+        done_files: total_files,
+        total_files,
+        done_bytes: total_bytes,
+        total_bytes,
+    });
     Ok(())
 }
 
@@ -133,7 +127,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "downloads about 850 MB from Mojang servers"]
     async fn installs_a_modern_version_with_separate_native_libraries() {
-        let root = std::env::temp_dir().join(format!("voidlight-e2e-modern-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("zenith-e2e-modern-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         let paths = DataPaths::new(root.clone());
         let client = build_client().unwrap();
@@ -171,7 +165,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "downloads from Mojang servers"]
     async fn installs_a_real_version_and_reuses_files_on_the_second_run() {
-        let root = std::env::temp_dir().join(format!("voidlight-e2e-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("zenith-e2e-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         let paths = DataPaths::new(root.clone());
         let client = build_client().unwrap();

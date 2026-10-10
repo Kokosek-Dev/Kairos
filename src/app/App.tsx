@@ -5,6 +5,7 @@ import { TitleBar } from "@/components/shell/TitleBar";
 import { DiscoverPage } from "@/features/discover/DiscoverPage";
 import { LibraryPage } from "@/features/library/LibraryPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
+import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
 import { VersionsPage } from "@/features/versions/VersionsPage";
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
 
@@ -35,6 +36,7 @@ export function App() {
           </AnimatePresence>
         </main>
       </div>
+      <ConsoleDrawer />
       <WelcomeDialog />
     </div>
   );

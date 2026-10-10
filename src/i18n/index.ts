@@ -2,7 +2,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { en, pl, type LanguageCode } from "./locales";
 
-const STORAGE_KEY = "voidlight.language";
+const STORAGE_KEY = "zenith.language";
 
 export function getStoredLanguage(): LanguageCode | null {
   const value = localStorage.getItem(STORAGE_KEY);

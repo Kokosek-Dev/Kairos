@@ -2,12 +2,43 @@ use crate::error::{AppError, AppResult};
 use crate::paths::DataPaths;
 use reqwest::Client;
 use std::collections::HashMap;
-use std::sync::{Mutex, MutexGuard, PoisonError};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use tokio_util::sync::CancellationToken;
+
+#[derive(Clone, Default)]
+pub struct RunRegistry {
+    active: Arc<Mutex<HashMap<u64, CancellationToken>>>,
+    next_id: Arc<AtomicU64>,
+}
+
+impl RunRegistry {
+    pub fn register(&self) -> (u64, CancellationToken) {
+        let id = self.next_id.fetch_add(1, Ordering::Relaxed) + 1;
+        let token = CancellationToken::new();
+        self.lock().insert(id, token.clone());
+        (id, token)
+    }
+
+    pub fn finish(&self, run_id: u64) {
+        self.lock().remove(&run_id);
+    }
+
+    pub fn stop(&self, run_id: u64) {
+        if let Some(token) = self.lock().get(&run_id) {
+            token.cancel();
+        }
+    }
+
+    fn lock(&self) -> MutexGuard<'_, HashMap<u64, CancellationToken>> {
+        self.active.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+}
 
 pub struct AppState {
     pub client: Client,
     pub paths: DataPaths,
+    pub runs: RunRegistry,
     installs: Mutex<HashMap<String, CancellationToken>>,
 }
 
@@ -16,6 +47,7 @@ impl AppState {
         Self {
             client,
             paths,
+            runs: RunRegistry::default(),
             installs: Mutex::default(),
         }
     }

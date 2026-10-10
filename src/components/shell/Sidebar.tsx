@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { Compass, Layers, Library, Settings, type LucideIcon } from "lucide-react";
+import { Compass, Layers, Library, Settings, Terminal, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
+import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -16,6 +17,24 @@ const ITEMS: NavItem[] = [
   { to: "/discover", labelKey: "nav.discover", icon: Compass },
   { to: "/settings", labelKey: "nav.settings", icon: Settings },
 ];
+
+function ConsoleButton() {
+  const { t } = useTranslation();
+  const { phase, consoleOpen, setConsoleOpen } = useGameStore();
+  if (phase.kind === "idle") return null;
+
+  return (
+    <button
+      type="button"
+      onClick={() => setConsoleOpen(!consoleOpen)}
+      className="mt-auto flex h-10 items-center gap-3 rounded-md px-3 font-medium text-muted transition-colors hover:bg-surface-raised hover:text-foreground"
+    >
+      <Terminal size={18} />
+      {t("console.title")}
+      {isBusy(phase) && <span className="ml-auto size-2 animate-pulse rounded-full bg-success" />}
+    </button>
+  );
+}
 
 export function Sidebar() {
   const { t } = useTranslation();
@@ -49,6 +68,7 @@ export function Sidebar() {
           )}
         </NavLink>
       ))}
+      <ConsoleButton />
     </nav>
   );
 }

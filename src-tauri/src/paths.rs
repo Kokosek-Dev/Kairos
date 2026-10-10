@@ -42,6 +42,22 @@ impl DataPaths {
         self.assets().join("objects").join(&hash[..2]).join(hash)
     }
 
+    pub fn virtual_assets(&self, index_id: &str) -> PathBuf {
+        self.assets().join("virtual").join(index_id)
+    }
+
+    pub fn natives_dir(&self, version_id: &str) -> PathBuf {
+        self.version_dir(version_id).join("natives")
+    }
+
+    pub fn game_dir(&self, version_id: &str) -> PathBuf {
+        self.root.join("game").join(version_id)
+    }
+
+    pub fn runtimes(&self) -> PathBuf {
+        self.root.join("runtimes")
+    }
+
     pub fn log_configs(&self) -> PathBuf {
         self.assets().join("log_configs")
     }

@@ -3,6 +3,8 @@ mod download;
 mod error;
 mod http;
 mod install;
+mod java;
+mod launch;
 mod mojang;
 mod paths;
 mod state;
@@ -24,7 +26,9 @@ pub fn run() {
             commands::list_installed_versions,
             commands::install_version,
             commands::cancel_install,
+            commands::launch_game,
+            commands::stop_game,
         ])
         .run(tauri::generate_context!())
-        .expect("failed to run Voidlight");
+        .expect("failed to run Zenith");
 }

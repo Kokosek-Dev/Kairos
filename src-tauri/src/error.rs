@@ -14,6 +14,11 @@ pub enum AppError {
     VersionNotFound(String),
     #[error("download failed with HTTP {status} for {url}")]
     HttpStatus { status: u16, url: String },
+    #[error("no Java {0} runtime is available for this system")]
+    JavaUnavailable(u32),
+    #[error("you need to sign in with a Microsoft account to play")]
+    #[cfg_attr(debug_assertions, allow(dead_code))]
+    NotSignedIn,
     #[error("operation cancelled")]
     Cancelled,
     #[error("{0}")]
@@ -29,6 +34,8 @@ impl AppError {
             Self::Checksum(_) => "checksum",
             Self::VersionNotFound(_) => "version_not_found",
             Self::HttpStatus { .. } => "http_status",
+            Self::JavaUnavailable(_) => "java_unavailable",
+            Self::NotSignedIn => "not_signed_in",
             Self::Cancelled => "cancelled",
             Self::Internal(_) => "internal",
         }
