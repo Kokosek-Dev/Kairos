@@ -1,6 +1,4 @@
-use crate::error::AppResult;
-
-#[derive(Debug, Clone)]
+﻿#[derive(Debug, Clone)]
 pub struct GameSession {
     pub username: String,
     pub uuid: String,
@@ -12,8 +10,8 @@ pub struct GameSession {
 
 #[cfg(debug_assertions)]
 impl GameSession {
-    /// Placeholder identity used by development builds until Microsoft sign-in exists.
-    /// It cannot authenticate against online services and is compiled out of release builds.
+    /// Placeholder identity for development builds only. It cannot authenticate against
+    /// online services and is never compiled into release builds.
     pub fn development() -> Self {
         Self {
             username: "ZenithDev".into(),
@@ -26,9 +24,10 @@ impl GameSession {
     }
 }
 
-pub fn current() -> AppResult<GameSession> {
+/// Debug builds can skip Microsoft sign-in when `ZENITH_DEV_SESSION=1` is set explicitly.
+pub fn development_override() -> Option<GameSession> {
     #[cfg(debug_assertions)]
-    return Ok(GameSession::development());
+    return (std::env::var("ZENITH_DEV_SESSION").as_deref() == Ok("1")).then(GameSession::development);
     #[cfg(not(debug_assertions))]
-    return Err(crate::error::AppError::NotSignedIn);
+    return None;
 }

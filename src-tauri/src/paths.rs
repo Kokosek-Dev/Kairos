@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone)]
 pub struct DataPaths {
@@ -8,6 +8,10 @@ pub struct DataPaths {
 impl DataPaths {
     pub fn new(root: PathBuf) -> Self {
         Self { root }
+    }
+
+    pub fn root(&self) -> &Path {
+        &self.root
     }
 
     pub fn versions(&self) -> PathBuf {
@@ -48,6 +52,14 @@ impl DataPaths {
 
     pub fn natives_dir(&self, version_id: &str) -> PathBuf {
         self.version_dir(version_id).join("natives")
+    }
+
+    pub fn accounts_file(&self) -> PathBuf {
+        self.root.join("accounts.json")
+    }
+
+    pub fn settings_file(&self) -> PathBuf {
+        self.root.join("settings.json")
     }
 
     pub fn instances(&self) -> PathBuf {

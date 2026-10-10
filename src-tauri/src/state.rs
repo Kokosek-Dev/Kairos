@@ -1,3 +1,4 @@
+use crate::auth::AuthService;
 use crate::error::{AppError, AppResult};
 use crate::paths::DataPaths;
 use reqwest::Client;
@@ -48,15 +49,19 @@ impl RunRegistry {
 pub struct AppState {
     pub client: Client,
     pub paths: DataPaths,
+    pub auth: AuthService,
     pub runs: RunRegistry,
+    sign_in: Mutex<Option<CancellationToken>>,
     installs: Mutex<HashMap<String, CancellationToken>>,
 }
 
 impl AppState {
-    pub fn new(client: Client, paths: DataPaths) -> Self {
+    pub fn new(client: Client, paths: DataPaths, auth: AuthService) -> Self {
         Self {
             client,
             paths,
+            auth,
+            sign_in: Mutex::default(),
             runs: RunRegistry::default(),
             installs: Mutex::default(),
         }
@@ -73,6 +78,26 @@ impl AppState {
         }
         installs.insert(version_id.to_owned(), token);
         Ok(())
+    }
+
+    pub fn begin_sign_in(&self) -> AppResult<CancellationToken> {
+        let mut current = self.sign_in.lock().unwrap_or_else(PoisonError::into_inner);
+        if current.is_some() {
+            return Err(AppError::Internal("a sign-in is already in progress".into()));
+        }
+        let token = CancellationToken::new();
+        *current = Some(token.clone());
+        Ok(token)
+    }
+
+    pub fn end_sign_in(&self) {
+        *self.sign_in.lock().unwrap_or_else(PoisonError::into_inner) = None;
+    }
+
+    pub fn cancel_sign_in(&self) {
+        if let Some(token) = self.sign_in.lock().unwrap_or_else(PoisonError::into_inner).as_ref() {
+            token.cancel();
+        }
     }
 
     pub fn finish_install(&self, version_id: &str) {

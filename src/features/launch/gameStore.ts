@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useSignInStore } from "@/features/accounts/signInStore";
 import { isLauncherError } from "@/lib/tauri/errors";
 import {
   launchInstance,
@@ -89,6 +90,9 @@ export const useGameStore = create<GameState>((set, get) => {
       } catch (error) {
         if (isLauncherError(error) && error.code === "cancelled") {
           set({ phase: { kind: "idle" }, runId: null });
+        } else if (isLauncherError(error) && error.code === "not_signed_in") {
+          set({ phase: { kind: "idle" }, runId: null, consoleOpen: false });
+          void useSignInStore.getState().start();
         } else {
           set({ phase: { kind: "failed", error }, runId: null });
         }

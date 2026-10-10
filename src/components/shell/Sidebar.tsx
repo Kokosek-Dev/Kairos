@@ -1,7 +1,11 @@
 import { motion } from "framer-motion";
-import { Compass, Layers, Library, Settings, Terminal, type LucideIcon } from "lucide-react";
+import { Compass, Layers, Library, LogIn, Settings, Terminal, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { AccountAvatar } from "@/features/accounts/AccountAvatar";
+import { useAccounts } from "@/features/accounts/AccountsSection";
+import { useSignInStore } from "@/features/accounts/signInStore";
+import { Button } from "@/components/ui/button";
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +36,34 @@ function ConsoleButton() {
       <Terminal size={18} />
       {t("console.title")}
       {isBusy(phase) && <span className="ml-auto size-2 animate-pulse rounded-full bg-success" />}
+    </button>
+  );
+}
+
+function AccountChip() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const accounts = useAccounts();
+  const startSignIn = useSignInStore((state) => state.start);
+  const active = accounts.data?.accounts.find((account) => account.id === accounts.data?.activeId);
+
+  if (accounts.isPending) return <div className="skeleton mt-2 h-12 rounded-md" />;
+  if (!active) {
+    return (
+      <Button variant="secondary" className="mt-2 w-full" onClick={() => void startSignIn()}>
+        <LogIn size={16} />
+        {t("accounts.signIn")}
+      </Button>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => navigate("/settings")}
+      className="mt-2 flex h-12 items-center gap-3 rounded-md border bg-surface px-3 text-left transition-colors hover:bg-surface-raised"
+    >
+      <AccountAvatar name={active.username} className="size-7 text-xs" />
+      <span className="min-w-0 flex-1 truncate font-medium">{active.username}</span>
     </button>
   );
 }
@@ -69,6 +101,7 @@ export function Sidebar() {
         </NavLink>
       ))}
       <ConsoleButton />
+      <AccountChip />
     </nav>
   );
 }

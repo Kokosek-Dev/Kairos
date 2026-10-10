@@ -6,6 +6,7 @@ import { DiscoverPage } from "@/features/discover/DiscoverPage";
 import { InstanceSettingsPage } from "@/features/instances/InstanceSettingsPage";
 import { LibraryPage } from "@/features/library/LibraryPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
+import { SignInDialog } from "@/features/accounts/SignInDialog";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
 import { VersionsPage } from "@/features/versions/VersionsPage";
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
@@ -39,6 +40,7 @@ export function App() {
         </main>
       </div>
       <ConsoleDrawer />
+      <SignInDialog />
       <WelcomeDialog />
     </div>
   );

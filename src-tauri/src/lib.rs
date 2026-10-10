@@ -1,3 +1,4 @@
+mod auth;
 mod commands;
 mod download;
 mod error;
@@ -8,9 +9,15 @@ mod java;
 mod launch;
 mod mojang;
 mod paths;
+mod settings;
 mod state;
+mod tasks;
 
+use auth::endpoints::Endpoints;
+use auth::store::{AccountStore, KeyringStore};
+use auth::AuthService;
 use paths::DataPaths;
+use std::sync::Arc;
 use state::AppState;
 use tauri::Manager;
 
@@ -21,7 +28,9 @@ pub fn run() {
         .setup(|app| {
             let paths = DataPaths::new(app.path().app_data_dir()?);
             let client = http::build_client()?;
-            app.manage(AppState::new(client, paths));
+            let accounts = AccountStore::new(paths.accounts_file(), Arc::new(KeyringStore));
+            let auth = AuthService::new(client.clone(), Endpoints::default(), accounts);
+            app.manage(AppState::new(client, paths, auth));
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -42,6 +51,14 @@ pub fn run() {
             commands::open_instance_folder,
             commands::pick_icon_file,
             commands::pick_java_file,
+            commands::get_accounts,
+            commands::sign_in,
+            commands::cancel_sign_in,
+            commands::set_active_account,
+            commands::remove_account,
+            commands::get_auth_config,
+            commands::set_ms_client_id,
+            commands::open_login_page,
         ])
         .run(tauri::generate_context!())
         .expect("failed to run Zenith");

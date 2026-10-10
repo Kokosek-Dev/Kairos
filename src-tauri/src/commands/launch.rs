@@ -1,6 +1,7 @@
-﻿use crate::error::{AppError, AppResult};
+use crate::error::{AppError, AppResult};
 use crate::instances::store;
 use crate::launch::{self, LaunchEvent, LaunchRequest};
+use crate::settings;
 use crate::state::AppState;
 use tauri::{ipc::Channel, State};
 
@@ -14,7 +15,10 @@ pub async fn launch_instance(
     if state.runs.is_instance_running(&instance.id) {
         return Err(AppError::InstanceRunning);
     }
-    let session = launch::session::current()?;
+    let session = match launch::session::development_override() {
+        Some(session) => session,
+        None => state.auth.game_session(|| settings::client_id(&state.paths)).await?,
+    };
     let (run_id, token) = state.runs.register(&instance.id);
     let emit = move |event: LaunchEvent| {
         let _ = on_event.send(event);
