@@ -1,14 +1,14 @@
 import { create } from "zustand";
 import { isLauncherError } from "@/lib/tauri/errors";
 import { queryClient } from "@/lib/queryClient";
-import { cancelSignIn, openLoginPage, signIn, type SignInEvent, type SignInStep } from "@/lib/tauri/auth";
+import { cancelSignIn, signIn, type SignInEvent, type SignInStep } from "@/lib/tauri/auth";
 
 export const ACCOUNTS_KEY = ["accounts"];
 
 export type SignInPhase =
   | { kind: "idle" }
   | { kind: "starting" }
-  | { kind: "code"; userCode: string; verificationUri: string }
+  | { kind: "browser"; url: string }
   | { kind: "working"; step: SignInStep }
   | { kind: "done"; username: string }
   | { kind: "failed"; error: unknown };
@@ -22,9 +22,8 @@ interface SignInState {
 
 export const useSignInStore = create<SignInState>((set, get) => {
   const handle = (event: SignInEvent) => {
-    if (event.type === "device_code") {
-      set({ phase: { kind: "code", userCode: event.userCode, verificationUri: event.verificationUri } });
-      void openLoginPage(event.verificationUri).catch(() => undefined);
+    if (event.type === "browser") {
+      set({ phase: { kind: "browser", url: event.url } });
     } else {
       set({ phase: { kind: "working", step: event.step } });
     }
@@ -51,7 +50,7 @@ export const useSignInStore = create<SignInState>((set, get) => {
 
     close: () => {
       const { phase } = get();
-      if (phase.kind === "starting" || phase.kind === "code" || phase.kind === "working") {
+      if (phase.kind === "starting" || phase.kind === "browser" || phase.kind === "working") {
         void cancelSignIn();
       }
       set({ open: false, phase: { kind: "idle" } });

@@ -1,6 +1,6 @@
 #[derive(Debug, Clone)]
 pub struct Endpoints {
-    pub device_code: String,
+    pub authorize: String,
     pub token: String,
     pub xbox_user: String,
     pub xsts: String,
@@ -12,7 +12,7 @@ pub struct Endpoints {
 impl Default for Endpoints {
     fn default() -> Self {
         Self {
-            device_code: "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode".into(),
+            authorize: "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize".into(),
             token: "https://login.microsoftonline.com/consumers/oauth2/v2.0/token".into(),
             xbox_user: "https://user.auth.xboxlive.com/user/authenticate".into(),
             xsts: "https://xsts.auth.xboxlive.com/xsts/authorize".into(),
@@ -27,7 +27,7 @@ impl Default for Endpoints {
 impl Endpoints {
     pub fn with_base(base: &str) -> Self {
         Self {
-            device_code: format!("{base}/devicecode"),
+            authorize: format!("{base}/authorize"),
             token: format!("{base}/token"),
             xbox_user: format!("{base}/xbl"),
             xsts: format!("{base}/xsts"),

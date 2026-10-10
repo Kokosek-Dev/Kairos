@@ -1,4 +1,5 @@
 pub mod endpoints;
+mod loopback;
 mod microsoft;
 mod minecraft;
 pub mod store;
@@ -37,10 +38,8 @@ pub enum SignInStep {
 #[derive(Debug, Clone, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", rename_all_fields = "camelCase")]
 pub enum SignInEvent {
-    DeviceCode {
-        user_code: String,
-        verification_uri: String,
-        expires_in: u64,
+    Browser {
+        url: String,
     },
     Step {
         step: SignInStep,
@@ -91,15 +90,20 @@ impl AuthService {
         &self,
         client_id: &str,
         cancel: &CancellationToken,
+        open_browser: impl FnOnce(&str) -> AppResult<()>,
         emit: impl Fn(SignInEvent),
     ) -> AppResult<Account> {
-        let device = microsoft::request_device_code(&self.client, &self.endpoints, client_id).await?;
-        emit(SignInEvent::DeviceCode {
-            user_code: device.user_code.clone(),
-            verification_uri: device.verification_uri.clone(),
-            expires_in: device.expires_in,
-        });
-        let tokens = microsoft::poll_for_tokens(&self.client, &self.endpoints, client_id, &device, cancel).await?;
+        let pkce = microsoft::Pkce::generate()?;
+        let state = microsoft::random_state()?;
+        let loopback = loopback::bind().await?;
+        let redirect_uri = loopback.redirect_uri.clone();
+
+        let url = microsoft::authorize_url(&self.endpoints, client_id, &redirect_uri, &state, &pkce)?;
+        emit(SignInEvent::Browser { url: url.clone() });
+        open_browser(&url)?;
+        let code = loopback.wait_for_code(&state, cancel).await?;
+        let tokens =
+            microsoft::exchange_code(&self.client, &self.endpoints, client_id, &code, &redirect_uri, &pkce).await?;
 
         let minecraft = self
             .minecraft_token(&tokens.access_token, |step| emit(SignInEvent::Step { step }))

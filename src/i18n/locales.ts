@@ -45,10 +45,9 @@ export const en = {
     title: "Sign in with Microsoft",
     subtitle: "Use the Microsoft account that owns Minecraft: Java Edition.",
     starting: "Contacting Microsoft...",
-    codeHint: "A browser page was opened. Enter this code there and approve the sign-in.",
-    copy: "Copy code",
+    browserHint: "A Microsoft sign-in page opened in your browser. Sign in there and Zenith continues on its own.",
     waiting: "Waiting for you to finish in the browser...",
-    openPage: "Open sign-in page",
+    openPage: "Open the page again",
     step: {
       xbox: "Signing in to Xbox Live",
       xsts: "Getting the Xbox security token",
@@ -117,7 +116,7 @@ export const en = {
   errors: {
     auth_not_configured: "Add the application ID of your Azure app in Settings first.",
     auth_declined: "The sign-in was declined in the browser.",
-    auth_expired: "The sign-in code expired. Start again.",
+    auth_expired: "The sign-in took too long and timed out. Start again.",
     auth_app_not_approved: "Microsoft has not approved this application for Minecraft yet. Submit the approval form and wait for the confirmation.",
     auth_xbox_no_account: "This Microsoft account has no Xbox profile. Create one at xbox.com and try again.",
     auth_xbox_banned: "This account is banned from Xbox.",
@@ -197,10 +196,9 @@ export const pl: typeof en = {
     title: "Zaloguj się kontem Microsoft",
     subtitle: "Użyj konta Microsoft, które posiada Minecraft: Java Edition.",
     starting: "Łączenie z Microsoft...",
-    codeHint: "Otwarto stronę w przeglądarce. Wpisz tam ten kod i zatwierdź logowanie.",
-    copy: "Kopiuj kod",
+    browserHint: "W przeglądarce otworzyła się strona logowania Microsoft. Zaloguj się tam, a Zenith dokończy sam.",
     waiting: "Czekam, aż skończysz w przeglądarce...",
-    openPage: "Otwórz stronę logowania",
+    openPage: "Otwórz stronę ponownie",
     step: {
       xbox: "Logowanie do Xbox Live",
       xsts: "Pobieranie tokenu bezpieczeństwa Xbox",
@@ -269,7 +267,7 @@ export const pl: typeof en = {
   errors: {
     auth_not_configured: "Najpierw dodaj identyfikator aplikacji z Azure w Ustawieniach.",
     auth_declined: "Logowanie zostało odrzucone w przeglądarce.",
-    auth_expired: "Kod logowania wygasł. Zacznij od nowa.",
+    auth_expired: "Logowanie trwało zbyt długo i wygasło. Zacznij od nowa.",
     auth_app_not_approved: "Microsoft nie zatwierdził jeszcze tej aplikacji do Minecrafta. Wyślij formularz zgody i poczekaj na potwierdzenie.",
     auth_xbox_no_account: "To konto Microsoft nie ma profilu Xbox. Utwórz go na xbox.com i spróbuj ponownie.",
     auth_xbox_banned: "To konto ma blokadę na Xbox.",

@@ -1,23 +1,13 @@
 use super::endpoints::Endpoints;
 use crate::error::{AppError, AppResult, AuthFailure};
-use reqwest::Client;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+use base64::Engine;
+use reqwest::{Client, Url};
 use serde::Deserialize;
-use std::time::Duration;
-use tokio::time::Instant;
-use tokio_util::sync::CancellationToken;
+use sha2::{Digest, Sha256};
 
 const SCOPE: &str = "XboxLive.signin offline_access";
-const DEVICE_GRANT: &str = "urn:ietf:params:oauth:grant-type:device_code";
-const SLOW_DOWN_STEP: Duration = Duration::from_secs(5);
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct DeviceCode {
-    pub device_code: String,
-    pub user_code: String,
-    pub verification_uri: String,
-    pub expires_in: u64,
-    pub interval: u64,
-}
+const RANDOM_BYTES: usize = 32;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct MicrosoftTokens {
@@ -30,59 +20,77 @@ struct TokenError {
     error: String,
 }
 
-pub async fn request_device_code(client: &Client, endpoints: &Endpoints, client_id: &str) -> AppResult<DeviceCode> {
-    let response = client
-        .post(&endpoints.device_code)
-        .form(&[("client_id", client_id), ("scope", SCOPE)])
-        .send()
-        .await?;
-    if !response.status().is_success() {
-        let status = response.status().as_u16();
-        return Err(AppError::HttpStatus { status, url: endpoints.device_code.clone() });
-    }
-    Ok(response.json().await?)
+pub struct Pkce {
+    pub verifier: String,
+    pub challenge: String,
 }
 
-pub async fn poll_for_tokens(
+fn random_token() -> AppResult<String> {
+    let mut bytes = [0u8; RANDOM_BYTES];
+    getrandom::fill(&mut bytes).map_err(|error| AppError::Internal(error.to_string()))?;
+    Ok(URL_SAFE_NO_PAD.encode(bytes))
+}
+
+impl Pkce {
+    pub fn generate() -> AppResult<Self> {
+        let verifier = random_token()?;
+        let challenge = URL_SAFE_NO_PAD.encode(Sha256::digest(verifier.as_bytes()));
+        Ok(Self { verifier, challenge })
+    }
+}
+
+pub fn random_state() -> AppResult<String> {
+    random_token()
+}
+
+pub fn authorize_url(
+    endpoints: &Endpoints,
+    client_id: &str,
+    redirect_uri: &str,
+    state: &str,
+    pkce: &Pkce,
+) -> AppResult<String> {
+    let mut url = Url::parse(&endpoints.authorize).map_err(|error| AppError::Internal(error.to_string()))?;
+    url.query_pairs_mut()
+        .append_pair("client_id", client_id)
+        .append_pair("response_type", "code")
+        .append_pair("redirect_uri", redirect_uri)
+        .append_pair("response_mode", "query")
+        .append_pair("scope", SCOPE)
+        .append_pair("state", state)
+        .append_pair("code_challenge", &pkce.challenge)
+        .append_pair("code_challenge_method", "S256")
+        .append_pair("prompt", "select_account");
+    Ok(url.into())
+}
+
+pub async fn exchange_code(
     client: &Client,
     endpoints: &Endpoints,
     client_id: &str,
-    code: &DeviceCode,
-    cancel: &CancellationToken,
+    code: &str,
+    redirect_uri: &str,
+    pkce: &Pkce,
 ) -> AppResult<MicrosoftTokens> {
-    let deadline = Instant::now() + Duration::from_secs(code.expires_in);
-    let mut interval = Duration::from_secs(code.interval);
-
-    loop {
-        tokio::select! {
-            _ = cancel.cancelled() => return Err(AppError::Cancelled),
-            _ = tokio::time::sleep(interval) => {}
-        }
-        if Instant::now() > deadline {
-            return Err(AuthFailure::Expired.into());
-        }
-
-        let response = client
-            .post(&endpoints.token)
-            .form(&[
-                ("grant_type", DEVICE_GRANT),
-                ("client_id", client_id),
-                ("device_code", code.device_code.as_str()),
-            ])
-            .send()
-            .await?;
-        if response.status().is_success() {
-            return Ok(response.json().await?);
-        }
-
-        let error: TokenError = response.json().await?;
-        match error.error.as_str() {
-            "authorization_pending" => {}
-            "slow_down" => interval += SLOW_DOWN_STEP,
-            "authorization_declined" => return Err(AuthFailure::Declined.into()),
-            "expired_token" | "bad_verification_code" => return Err(AuthFailure::Expired.into()),
-            other => return Err(AppError::Internal(format!("Microsoft sign-in failed: {other}"))),
-        }
+    let response = client
+        .post(&endpoints.token)
+        .form(&[
+            ("client_id", client_id),
+            ("grant_type", "authorization_code"),
+            ("code", code),
+            ("redirect_uri", redirect_uri),
+            ("code_verifier", pkce.verifier.as_str()),
+            ("scope", SCOPE),
+        ])
+        .send()
+        .await?;
+    if response.status().is_success() {
+        return Ok(response.json().await?);
+    }
+    let status = response.status().as_u16();
+    match response.json::<TokenError>().await {
+        Ok(error) => Err(AppError::Internal(format!("Microsoft sign-in failed: {}", error.error))),
+        Err(_) => Err(AppError::HttpStatus { status, url: endpoints.token.clone() }),
     }
 }
 

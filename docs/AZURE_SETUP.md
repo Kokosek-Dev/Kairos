@@ -1,21 +1,30 @@
 # Rejestracja aplikacji w Azure (logowanie Microsoft)
 
-Zenith loguje przez konto Microsoft. Do tego potrzebuje własnej aplikacji zarejestrowanej w Azure (Microsoft Entra ID). Nie potrzebujesz sekretu klienta ani karty płatniczej do samej rejestracji, a launcher nigdy nie używa identyfikatora oficjalnego launchera Mojang.
+Zenith loguje przez konto Microsoft. Do tego potrzebuje własnej aplikacji zarejestrowanej w Azure (Microsoft Entra ID). Nie potrzebujesz sekretu klienta. Dokumentacja Microsoftu wymienia jako warunek wstępny konto Azure (można je założyć za darmo: <https://azure.microsoft.com/pricing/purchase-options/azure-account>) i dostęp do katalogu (np. *Default Directory*). Launcher nigdy nie używa identyfikatora oficjalnego launchera Mojang.
 
-Flow w launcherze: **Microsoft (device code)** → Xbox Live → XSTS → Minecraft Services → sprawdzenie profilu (konto bez gry nie ma profilu).
+Flow w launcherze: **logowanie w przeglądarce (kod autoryzacji + PKCE, automatyczny powrót na lokalny adres)** → Xbox Live → XSTS → Minecraft Services → sprawdzenie profilu (konto bez gry nie ma profilu).
+
+Dla użytkownika wygląda to tak: klik „Dodaj konto", otwiera się przeglądarka ze stroną logowania Microsoft, po zalogowaniu strona pokazuje „możesz zamknąć kartę", a launcher sam kończy logowanie.
 
 ## 1. Zarejestruj aplikację
 
-1. Wejdź na <https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade> (albo portal.azure.com → *Microsoft Entra ID* → *App registrations*) i zaloguj się swoim kontem Microsoft. Jeśli portal poprosi o utworzenie bezpłatnego katalogu (tenanta), zgódź się.
-2. Kliknij **New registration** i ustaw:
+1. Wejdź na <https://entra.microsoft.com> i zaloguj się swoim kontem Microsoft. Jeśli masz dostęp do kilku katalogów (tenantów), przełącz się ikoną ustawień u góry na właściwy.
+2. Przejdź do **Entra ID** → **App registrations** i kliknij **New registration**.
+3. Ustaw:
    - **Name:** np. `Zenith` (ta nazwa pokaże się użytkownikom przy logowaniu; nie używaj w niej słów „Minecraft" ani „Mojang").
-   - **Supported account types:** **Personal Microsoft accounts only**. Launcher używa endpointu `consumers`, a konta służbowe/szkolne nie mogą się tak zalogować.
-   - **Redirect URI:** zostaw puste. Device code flow nie potrzebuje przekierowania.
-3. Kliknij **Register**. Na stronie *Overview* skopiuj **Application (client) ID**. To jest ten identyfikator, którego potrzebuje Zenith.
+   - **Supported account types:** **Personal accounts only**. Launcher używa endpointu `consumers`, a konta służbowe/szkolne nie mogą się tak zalogować.
+   - **Redirect URI:** możesz zostawić puste i dodać w kroku 2.
+4. Kliknij **Register**. Na stronie *Overview* skopiuj **Application (client) ID**. To jest ten identyfikator, którego potrzebuje Zenith.
 
-## 2. Włącz flow dla klientów publicznych
+## 2. Dodaj adres przekierowania i włącz klienta publicznego
 
-*Authentication* → *Advanced settings* → **Allow public client flows: Yes** → **Save**. Bez tego logowanie kodem urządzenia zwróci błąd.
+Po zalogowaniu Microsoft odsyła przeglądarkę na lokalny adres launchera (`http://localhost:<losowy port>`). Microsoft ignoruje numer portu przy dopasowaniu adresu `localhost`, więc rejestrujesz go raz, bez portu:
+
+1. *Authentication* → **Add a platform** (w nowszym interfejsie: **Add Redirect URI**) → **Mobile and desktop applications**.
+2. W polu własnego adresu wpisz dokładnie `http://localhost` i zatwierdź (**Configure** / **Save**).
+3. Przełącznik **Allow public client flows** ustaw na **Yes** i kliknij **Save** (w nowszym interfejsie bywa w zakładce *Settings* na stronie Authentication, w starszym w sekcji *Advanced settings*).
+
+Bez poprawnego adresu przekierowania Microsoft zwróci błąd `AADSTS50011` (reply URL does not match).
 
 ## 3. Uprawnienia (API permissions)
 
@@ -43,6 +52,7 @@ Wydając własny launcher, wbuduj swój zatwierdzony identyfikator (opcja 3). Ka
 
 - Zapisywany jest wyłącznie **refresh token**, w systemowym magazynie poświadczeń (Windows Credential Manager, macOS Keychain, Secret Service na Linuksie). Metadane kont (nazwa, UUID) są w `accounts.json` bez żadnych tokenów.
 - Token dostępu do Minecrafta żyje tylko w pamięci i jest odnawiany przy starcie gry.
+- Lokalny serwer odbierający przekierowanie działa tylko na `127.0.0.1`, tylko podczas logowania, i akceptuje wyłącznie odpowiedź z poprawnym parametrem `state` (ochrona przed podstawionym żądaniem). Kod autoryzacji jest wymieniany z kodem PKCE, bez sekretu.
 
 ## Tryb deweloperski
 
@@ -53,7 +63,8 @@ W buildach debug można uruchomić grę bez logowania, ustawiając `ZENITH_DEV_S
 | Objaw | Przyczyna |
 | --- | --- |
 | Błąd po kroku „Minecraft" (403) | Aplikacja nie ma jeszcze zgody z kroku 4 |
-| Błąd zaraz po uruchomieniu logowania | Brak „Allow public client flows" lub zły typ kont |
+| Błąd `AADSTS50011` w przeglądarce | Brak adresu `http://localhost` w platformie *Mobile and desktop applications* |
+| Inny błąd zaraz po otwarciu strony logowania | Brak „Allow public client flows" lub zły typ kont |
 | „Konto nie ma profilu Xbox" (XErr 2148916233) | Utwórz profil na xbox.com |
 | Błąd kraju (2148916235) | Xbox Live niedostępny w kraju konta |
 | Konto dziecięce (2148916238) | Dorosły musi dodać je do rodziny Microsoft |

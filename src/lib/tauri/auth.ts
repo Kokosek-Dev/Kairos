@@ -19,7 +19,7 @@ export interface AuthConfig {
 export type SignInStep = "xbox" | "xsts" | "minecraft" | "profile";
 
 export type SignInEvent =
-  | { type: "device_code"; userCode: string; verificationUri: string; expiresIn: number }
+  | { type: "browser"; url: string }
   | { type: "step"; step: SignInStep };
 
 export const SIGN_IN_STEPS: SignInStep[] = ["xbox", "xsts", "minecraft", "profile"];

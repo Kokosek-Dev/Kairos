@@ -1,4 +1,4 @@
-import { Check, Copy, ExternalLink, Loader2 } from "lucide-react";
+import { Check, ExternalLink, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -48,27 +48,16 @@ function Body({ phase, onClose }: { phase: SignInPhase; onClose: () => void }) {
           {t("signIn.starting")}
         </div>
       );
-    case "code":
+    case "browser":
       return (
         <div className="mt-5">
-          <p className="text-muted">{t("signIn.codeHint")}</p>
-          <div className="mt-4 flex items-center justify-center gap-3 rounded-xl border bg-background/60 py-5">
-            <span className="select-text font-mono text-3xl font-bold tracking-[0.3em]">{phase.userCode}</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              aria-label={t("signIn.copy")}
-              onClick={() => void navigator.clipboard.writeText(phase.userCode)}
-            >
-              <Copy size={16} />
-            </Button>
-          </div>
-          <div className="mt-4 flex items-center justify-between gap-3">
+          <p className="text-muted">{t("signIn.browserHint")}</p>
+          <div className="mt-5 flex items-center justify-between gap-3">
             <span className="flex items-center gap-2 text-sm text-muted">
               <Loader2 size={14} className="animate-spin" />
               {t("signIn.waiting")}
             </span>
-            <Button variant="secondary" size="sm" onClick={() => void openLoginPage(phase.verificationUri)}>
+            <Button variant="secondary" size="sm" onClick={() => void openLoginPage(phase.url)}>
               <ExternalLink size={14} />
               {t("signIn.openPage")}
             </Button>

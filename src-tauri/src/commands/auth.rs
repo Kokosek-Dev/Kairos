@@ -23,14 +23,23 @@ pub async fn get_accounts(state: State<'_, AppState>) -> AppResult<Accounts> {
 }
 
 #[tauri::command]
-pub async fn sign_in(state: State<'_, AppState>, on_event: Channel<SignInEvent>) -> AppResult<Account> {
+pub async fn sign_in(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    on_event: Channel<SignInEvent>,
+) -> AppResult<Account> {
     let client_id = settings::client_id(&state.paths)?;
     let token = state.begin_sign_in()?;
     let result = state
         .auth
-        .sign_in(&client_id, &token, |event| {
-            let _ = on_event.send(event);
-        })
+        .sign_in(
+            &client_id,
+            &token,
+            |url| open_in_browser(&app, url),
+            |event| {
+                let _ = on_event.send(event);
+            },
+        )
         .await;
     state.end_sign_in();
     result
@@ -81,6 +90,10 @@ pub fn open_login_page(app: AppHandle, url: String) -> AppResult<()> {
     if !trusted {
         return Err(AppError::InvalidInput("this link cannot be opened from the launcher".into()));
     }
+    open_in_browser(&app, &url)
+}
+
+fn open_in_browser(app: &AppHandle, url: &str) -> AppResult<()> {
     app.opener()
         .open_url(url, None::<&str>)
         .map_err(|error| AppError::Internal(error.to_string()))
