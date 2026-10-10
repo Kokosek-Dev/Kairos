@@ -3,118 +3,14 @@ use super::store::memory::MemoryStore;
 use super::store::{AccountStore, SecretStore};
 use super::{AuthService, SignInEvent};
 use crate::error::{AppError, AuthFailure};
-use std::collections::{HashMap, VecDeque};
-use std::sync::{Arc, Mutex};
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tokio::net::TcpListener;
+use crate::test_support::{start, Mock};
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use base64::Engine;
 use sha2::{Digest, Sha256};
+use std::sync::{Arc, Mutex};
 use tokio_util::sync::CancellationToken;
 
 const CLIENT_ID: &str = "12345678-abcd-4ef0-9abc-0123456789ab";
-
-type Responses = HashMap<&'static str, VecDeque<(u16, String)>>;
-
-#[derive(Clone, Debug)]
-struct Recorded {
-    path: String,
-    body: String,
-    authorization: Option<String>,
-}
-
-struct Mock {
-    base: String,
-    requests: Arc<Mutex<Vec<Recorded>>>,
-}
-
-impl Mock {
-    fn count(&self, path: &str) -> usize {
-        self.requests.lock().unwrap().iter().filter(|request| request.path == path).count()
-    }
-
-    fn last(&self, path: &str) -> Recorded {
-        self.requests
-            .lock()
-            .unwrap()
-            .iter()
-            .rev()
-            .find(|request| request.path == path)
-            .cloned()
-            .unwrap_or_else(|| panic!("no request to {path}"))
-    }
-}
-
-async fn start(routes: Vec<(&'static str, Vec<(u16, &str)>)>) -> Mock {
-    let responses: Responses = routes
-        .into_iter()
-        .map(|(path, queue)| (path, queue.into_iter().map(|(status, body)| (status, body.to_owned())).collect()))
-        .collect();
-    let responses = Arc::new(Mutex::new(responses));
-    let requests: Arc<Mutex<Vec<Recorded>>> = Arc::default();
-    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-    let base = format!("http://{}", listener.local_addr().unwrap());
-
-    let log = requests.clone();
-    tokio::spawn(async move {
-        loop {
-            let Ok((mut socket, _)) = listener.accept().await else { return };
-            let (responses, log) = (responses.clone(), log.clone());
-            tokio::spawn(async move {
-                let mut data = Vec::new();
-                let mut buffer = [0u8; 4096];
-                let (head_end, length) = loop {
-                    let read = socket.read(&mut buffer).await.unwrap_or(0);
-                    if read == 0 {
-                        return;
-                    }
-                    data.extend_from_slice(&buffer[..read]);
-                    if let Some(end) = data.windows(4).position(|window| window == b"\r\n\r\n") {
-                        let head = String::from_utf8_lossy(&data[..end]).to_lowercase();
-                        let length = head
-                            .lines()
-                            .find_map(|line| line.strip_prefix("content-length:"))
-                            .and_then(|value| value.trim().parse::<usize>().ok())
-                            .unwrap_or(0);
-                        break (end + 4, length);
-                    }
-                };
-                while data.len() < head_end + length {
-                    let read = socket.read(&mut buffer).await.unwrap_or(0);
-                    if read == 0 {
-                        break;
-                    }
-                    data.extend_from_slice(&buffer[..read]);
-                }
-
-                let head = String::from_utf8_lossy(&data[..head_end]).into_owned();
-                let path = head.split_whitespace().nth(1).unwrap_or_default().to_owned();
-                let authorization = head
-                    .lines()
-                    .find(|line| line.to_lowercase().starts_with("authorization:"))
-                    .map(|line| line.split_once(':').unwrap().1.trim().to_owned());
-                let body = String::from_utf8_lossy(&data[head_end..]).into_owned();
-                log.lock().unwrap().push(Recorded { path: path.clone(), body, authorization });
-
-                let (status, body) = {
-                    let mut responses = responses.lock().unwrap();
-                    match responses.get_mut(path.as_str()) {
-                        Some(queue) if queue.len() > 1 => queue.pop_front().unwrap(),
-                        Some(queue) => queue.front().cloned().unwrap_or((404, "{}".into())),
-                        None => (404, "{}".into()),
-                    }
-                };
-                let response = format!(
-                    "HTTP/1.1 {status} X\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
-                    body.len()
-                );
-                let _ = socket.write_all(response.as_bytes()).await;
-            });
-        }
-    });
-    Mock { base, requests }
-}
-
 const XBOX: &str = r#"{"Token":"XBOX-TOKEN","DisplayClaims":{"xui":[{"uhs":"USERHASH"}]}}"#;
 const XSTS: &str = r#"{"Token":"XSTS-TOKEN","DisplayClaims":{"xui":[{"uhs":"USERHASH"}]}}"#;
 const MC_LOGIN: &str = r#"{"access_token":"MC-TOKEN","expires_in":86400}"#;

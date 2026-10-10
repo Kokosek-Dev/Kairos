@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Copy, FolderOpen, Play, Save, Square, Trash2 } from "lucide-react";
+import { ArrowLeft, Boxes, Copy, FileDown, FolderOpen, Play, Save, Square, Trash2 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -8,6 +8,7 @@ import { Field, Input, Textarea } from "@/components/ui/input";
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { joinArgs, splitArgs } from "@/lib/args";
 import { formatMemory } from "@/lib/format";
+import { exportMrpack, pickMrpackDestination } from "@/lib/tauri/modrinth";
 import { errorMessage } from "@/lib/tauri/errors";
 import {
   duplicateInstance,
@@ -118,6 +119,13 @@ function SettingsForm({ instance }: { instance: Instance }) {
     },
   });
 
+  const exportPack = useMutation({
+    mutationFn: async () => {
+      const destination = await pickMrpackDestination(`${instance.name}.mrpack`);
+      if (destination) await exportMrpack(instance.id, destination, instance.name, "1.0.0");
+    },
+  });
+
   const reset = () => {
     setName(instance.name);
     setGameVersion(instance.gameVersion);
@@ -135,7 +143,7 @@ function SettingsForm({ instance }: { instance: Instance }) {
   };
 
   const currentIcon: IconInput | null = instance.icon.kind === "preset" ? instance.icon : null;
-  const error = save.error ?? changeIcon.error ?? duplicate.error;
+  const error = save.error ?? changeIcon.error ?? duplicate.error ?? exportPack.error;
 
   return (
     <div className="max-w-3xl space-y-5 pb-24">
@@ -153,6 +161,12 @@ function SettingsForm({ instance }: { instance: Instance }) {
             {instance.loaderVersion ? ` ${instance.loaderVersion}` : ""}
           </p>
         </div>
+        <Button variant="secondary" size="lg" asChild>
+          <Link to={`/instances/${instance.id}/content`}>
+            <Boxes size={18} />
+            {t("content.open")}
+          </Link>
+        </Button>
         {thisRunning ? (
           <Button size="lg" variant="secondary" onClick={() => void stop()}>
             <Square size={16} />
@@ -242,6 +256,10 @@ function SettingsForm({ instance }: { instance: Instance }) {
           <Button variant="secondary" onClick={() => void openInstanceFolder(instance.id)}>
             <FolderOpen size={16} />
             {t("instances.openFolder")}
+          </Button>
+          <Button variant="secondary" disabled={exportPack.isPending} onClick={() => exportPack.mutate()}>
+            <FileDown size={16} />
+            {t("content.exportPack")}
           </Button>
           <Button variant="secondary" disabled={duplicate.isPending} onClick={() => duplicate.mutate()}>
             <Copy size={16} />

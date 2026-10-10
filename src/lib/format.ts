@@ -32,3 +32,7 @@ export function formatRelative(iso: string, locale: string): string {
 export function formatMemory(megabytes: number): string {
   return megabytes % 1024 === 0 ? `${megabytes / 1024} GB` : `${(megabytes / 1024).toFixed(1)} GB`;
 }
+
+export function formatCount(value: number, locale: string): string {
+  return new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 }).format(value);
+}

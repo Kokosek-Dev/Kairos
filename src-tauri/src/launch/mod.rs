@@ -267,7 +267,7 @@ mod tests {
         DataPaths::new(std::env::temp_dir().join("zenith-e2e-shared"))
     }
 
-    async fn launch_and_collect_log(loader: LoaderKind, game_version: &str, loader_version: &str) -> Vec<String> {
+    async fn launch_and_collect_log(loader: LoaderKind, game_version: &str, loader_version: &str, mods: &[&str]) -> Vec<String> {
         let paths = shared_paths();
         let name = format!("e2e-{loader:?}").to_lowercase();
         let _ = std::fs::remove_dir_all(paths.instance_dir(&name));
@@ -280,6 +280,16 @@ mod tests {
             loader_version: Some(loader_version.into()),
         };
         let instance = store::create(&paths, new).unwrap();
+
+        if !mods.is_empty() {
+            let api = crate::modrinth::api::ModrinthApi::new(build_client().unwrap(), None);
+            let context = crate::modrinth::install::Context { api: &api, paths: &paths };
+            for slug in mods {
+                crate::modrinth::install::install_project(&context, &instance, slug, None, &CancellationToken::new(), |_, _| {})
+                    .await
+                    .unwrap();
+            }
+        }
 
         let client = build_client().unwrap();
         let runs = RunRegistry::default();
@@ -337,7 +347,7 @@ mod tests {
     async fn launches_a_fabric_instance() {
         let versions = crate::loaders::list_versions(&build_client().unwrap(), LoaderKind::Fabric, "1.21.1").await.unwrap();
         let recommended = versions.iter().find(|version| version.recommended).unwrap();
-        let log = launch_and_collect_log(LoaderKind::Fabric, "1.21.1", &recommended.version).await;
+        let log = launch_and_collect_log(LoaderKind::Fabric, "1.21.1", &recommended.version, &[]).await;
         assert_reached_the_game(&log, "fabric");
     }
 
@@ -346,7 +356,7 @@ mod tests {
     async fn launches_a_quilt_instance() {
         let versions = crate::loaders::list_versions(&build_client().unwrap(), LoaderKind::Quilt, "1.21.1").await.unwrap();
         let recommended = versions.iter().find(|version| version.recommended).unwrap();
-        let log = launch_and_collect_log(LoaderKind::Quilt, "1.21.1", &recommended.version).await;
+        let log = launch_and_collect_log(LoaderKind::Quilt, "1.21.1", &recommended.version, &[]).await;
         assert_reached_the_game(&log, "quilt");
     }
 
@@ -355,7 +365,7 @@ mod tests {
     async fn launches_a_forge_instance() {
         let versions = crate::loaders::list_versions(&build_client().unwrap(), LoaderKind::Forge, "1.20.1").await.unwrap();
         let recommended = versions.iter().find(|version| version.recommended).unwrap();
-        let log = launch_and_collect_log(LoaderKind::Forge, "1.20.1", &recommended.version).await;
+        let log = launch_and_collect_log(LoaderKind::Forge, "1.20.1", &recommended.version, &[]).await;
         assert_reached_the_game(&log, "forge");
     }
 
@@ -364,7 +374,7 @@ mod tests {
     async fn launches_a_neoforge_instance() {
         let versions = crate::loaders::list_versions(&build_client().unwrap(), LoaderKind::NeoForge, "1.21.1").await.unwrap();
         let recommended = versions.iter().find(|version| version.recommended).unwrap();
-        let log = launch_and_collect_log(LoaderKind::NeoForge, "1.21.1", &recommended.version).await;
+        let log = launch_and_collect_log(LoaderKind::NeoForge, "1.21.1", &recommended.version, &[]).await;
         assert_reached_the_game(&log, "neoforge");
     }
     #[tokio::test]
@@ -372,6 +382,17 @@ mod tests {
     async fn launches_a_legacy_forge_instance() {
         let versions = crate::loaders::list_versions(&build_client().unwrap(), LoaderKind::Forge, "1.12.2").await.unwrap();
         let recommended = versions.iter().find(|version| version.recommended).unwrap();
-        let log = launch_and_collect_log(LoaderKind::Forge, "1.12.2", &recommended.version).await;
+        let log = launch_and_collect_log(LoaderKind::Forge, "1.12.2", &recommended.version, &[]).await;
         assert_reached_the_game(&log, "forge");
+    }
+    #[tokio::test]
+    #[ignore = "downloads the game, Fabric and mods from Modrinth, then starts the game"]
+    async fn mods_installed_from_modrinth_load_in_the_game() {
+        let versions = crate::loaders::list_versions(&build_client().unwrap(), LoaderKind::Fabric, "1.21.1").await.unwrap();
+        let recommended = versions.iter().find(|version| version.recommended).unwrap();
+        let log = launch_and_collect_log(LoaderKind::Fabric, "1.21.1", &recommended.version, &["modmenu"]).await;
+        let joined = log.join("\n").to_lowercase();
+        assert!(joined.contains("modmenu") || joined.contains("mod menu"), "Mod Menu never showed up in the log");
+        assert!(joined.contains("fabric-api") || joined.contains("fabric api"), "the Fabric API dependency never loaded");
+        assert_reached_the_game(&log, "fabric");
     }}

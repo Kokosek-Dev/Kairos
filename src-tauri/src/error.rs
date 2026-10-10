@@ -79,6 +79,10 @@ pub enum AppError {
     InvalidInput(String),
     #[error("the instance is currently running")]
     InstanceRunning,
+    #[error("no compatible version was found for {0}")]
+    NoCompatibleVersion(String),
+    #[error("the modpack is invalid: {0}")]
+    InvalidModpack(String),
     #[error("operation cancelled")]
     Cancelled,
     #[error("{0}")]
@@ -100,6 +104,8 @@ impl AppError {
             Self::InstanceNotFound(_) => "instance_not_found",
             Self::InvalidInput(_) => "invalid_input",
             Self::InstanceRunning => "instance_running",
+            Self::NoCompatibleVersion(_) => "no_compatible_version",
+            Self::InvalidModpack(_) => "invalid_modpack",
             Self::Cancelled => "cancelled",
             Self::Internal(_) => "internal",
         }

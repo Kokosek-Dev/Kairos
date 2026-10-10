@@ -2,7 +2,7 @@ use crate::error::{AppError, AppResult};
 use futures_util::{StreamExt, TryStreamExt};
 use reqwest::{header::RANGE, Client, StatusCode};
 use sha1::{Digest, Sha1};
-use sha2::Sha256;
+use sha2::{Sha256, Sha512};
 use std::collections::HashSet;
 use std::path::{Component, Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -19,6 +19,7 @@ const MAX_ATTEMPTS: u32 = 3;
 pub enum Checksum {
     Sha1(String),
     Sha256(String),
+    Sha512(String),
 }
 
 #[derive(Debug, Clone)]
@@ -218,6 +219,7 @@ async fn matches_checksum(path: &Path, checksum: &Checksum) -> AppResult<bool> {
     let (actual, expected) = match checksum {
         Checksum::Sha1(expected) => (hash_file::<Sha1>(path).await?, expected),
         Checksum::Sha256(expected) => (hash_file::<Sha256>(path).await?, expected),
+        Checksum::Sha512(expected) => (hash_file::<Sha512>(path).await?, expected),
     };
     Ok(actual.eq_ignore_ascii_case(expected))
 }

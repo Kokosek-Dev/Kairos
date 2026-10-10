@@ -10,6 +10,7 @@ const BUILT_IN_CLIENT_ID: Option<&str> = option_env!("ZENITH_MS_CLIENT_ID");
 #[serde(rename_all = "camelCase")]
 struct SettingsFile {
     ms_client_id: Option<String>,
+    modrinth_contact: Option<String>,
 }
 
 fn load(paths: &DataPaths) -> AppResult<SettingsFile> {
@@ -43,6 +44,20 @@ pub fn client_id(paths: &DataPaths) -> AppResult<String> {
         .ok_or_else(|| AuthFailure::NotConfigured.into())
 }
 
+pub fn modrinth_contact(paths: &DataPaths) -> AppResult<Option<String>> {
+    Ok(load(paths)?.modrinth_contact)
+}
+
+pub fn set_modrinth_contact(paths: &DataPaths, value: Option<String>) -> AppResult<()> {
+    let value = value.map(|value| value.trim().to_owned()).filter(|value| !value.is_empty());
+    if value.as_deref().is_some_and(|value| value.len() > 100 || value.chars().any(|c| c.is_control() || matches!(c, '(' | ')'))) {
+        return Err(AppError::InvalidInput("the contact must be a short email address or website".into()));
+    }
+    let mut settings = load(paths)?;
+    settings.modrinth_contact = value;
+    save(paths, &settings)
+}
+
 pub fn saved_client_id(paths: &DataPaths) -> AppResult<Option<String>> {
     Ok(load(paths)?.ms_client_id)
 }
@@ -54,11 +69,15 @@ pub fn set_client_id(paths: &DataPaths, value: Option<String>) -> AppResult<()> 
             "the application ID must look like 00000000-0000-0000-0000-000000000000".into(),
         ));
     }
-    fs::create_dir_all(paths.root())?;
     let mut settings = load(paths)?;
     settings.ms_client_id = value;
+    save(paths, &settings)
+}
+
+fn save(paths: &DataPaths, settings: &SettingsFile) -> AppResult<()> {
+    fs::create_dir_all(paths.root())?;
     let temp = paths.settings_file().with_extension("json.tmp");
-    fs::write(&temp, serde_json::to_vec_pretty(&settings)?)?;
+    fs::write(&temp, serde_json::to_vec_pretty(settings)?)?;
     fs::rename(temp, paths.settings_file())?;
     Ok(())
 }

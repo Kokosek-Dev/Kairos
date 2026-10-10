@@ -1,4 +1,5 @@
 use crate::auth::AuthService;
+use crate::modrinth::api::ModrinthApi;
 use crate::error::{AppError, AppResult};
 use crate::paths::DataPaths;
 use reqwest::Client;
@@ -50,17 +51,19 @@ pub struct AppState {
     pub client: Client,
     pub paths: DataPaths,
     pub auth: AuthService,
+    pub modrinth: ModrinthApi,
     pub runs: RunRegistry,
     sign_in: Mutex<Option<CancellationToken>>,
     installs: Mutex<HashMap<String, CancellationToken>>,
 }
 
 impl AppState {
-    pub fn new(client: Client, paths: DataPaths, auth: AuthService) -> Self {
+    pub fn new(client: Client, paths: DataPaths, auth: AuthService, modrinth: ModrinthApi) -> Self {
         Self {
             client,
             paths,
             auth,
+            modrinth,
             sign_in: Mutex::default(),
             runs: RunRegistry::default(),
             installs: Mutex::default(),
@@ -98,6 +101,16 @@ impl AppState {
         if let Some(token) = self.sign_in.lock().unwrap_or_else(PoisonError::into_inner).as_ref() {
             token.cancel();
         }
+    }
+
+    pub fn register_job(&self, key: &str) -> AppResult<CancellationToken> {
+        let token = CancellationToken::new();
+        self.register_install(key, token.clone())?;
+        Ok(token)
+    }
+
+    pub fn finish_job(&self, key: &str) {
+        self.finish_install(key);
     }
 
     pub fn finish_install(&self, version_id: &str) {

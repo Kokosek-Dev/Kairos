@@ -93,6 +93,16 @@ pub fn open_login_page(app: AppHandle, url: String) -> AppResult<()> {
     open_in_browser(&app, &url)
 }
 
+/// Opens a link the user clicked inside project descriptions; only web links are allowed.
+#[tauri::command]
+pub fn open_external_link(app: AppHandle, url: String) -> AppResult<()> {
+    let parsed = reqwest::Url::parse(&url).map_err(|_| AppError::InvalidInput("invalid link".into()))?;
+    if !matches!(parsed.scheme(), "http" | "https") {
+        return Err(AppError::InvalidInput("only web links can be opened".into()));
+    }
+    open_in_browser(&app, &url)
+}
+
 fn open_in_browser(app: &AppHandle, url: &str) -> AppResult<()> {
     app.opener()
         .open_url(url, None::<&str>)

@@ -3,6 +3,8 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TitleBar } from "@/components/shell/TitleBar";
 import { DiscoverPage } from "@/features/discover/DiscoverPage";
+import { ProjectPage } from "@/features/discover/ProjectPage";
+import { ContentPage } from "@/features/instances/ContentPage";
 import { InstanceSettingsPage } from "@/features/instances/InstanceSettingsPage";
 import { LibraryPage } from "@/features/library/LibraryPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
@@ -31,8 +33,10 @@ export function App() {
               <Routes location={location}>
                 <Route path="/" element={<LibraryPage />} />
                 <Route path="/instances/:id" element={<InstanceSettingsPage />} />
+                <Route path="/instances/:id/content" element={<ContentPage />} />
                 <Route path="/versions" element={<VersionsPage />} />
                 <Route path="/discover" element={<DiscoverPage />} />
+                <Route path="/discover/:projectId" element={<ProjectPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Routes>
             </motion.div>

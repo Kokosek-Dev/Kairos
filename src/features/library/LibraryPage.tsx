@@ -1,8 +1,10 @@
-import { Boxes, Plus } from "lucide-react";
+import { Boxes, FileUp, Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { Button } from "@/components/ui/button";
+import { useJobsStore } from "@/features/discover/jobsStore";
+import { pickMrpackFile } from "@/lib/tauri/modrinth";
 import { DeleteInstanceDialog } from "@/features/instances/DeleteInstanceDialog";
 import { InstanceCard } from "@/features/instances/InstanceCard";
 import { NewInstanceDialog } from "@/features/instances/NewInstanceDialog";
@@ -15,16 +17,41 @@ export function LibraryPage() {
   const instances = useInstances();
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState<Instance | null>(null);
+  const { jobs, importPack: runImport, dismiss } = useJobsStore();
+  const importJob = jobs["mrpack-import"];
+  const importing = importJob?.progress !== undefined;
+
+  const importPack = async () => {
+    const path = await pickMrpackFile();
+    if (path) await runImport(t, path);
+  };
 
   return (
     <>
       <div className="flex items-start justify-between gap-4">
         <PageHeader title={t("library.title")} subtitle={t("library.subtitle")} />
-        <Button onClick={() => setCreating(true)}>
-          <Plus size={16} />
-          {t("instances.new")}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" disabled={importing} onClick={() => void importPack()}>
+            <FileUp size={16} />
+            {t("content.importPack")}
+          </Button>
+          <Button onClick={() => setCreating(true)}>
+            <Plus size={16} />
+            {t("instances.new")}
+          </Button>
+        </div>
       </div>
+
+      {importJob?.progress && <p className="mb-4 text-sm text-muted">{t("content.importing")}</p>}
+      {importJob?.message && (
+        <button
+          type="button"
+          onClick={() => dismiss("mrpack-import")}
+          className={`mb-4 block text-left text-sm ${importJob.message.kind === "success" ? "text-success" : "text-danger"}`}
+        >
+          {importJob.message.text}
+        </button>
+      )}
 
       {instances.isPending && (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-4">
