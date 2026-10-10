@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Compass, Library, Settings, type LucideIcon } from "lucide-react";
+import { Compass, Layers, Library, Settings, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ interface NavItem {
 
 const ITEMS: NavItem[] = [
   { to: "/", labelKey: "nav.library", icon: Library },
+  { to: "/versions", labelKey: "nav.versions", icon: Layers },
   { to: "/discover", labelKey: "nav.discover", icon: Compass },
   { to: "/settings", labelKey: "nav.settings", icon: Settings },
 ];

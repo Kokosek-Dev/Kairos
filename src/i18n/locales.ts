@@ -6,12 +6,28 @@ export const LANGUAGES = [
 export type LanguageCode = (typeof LANGUAGES)[number]["code"];
 
 export const en = {
-  nav: { library: "Library", discover: "Discover", settings: "Settings" },
+  nav: { library: "Library", versions: "Versions", discover: "Discover", settings: "Settings" },
   library: {
     title: "Library",
     subtitle: "Your instances will appear here.",
     emptyTitle: "No instances yet",
     emptyBody: "Create your first instance to start playing.",
+  },
+  versions: {
+    title: "Game versions",
+    subtitle: "Download official game versions from Mojang servers.",
+    filter: { release: "Releases", snapshot: "Snapshots", old: "Old" },
+    kind: { release: "Release", snapshot: "Snapshot", old_beta: "Beta", old_alpha: "Alpha" },
+    search: "Search versions",
+    install: "Install",
+    installed: "Installed",
+    cancel: "Cancel",
+    resolving: "Preparing download...",
+    progress: "{{done}} / {{total}} · {{files}} / {{totalFiles}} files",
+    empty: "No versions match your search.",
+    loadFailed: "Could not load the version list",
+    loadFailedHint: "Check your internet connection and try again.",
+    retry: "Try again",
   },
   discover: {
     title: "Discover",
@@ -32,12 +48,28 @@ export const en = {
 };
 
 export const pl: typeof en = {
-  nav: { library: "Biblioteka", discover: "Odkrywaj", settings: "Ustawienia" },
+  nav: { library: "Biblioteka", versions: "Wersje", discover: "Odkrywaj", settings: "Ustawienia" },
   library: {
     title: "Biblioteka",
     subtitle: "Tutaj pojawią się Twoje instancje.",
     emptyTitle: "Brak instancji",
     emptyBody: "Utwórz pierwszą instancję, aby zacząć grać.",
+  },
+  versions: {
+    title: "Wersje gry",
+    subtitle: "Pobieraj oficjalne wersje gry z serwerów Mojang.",
+    filter: { release: "Wydania", snapshot: "Snapshoty", old: "Stare" },
+    kind: { release: "Wydanie", snapshot: "Snapshot", old_beta: "Beta", old_alpha: "Alfa" },
+    search: "Szukaj wersji",
+    install: "Zainstaluj",
+    installed: "Zainstalowana",
+    cancel: "Anuluj",
+    resolving: "Przygotowywanie pobierania...",
+    progress: "{{done}} / {{total}} · {{files}} / {{totalFiles}} plików",
+    empty: "Żadna wersja nie pasuje do wyszukiwania.",
+    loadFailed: "Nie udało się wczytać listy wersji",
+    loadFailedHint: "Sprawdź połączenie z internetem i spróbuj ponownie.",
+    retry: "Spróbuj ponownie",
   },
   discover: {
     title: "Odkrywaj",

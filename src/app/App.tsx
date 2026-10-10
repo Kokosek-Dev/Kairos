@@ -5,6 +5,7 @@ import { TitleBar } from "@/components/shell/TitleBar";
 import { DiscoverPage } from "@/features/discover/DiscoverPage";
 import { LibraryPage } from "@/features/library/LibraryPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
+import { VersionsPage } from "@/features/versions/VersionsPage";
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
 
 export function App() {
@@ -26,6 +27,7 @@ export function App() {
             >
               <Routes location={location}>
                 <Route path="/" element={<LibraryPage />} />
+                <Route path="/versions" element={<VersionsPage />} />
                 <Route path="/discover" element={<DiscoverPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Routes>
