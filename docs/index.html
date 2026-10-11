@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zenith</title>
+  <meta name="description" content="Zenith is an independent, open source launcher for Minecraft: Java Edition." />
+  <meta name="color-scheme" content="dark" />
+  <style>
+    :root {
+      --background: #070b14;
+      --surface: #0e1424;
+      --border: #1e2842;
+      --foreground: #e8ecf8;
+      --muted: #8a95b3;
+      --accent: #1e90ff;
+      --accent-2: #00c2f0;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", system-ui, sans-serif;
+      line-height: 1.6;
+      color: var(--foreground);
+      background:
+        radial-gradient(900px 500px at 85% -10%, rgb(30 144 255 / 0.22), transparent 70%),
+        radial-gradient(700px 480px at -10% 105%, rgb(0 194 240 / 0.14), transparent 70%),
+        var(--background);
+      background-attachment: fixed;
+    }
+    a { color: var(--accent-2); }
+    .wrap { width: min(64rem, 100% - 2rem); margin-inline: auto; }
+    header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 0; }
+    .brand { display: flex; align-items: center; gap: .6rem; font-weight: 800; letter-spacing: .2em; }
+    .brand svg { width: 28px; height: 28px; }
+    .lang { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: .3rem .8rem; cursor: pointer; font: inherit; }
+    .lang:hover { color: var(--foreground); border-color: var(--accent); }
+    .hero { padding: 4.5rem 0 3rem; text-align: center; }
+    h1 {
+      font-size: clamp(2.4rem, 7vw, 4.2rem); line-height: 1.05; margin: 0 0 1rem; font-weight: 800; letter-spacing: -.02em;
+      background: linear-gradient(95deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .lead { max-width: 38rem; margin: 0 auto 2rem; color: var(--muted); font-size: 1.15rem; }
+    .button {
+      display: inline-flex; align-items: center; gap: .6rem; padding: .95rem 1.8rem; border-radius: 12px; border: 0; cursor: pointer;
+      font: inherit; font-weight: 700; font-size: 1.05rem; color: #04101f; text-decoration: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 40px -10px rgb(30 144 255 / 0.7);
+    }
+    .button:hover { filter: brightness(1.1); }
+    .meta { margin-top: .9rem; font-size: .9rem; color: var(--muted); min-height: 1.4em; }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin: 1rem 0 3rem; }
+    .card { background: color-mix(in srgb, var(--surface) 90%, transparent); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem; }
+    .card h3 { margin: 0 0 .4rem; font-size: 1.05rem; }
+    .card p { margin: 0; color: var(--muted); font-size: .95rem; }
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.6rem; margin: 0 0 1rem; }
+    ul { padding-left: 1.2rem; color: var(--muted); }
+    li { margin-bottom: .4rem; }
+    li strong { color: var(--foreground); }
+    details { border: 1px solid var(--border); border-radius: var(--radius); padding: .9rem 1.2rem; margin-bottom: .7rem; background: var(--surface); }
+    summary { cursor: pointer; font-weight: 600; }
+    details p { color: var(--muted); margin: .6rem 0 0; }
+    footer { border-top: 1px solid var(--border); padding: 1.5rem 0 3rem; color: var(--muted); font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="18" r="9" stroke="url(#g)" stroke-width="3.5"/><path d="M16 3v8" stroke="url(#g)" stroke-width="3.5" stroke-linecap="round"/><defs><linearGradient id="g" x1="4" y1="4" x2="28" y2="28"><stop stop-color="#1e90ff"/><stop offset="1" stop-color="#00c2f0"/></linearGradient></defs></svg>
+        ZENITH
+      </div>
+      <button class="lang" id="lang" type="button">PL</button>
+    </header>
+
+    <main>
+      <div class="hero">
+        <h1 data-t="title">A launcher that feels alive</h1>
+        <p class="lead" data-t="lead">An independent, open source launcher for Minecraft: Java Edition. Your skin in 3D, mods, modpacks and your own textures in one place.</p>
+        <a class="button" id="download" href="#download">
+          <span data-t="download">Download for Windows</span>
+        </a>
+        <p class="meta" id="meta"></p>
+      </div>
+
+      <div class="grid">
+        <div class="card"><h3 data-t="f1h">Skins and textures</h3><p data-t="f1p">Paint skins on a flat texture or straight on a 3D model, and redraw any texture of the game.</p></div>
+        <div class="card"><h3 data-t="f2h">Mods without the chores</h3><p data-t="f2p">Fabric, Quilt, Forge and NeoForge, dependency-aware installs and automatic mod updates.</p></div>
+        <div class="card"><h3 data-t="f3h">Helps when it breaks</h3><p data-t="f3p">Crash analysis explains what went wrong, and one click saves a report with no personal data.</p></div>
+        <div class="card"><h3 data-t="f4h">Yours to arrange</h3><p data-t="f4p">Choose where everything is stored, pick colors and backgrounds, English and Polish.</p></div>
+      </div>
+
+      <section>
+        <h2 data-t="safeh">Safe and private</h2>
+        <ul>
+          <li><strong data-t="s1b">Open source.</strong> <span data-t="s1">Every release is built automatically from the public code.</span></li>
+          <li><strong data-t="s2b">Check your download.</strong> <span data-t="s2">Each release lists a SHA256 checksum to compare with your file.</span></li>
+          <li><strong data-t="s3b">No password.</strong> <span data-t="s3">You sign in on Microsoft's own page. Zenith never sees your password.</span></li>
+          <li><strong data-t="s4b">No tracking.</strong> <span data-t="s4">No telemetry, no analytics, no ads.</span></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 data-t="faqh">Questions</h2>
+        <details><summary data-t="q1">Windows says "unknown publisher". Is that safe?</summary><p data-t="a1">The installer is not signed with a paid certificate yet, so SmartScreen warns about new programs. Choose "More info", then "Run anyway". Compare the checksum first if you want to be sure.</p></details>
+        <details><summary data-t="q2">Do I need to own Minecraft?</summary><p data-t="a2">Yes. You sign in with the Microsoft account that owns Minecraft: Java Edition. Zenith does not get around the game's licence.</p></details>
+        <details><summary data-t="q3">Is it official?</summary><p data-t="a3">No. Zenith is made by the community and is not affiliated with Mojang or Microsoft.</p></details>
+      </section>
+    </main>
+
+    <footer>
+      <span data-t="foot">Zenith is not affiliated with Mojang or Microsoft. MIT licensed.</span>
+      <a id="source" href="#" data-t="source">Source code</a>
+    </footer>
+  </div>
+
+  <script>
+    const text = {
+      en: {},
+      pl: {
+        title: "Launcher, który żyje",
+        lead: "Niezależny launcher z otwartym kodem do Minecraft: Java Edition. Twój skin w 3D, mody, modpacki i własne tekstury w jednym miejscu.",
+        download: "Pobierz dla Windows",
+        f1h: "Skiny i tekstury", f1p: "Rysuj skiny na płaskiej teksturze albo prosto na modelu 3D i przerysuj dowolną teksturę gry.",
+        f2h: "Mody bez kłopotu", f2p: "Fabric, Quilt, Forge i NeoForge, instalacja z zależnościami i automatyczne aktualizacje modów.",
+        f3h: "Pomaga, gdy coś nie działa", f3p: "Analiza crashy tłumaczy, co poszło nie tak, a jedno kliknięcie zapisuje raport bez danych osobowych.",
+        f4h: "Ułóż po swojemu", f4p: "Wybierz, gdzie wszystko jest zapisane, kolory i tła, polski i angielski.",
+        safeh: "Bezpieczny i prywatny",
+        s1b: "Otwarty kod.", s1: "Każde wydanie jest budowane automatycznie z publicznego kodu.",
+        s2b: "Sprawdź pobrany plik.", s2: "Każde wydanie ma sumę SHA256 do porównania z Twoim plikiem.",
+        s3b: "Bez hasła.", s3: "Logujesz się na stronie Microsoftu. Zenith nigdy nie widzi Twojego hasła.",
+        s4b: "Bez śledzenia.", s4: "Bez telemetrii, analityki i reklam.",
+        faqh: "Pytania",
+        q1: "Windows pisze „nieznany wydawca”. Czy to bezpieczne?", a1: "Instalator nie jest jeszcze podpisany płatnym certyfikatem, więc SmartScreen ostrzega przed nowymi programami. Wybierz „Więcej informacji”, potem „Uruchom mimo to”. Jeśli chcesz mieć pewność, najpierw porównaj sumę kontrolną.",
+        q2: "Czy muszę mieć Minecrafta?", a2: "Tak. Logujesz się kontem Microsoft, które posiada Minecraft: Java Edition. Zenith nie omija licencji gry.",
+        q3: "Czy to oficjalny program?", a3: "Nie. Zenith tworzy społeczność i nie jest związany z Mojang ani Microsoft.",
+        foot: "Zenith nie jest związany z Mojang ani Microsoft. Licencja MIT.", source: "Kod źródłowy",
+      },
+    };
+    const fixed = {};
+    document.querySelectorAll("[data-t]").forEach((el) => (fixed[el.dataset.t] = el.textContent));
+    text.en = fixed;
+
+    let lang = navigator.language.toLowerCase().startsWith("pl") ? "pl" : "en";
+    const apply = () => {
+      document.documentElement.lang = lang;
+      document.querySelectorAll("[data-t]").forEach((el) => (el.textContent = text[lang][el.dataset.t]));
+      document.getElementById("lang").textContent = lang === "pl" ? "EN" : "PL";
+      renderMeta();
+    };
+    document.getElementById("lang").addEventListener("click", () => {
+      lang = lang === "pl" ? "en" : "pl";
+      apply();
+    });
+
+    // On GitHub Pages the project lives at <owner>.github.io/<repo>, which names the repository to look in.
+    const owner = location.hostname.endsWith(".github.io") ? location.hostname.split(".")[0] : null;
+    const repo = location.pathname.split("/").filter(Boolean)[0] ?? null;
+    let release = null;
+
+    const renderMeta = () => {
+      const meta = document.getElementById("meta");
+      if (!release) return void (meta.textContent = "");
+      const megabytes = (release.size / 1048576).toFixed(1);
+      meta.textContent = `${release.version} · ${megabytes} MB · Windows 10/11`;
+    };
+
+    async function loadRelease() {
+      const button = document.getElementById("download");
+      const source = document.getElementById("source");
+      if (!owner || !repo) return;
+      source.href = `https://github.com/${owner}/${repo}`;
+      button.href = `https://github.com/${owner}/${repo}/releases/latest`;
+      try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`);
+        if (!response.ok) return;
+        const data = await response.json();
+        const asset = data.assets.find((item) => item.name.endsWith("-setup.exe"));
+        if (!asset) return;
+        button.href = asset.browser_download_url;
+        release = { version: data.tag_name, size: asset.size };
+        renderMeta();
+      } catch {
+        // The button keeps pointing at the releases page.
+      }
+    }
+
+    apply();
+    loadRelease();
+  </script>
+</body>
+</html>
