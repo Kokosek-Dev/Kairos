@@ -1,8 +1,12 @@
 import { SlidersHorizontal } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useMascotRequests } from "@/components/Mascot";
+import { EVERYWHERE_KEY, useEverywhere } from "@/features/textures/useEverywhere";
+import { PACKS_KEY } from "@/features/textures/usePacks";
+import { setTexturePacksEverywhere } from "@/lib/tauri/texturepacks";
 import { usePreferences } from "./preferences";
 
 function Row({ title, hint, checked, onChange }: { title: string; hint: string; checked: boolean; onChange: (checked: boolean) => void }) {
@@ -21,6 +25,12 @@ export function BehaviorSection() {
   const { t } = useTranslation();
   const { autoUpdateMods, mascot, update } = usePreferences();
   const showMascot = useMascotRequests((state) => state.show);
+  const queryClient = useQueryClient();
+  const packsEverywhere = useEverywhere();
+  const switchPacks = useMutation({
+    mutationFn: setTexturePacksEverywhere,
+    onSuccess: () => Promise.all([queryClient.invalidateQueries({ queryKey: EVERYWHERE_KEY }), queryClient.invalidateQueries({ queryKey: PACKS_KEY })]),
+  });
 
   return (
     <section className="panel p-5">
@@ -34,6 +44,12 @@ export function BehaviorSection() {
           hint={t("behavior.autoUpdateHint")}
           checked={autoUpdateMods}
           onChange={(checked) => update({ autoUpdateMods: checked })}
+        />
+        <Row
+          title={t("behavior.packsEverywhere")}
+          hint={t("behavior.packsEverywhereHint")}
+          checked={packsEverywhere}
+          onChange={(checked) => switchPacks.mutate(checked)}
         />
         <Row
           title={t("behavior.mascot")}

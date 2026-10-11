@@ -92,3 +92,15 @@ pub async fn use_texture_pack_in_instances(
     let paths = state.paths.clone();
     blocking(move || texturepacks::use_in_instances(&paths, &pack_id, instance_ids)).await
 }
+
+#[tauri::command]
+pub async fn get_texture_packs_everywhere(state: State<'_, AppState>) -> AppResult<bool> {
+    let paths = state.paths.clone();
+    blocking(move || Ok(texturepacks::everywhere(&paths))).await
+}
+
+#[tauri::command]
+pub async fn set_texture_packs_everywhere(state: State<'_, AppState>, enabled: bool) -> AppResult<()> {
+    let paths = state.paths.clone();
+    blocking(move || texturepacks::set_everywhere(&paths, enabled)).await
+}

@@ -15,6 +15,8 @@ export interface TextureList {
   edited: string[];
 }
 
+export const getTexturePacksEverywhere = () => invoke<boolean>("get_texture_packs_everywhere");
+export const setTexturePacksEverywhere = (enabled: boolean) => invoke<void>("set_texture_packs_everywhere", { enabled });
 export const listTextureVersions = () => invoke<string[]>("list_texture_versions");
 export const createTexturePack = (name: string, gameVersion: string) =>
   invoke<TexturePack>("create_texture_pack", { name, gameVersion });

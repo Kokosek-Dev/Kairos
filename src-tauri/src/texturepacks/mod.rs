@@ -1,4 +1,5 @@
 use crate::error::{AppError, AppResult};
+use crate::instances::model::Instance;
 use crate::instances::store as instances;
 use crate::mojang::profile::is_safe_id;
 use crate::paths::DataPaths;
@@ -36,6 +37,17 @@ pub struct PackInfo {
 pub struct TextureList {
     pub textures: Vec<String>,
     pub edited: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct Preferences {
+    #[serde(default = "enabled")]
+    packs_everywhere: bool,
+}
+
+fn enabled() -> bool {
+    true
 }
 
 fn invalid(message: &str) -> AppError {
@@ -144,6 +156,7 @@ pub fn create(paths: &DataPaths, name: &str, game_version: &str) -> AppResult<Pa
     let dir = pack_dir(paths, &info.id)?;
     fs::create_dir_all(&dir)?;
     write_info(&dir, &info)?;
+    place_where_used(paths, &info);
     Ok(info)
 }
 
@@ -166,6 +179,11 @@ pub fn list(paths: &DataPaths) -> AppResult<Vec<PackInfo>> {
 
 pub fn delete(paths: &DataPaths, id: &str) -> AppResult<()> {
     let dir = pack_dir(paths, id)?;
+    if let Ok(pack) = info(paths, id) {
+        for instance in instances::list(paths).unwrap_or_default() {
+            remove_from_instance(paths, &pack, &instance.id);
+        }
+    }
     if dir.exists() {
         fs::remove_dir_all(dir)?;
     }
@@ -343,12 +361,58 @@ fn remove_from_instance(paths: &DataPaths, pack: &PackInfo, instance_id: &str) {
 }
 
 /// Best effort: the game may be running and holding the file, in which case the next launch catches up.
-fn refresh_copies(paths: &DataPaths, id: &str) {
-    if let Ok(pack) = info(paths, id) {
-        for instance_id in &pack.instances {
-            let _ = place_in_instance(paths, &pack, instance_id);
+fn preferences_path(paths: &DataPaths) -> PathBuf {
+    paths.root().join("texture-pack-preferences.json")
+}
+
+/// Whether every pack is used in every instance of its game version, without choosing instances one by one.
+pub fn everywhere(paths: &DataPaths) -> bool {
+    fs::read(preferences_path(paths))
+        .ok()
+        .and_then(|bytes| serde_json::from_slice::<Preferences>(&bytes).ok())
+        .map_or(true, |preferences| preferences.packs_everywhere)
+}
+
+fn is_used_in(pack: &PackInfo, instance: &Instance, everywhere: bool) -> bool {
+    pack.instances.contains(&instance.id) || (everywhere && instance.game_version == pack.game_version)
+}
+
+/// Copies the pack into every instance that should have it and switches it on there.
+fn place_where_used(paths: &DataPaths, pack: &PackInfo) {
+    let everywhere = everywhere(paths);
+    for instance in instances::list(paths).unwrap_or_default() {
+        if is_used_in(pack, &instance, everywhere) {
+            let _ = place_in_instance(paths, pack, &instance.id);
         }
     }
+}
+
+fn refresh_copies(paths: &DataPaths, id: &str) {
+    if let Ok(pack) = info(paths, id) {
+        place_where_used(paths, &pack);
+    }
+}
+
+/// Brings every pack into the instances that should have it, e.g. when the launcher starts.
+pub fn sync_all(paths: &DataPaths) {
+    for pack in list(paths).unwrap_or_default() {
+        place_where_used(paths, &pack);
+    }
+}
+
+pub fn set_everywhere(paths: &DataPaths, enabled: bool) -> AppResult<()> {
+    fs::write(preferences_path(paths), serde_json::to_vec_pretty(&Preferences { packs_everywhere: enabled })?)?;
+    let installed = instances::list(paths).unwrap_or_default();
+    for pack in list(paths)? {
+        if enabled {
+            place_where_used(paths, &pack);
+        } else {
+            for instance in installed.iter().filter(|instance| !pack.instances.contains(&instance.id)) {
+                remove_from_instance(paths, &pack, &instance.id);
+            }
+        }
+    }
+    Ok(())
 }
 
 /// Makes exactly these instances use the pack: it is copied in and switched on, and taken away from the rest.
@@ -361,21 +425,27 @@ pub fn use_in_instances(paths: &DataPaths, id: &str, instance_ids: Vec<String>) 
             wanted.push(instance_id);
         }
     }
-    for removed in pack.instances.iter().filter(|existing| !wanted.contains(existing)) {
-        remove_from_instance(paths, &pack, removed);
+    let previous = std::mem::replace(&mut pack.instances, wanted);
+    write_info(&pack_dir(paths, id)?, &pack)?;
+    let everywhere = everywhere(paths);
+    for removed in previous.iter().filter(|existing| !pack.instances.contains(existing)) {
+        let kept = instances::get(paths, removed).is_ok_and(|instance| is_used_in(&pack, &instance, everywhere));
+        if !kept {
+            remove_from_instance(paths, &pack, removed);
+        }
     }
-    for instance_id in &wanted {
+    for instance_id in &pack.instances {
         place_in_instance(paths, &pack, instance_id)?;
     }
-    pack.instances = wanted;
-    write_info(&pack_dir(paths, id)?, &pack)?;
     Ok(pack)
 }
 
 /// Called before a game starts so every pack the instance uses is current and switched on.
 pub fn prepare_for_launch(paths: &DataPaths, instance_id: &str) {
+    let Ok(instance) = instances::get(paths, instance_id) else { return };
+    let everywhere = everywhere(paths);
     for pack in list(paths).unwrap_or_default() {
-        if pack.instances.iter().any(|linked| linked == instance_id) {
+        if is_used_in(&pack, &instance, everywhere) {
             let _ = place_in_instance(paths, &pack, instance_id);
         }
     }
@@ -550,6 +620,7 @@ mod tests {
     #[test]
     fn linked_instances_get_an_up_to_date_pack_that_is_switched_on() {
         let paths = scratch("linked", r#"{"pack_version": 34}"#);
+        set_everywhere(&paths, false).unwrap();
         let instance = instance_for(&paths);
         let pack = create(&paths, "Mine", "1.21").unwrap();
 
@@ -572,6 +643,46 @@ mod tests {
         assert!(!file.exists());
         assert!(!fs::read_to_string(game.join("options.txt")).unwrap().contains(&file_name_for(&linked)));
         assert!(use_in_instances(&paths, &pack.id, vec!["missing".into()]).is_err());
+        let _ = fs::remove_dir_all(paths.root());
+    }
+
+    #[test]
+    fn every_pack_is_used_in_every_instance_of_its_version_until_switched_off() {
+        let paths = scratch("everywhere", r#"{"pack_version": 34}"#);
+        let same = instance_for(&paths);
+        let other = {
+            let icon = crate::instances::model::IconInput::Preset { key: "cube".into() };
+            let new = crate::instances::model::NewInstance {
+                name: "Older".into(),
+                game_version: "1.20".into(),
+                icon,
+                loader: crate::instances::model::LoaderKind::Vanilla,
+                loader_version: None,
+            };
+            instances::create(&paths, new).unwrap().id
+        };
+        assert!(everywhere(&paths));
+
+        let pack = create(&paths, "Everywhere", "1.21").unwrap();
+        let file = |instance: &str| instance_pack_file(&paths, &pack, instance);
+        assert!(file(&same).is_file() && !file(&other).exists());
+
+        set_everywhere(&paths, false).unwrap();
+        assert!(!everywhere(&paths) && !file(&same).exists());
+        set_everywhere(&paths, true).unwrap();
+        assert!(file(&same).is_file());
+
+        use_in_instances(&paths, &pack.id, vec![other.clone()]).unwrap();
+        assert!(file(&other).is_file() && file(&same).is_file());
+        set_everywhere(&paths, false).unwrap();
+        assert!(file(&other).is_file() && !file(&same).exists());
+
+        fs::remove_file(file(&other)).unwrap();
+        prepare_for_launch(&paths, &other);
+        assert!(file(&other).is_file());
+
+        delete(&paths, &pack.id).unwrap();
+        assert!(!file(&other).exists());
         let _ = fs::remove_dir_all(paths.root());
     }
 }

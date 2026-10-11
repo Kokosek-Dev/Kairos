@@ -43,6 +43,8 @@ pub fn run() {
             let default_dir = app.path().app_data_dir()?;
             let config_dir = app.path().app_config_dir()?;
             let paths = DataPaths::new(location::resolve(&config_dir, &default_dir));
+            let startup = paths.clone();
+            std::thread::spawn(move || texturepacks::sync_all(&startup));
 
             let client = http::build_client()?;
             let accounts = AccountStore::new(paths.accounts_file(), Arc::new(KeyringStore));
@@ -100,6 +102,8 @@ pub fn run() {
             commands::reset_pack_texture,
             commands::export_texture_pack,
             commands::use_texture_pack_in_instances,
+            commands::get_texture_packs_everywhere,
+            commands::set_texture_packs_everywhere,
             commands::get_data_location,
             commands::get_memory_advice,
             commands::list_moments,

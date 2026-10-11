@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { InstanceChecklist } from "./InstanceChecklist";
 import { TexturePreview3D } from "./TexturePreview3D";
 import { textureKey, TextureThumb } from "./TextureThumb";
+import { useEverywhere } from "./useEverywhere";
 import { PACKS_KEY } from "./usePacks";
 import { usePacks } from "./usePacks";
 
@@ -60,6 +61,7 @@ export function TexturePackPage() {
   const [sort, setSort] = useState<Sort>("name");
   const [editedOnly, setEditedOnly] = useState(false);
   const brush = useBrush(doc);
+  const everywhere = useEverywhere();
   useSyncExternalStore(doc.onHistory, () => doc.revision);
   const current = useRef({ doc, selected });
   useEffect(() => {
@@ -292,12 +294,18 @@ export function TexturePackPage() {
 
           <div className="panel space-y-3 p-4">
             <Field label={t("textures.useIn")} hint={t("textures.useInHint")}>
-              <InstanceChecklist
-                instances={instances.data ?? []}
-                gameVersion={pack?.gameVersion ?? ""}
-                selected={pack?.instances ?? []}
-                onChange={(ids) => useInInstances.mutate(ids)}
-              />
+              {everywhere ? (
+                <p className="rounded-lg border bg-surface/60 p-3 text-sm text-muted">
+                  {t("textures.everywhereNote", { version: pack?.gameVersion ?? "" })}
+                </p>
+              ) : (
+                <InstanceChecklist
+                  instances={instances.data ?? []}
+                  gameVersion={pack?.gameVersion ?? ""}
+                  selected={pack?.instances ?? []}
+                  onChange={(ids) => useInInstances.mutate(ids)}
+                />
+              )}
             </Field>
             <Button variant="secondary" className="w-full" disabled={exportZip.isPending} onClick={() => exportZip.mutate()}>
               <Download size={16} />

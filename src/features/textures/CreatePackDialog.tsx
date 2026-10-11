@@ -10,6 +10,7 @@ import { errorMessage } from "@/lib/tauri/errors";
 import { useInstances } from "@/features/instances/useInstances";
 import { createTexturePack, listTextureVersions, setTexturePackInstances } from "@/lib/tauri/texturepacks";
 import { InstanceChecklist } from "./InstanceChecklist";
+import { useEverywhere } from "./useEverywhere";
 import { PACKS_KEY } from "./usePacks";
 
 interface CreatePackDialogProps {
@@ -25,6 +26,7 @@ export function CreatePackDialog({ open, onOpenChange }: CreatePackDialogProps) 
   const [chosen, setChosen] = useState("");
   const [unchecked, setUnchecked] = useState<string[]>([]);
   const instances = useInstances();
+  const everywhere = useEverywhere();
   const versions = useQuery({ queryKey: ["texture-versions"], queryFn: listTextureVersions, enabled: open });
 
   const available = [...(versions.data ?? [])].sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
@@ -35,7 +37,7 @@ export function CreatePackDialog({ open, onOpenChange }: CreatePackDialogProps) 
   const create = useMutation({
     mutationFn: async () => {
       const pack = await createTexturePack(name, gameVersion);
-      return selected.length > 0 ? setTexturePackInstances(pack.id, selected) : pack;
+      return !everywhere && selected.length > 0 ? setTexturePackInstances(pack.id, selected) : pack;
     },
     onSuccess: async (pack) => {
       await queryClient.invalidateQueries({ queryKey: PACKS_KEY });
@@ -78,12 +80,16 @@ export function CreatePackDialog({ open, onOpenChange }: CreatePackDialogProps) 
 
         <div className="mt-4">
           <p className="mb-2 text-sm font-medium">{t("textures.useIn")}</p>
-          <InstanceChecklist
-            instances={instances.data ?? []}
-            gameVersion={gameVersion}
-            selected={selected}
-            onChange={(ids) => setUnchecked(matching.map((instance) => instance.id).filter((id) => !ids.includes(id)))}
-          />
+          {everywhere ? (
+            <p className="text-sm text-muted">{t("textures.everywhereNote", { version: gameVersion })}</p>
+          ) : (
+            <InstanceChecklist
+              instances={instances.data ?? []}
+              gameVersion={gameVersion}
+              selected={selected}
+              onChange={(ids) => setUnchecked(matching.map((instance) => instance.id).filter((id) => !ids.includes(id)))}
+            />
+          )}
         </div>
 
         {create.isError && <p className="mt-3 text-sm text-danger">{errorMessage(t, create.error)}</p>}
