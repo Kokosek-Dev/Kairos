@@ -62,11 +62,13 @@ paleta poleceń (Ctrl+K).
 
 ## 6. Co zostało (w tej kolejności)
 
+Stan na koniec sesji: Azure czeka na odpowiedź szkoły (właściciel liczy na odpowiedź następnego dnia).
+
 1. **Azure i logowanie Microsoft.** Bez Application (client) ID logowanie nie działa. ID wkleić do
    `src-tauri/.cargo/config.toml` (`ZENITH_MS_CLIENT_ID`). Potem wysłać formularz zatwierdzenia aplikacji do Mojang:
    https://aka.ms/mce-reviewappid (czeka się dni lub tygodnie, bez tego błąd 403). Właściciel próbuje przez konto
    szkolne albo dorosłego. Instrukcja: `docs/AZURE_SETUP.md`.
-2. **Test instalatora NSIS** (jeszcze nigdy nie uruchomiony): instalacja, odinstalowanie, język, skróty.
+2. ~~Test instalatora NSIS~~ zrobiony (11.10.2026): cicha instalacja do wskazanego folderu, skróty na pulpicie i w menu Start, wpis do odinstalowania, start aplikacji, odinstalowanie i usunięcie śladów, dane użytkownika zostają. Nie sprawdzone: okno instalatora z wyborem języka (tryb interaktywny) oraz tłumaczenia komunikatów NSIS po polsku (Tauri ostrzega, że część jest po angielsku).
 3. **Repozytorium na GitHubie.** W `src-tauri/tauri.conf.json` zamienić `OWNER/REPO` w adresie aktualizacji. Dodać
    sekrety `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (pusty), `ZENITH_MS_CLIENT_ID`.
    Włączyć Pages z folderu `/docs`. Szczegóły w `docs/RELEASING.md`.
