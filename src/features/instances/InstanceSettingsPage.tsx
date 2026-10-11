@@ -155,7 +155,7 @@ function SettingsForm({ instance }: { instance: Instance }) {
   const error = save.error ?? changeIcon.error ?? duplicate.error ?? exportPack.error;
 
   return (
-    <div className="max-w-3xl space-y-5 pb-24">
+    <div className="max-w-6xl space-y-5 pb-24">
       <Link to="/library" className="inline-flex items-center gap-2 text-muted transition-colors hover:text-foreground">
         <ArrowLeft size={16} />
         {t("instances.back")}
@@ -179,6 +179,7 @@ function SettingsForm({ instance }: { instance: Instance }) {
         <PlayButton instance={instance} />
       </header>
 
+      <div className="grid items-start gap-5 xl:grid-cols-2">
       <Section title={t("instances.general")}>
         <Field label={t("instances.name")}>
           <Input value={name} maxLength={64} onChange={(event) => setName(event.target.value)} />
@@ -289,6 +290,7 @@ function SettingsForm({ instance }: { instance: Instance }) {
           </Button>
         </div>
       </Section>
+      </div>
 
       {error && <p className="text-sm text-danger">{errorMessage(t, error)}</p>}
 

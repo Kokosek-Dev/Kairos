@@ -175,7 +175,7 @@ export function DiscoverPage() {
                   : "text-muted hover:text-foreground",
               )}
             >
-              {category.name}
+              {t(`discover.categories.${category.name}`, { defaultValue: category.name.replace(/-/g, " ") })}
             </button>
           ))}
         </div>

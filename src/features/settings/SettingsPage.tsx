@@ -16,7 +16,7 @@ export function SettingsPage() {
   return (
     <>
       <PageHeader title={t("settings.title")} />
-      <div className="max-w-3xl space-y-5">
+      <div className="grid max-w-6xl items-start gap-5 xl:grid-cols-2">
         <AccountsSection />
         <AppearanceSection />
         <StorageSection />
