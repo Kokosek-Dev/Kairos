@@ -6,6 +6,7 @@ export interface TexturePack {
   gameVersion: string;
   packFormat: number;
   rangedFormat: boolean;
+  instances: string[];
   createdAt: string;
 }
 
@@ -25,5 +26,5 @@ export const writePackTexture = (packId: string, path: string, pngBase64: string
   invoke<void>("write_pack_texture", { packId, path, pngBase64 });
 export const resetPackTexture = (packId: string, path: string) => invoke<void>("reset_pack_texture", { packId, path });
 export const exportTexturePack = (packId: string) => invoke<string | null>("export_texture_pack", { packId });
-export const installTexturePack = (packId: string, instanceId: string) =>
-  invoke<string>("install_texture_pack", { packId, instanceId });
+export const setTexturePackInstances = (packId: string, instanceIds: string[]) =>
+  invoke<TexturePack>("use_texture_pack_in_instances", { packId, instanceIds });

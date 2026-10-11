@@ -25,6 +25,9 @@ pub struct PackInfo {
     pub pack_format: u32,
     /// Newer versions describe the supported range with `min_format` and `max_format`.
     pub ranged_format: bool,
+    /// Instances that use this pack; Zenith keeps their copy up to date and switched on.
+    #[serde(default)]
+    pub instances: Vec<String>,
     pub created_at: DateTime<Utc>,
 }
 
@@ -135,6 +138,7 @@ pub fn create(paths: &DataPaths, name: &str, game_version: &str) -> AppResult<Pa
         game_version: game_version.to_owned(),
         pack_format,
         ranged_format,
+        instances: Vec::new(),
         created_at: Utc::now(),
     };
     let dir = pack_dir(paths, &info.id)?;
@@ -240,15 +244,18 @@ pub fn write_texture(paths: &DataPaths, id: &str, path: &str, png: &[u8]) -> App
         fs::create_dir_all(parent)?;
     }
     fs::write(target, png)?;
+    refresh_copies(paths, id);
     Ok(())
 }
 
 pub fn reset_texture(paths: &DataPaths, id: &str, path: &str) -> AppResult<()> {
     checked_texture_path(path)?;
     match fs::remove_file(texture_file(&pack_dir(paths, id)?, path)) {
-        Err(error) if error.kind() != std::io::ErrorKind::NotFound => Err(error.into()),
-        _ => Ok(()),
+        Err(error) if error.kind() != std::io::ErrorKind::NotFound => return Err(error.into()),
+        _ => {}
     }
+    refresh_copies(paths, id);
+    Ok(())
 }
 
 fn mcmeta(pack: &PackInfo) -> serde_json::Value {
@@ -276,24 +283,102 @@ pub fn export(paths: &DataPaths, id: &str, destination: &Path) -> AppResult<()> 
     Ok(())
 }
 
-fn file_name_for(name: &str) -> String {
-    let cleaned: String = name
+fn file_name_for(pack: &PackInfo) -> String {
+    let cleaned: String = pack
+        .name
         .chars()
         .map(|character| if character.is_alphanumeric() || matches!(character, ' ' | '-' | '_') { character } else { '_' })
         .collect();
     let cleaned = cleaned.trim();
-    if cleaned.is_empty() { "texture-pack".to_owned() } else { cleaned.to_owned() }
+    let base = if cleaned.is_empty() { "texture-pack" } else { cleaned };
+    format!("{base}-{}.zip", &pack.id[..pack.id.len().min(4)])
 }
 
-/// Puts the pack into an instance's resource pack folder, ready to be switched on in the game.
-pub fn install(paths: &DataPaths, id: &str, instance_id: &str) -> AppResult<PathBuf> {
-    let pack = info(paths, id)?;
+fn instance_pack_file(paths: &DataPaths, pack: &PackInfo, instance_id: &str) -> PathBuf {
+    paths.instance_game_dir(instance_id).join("resourcepacks").join(file_name_for(pack))
+}
+
+/// Switches a resource pack on or off in the instance's `options.txt`, leaving every other line alone.
+fn set_pack_enabled(game_dir: &Path, file_name: &str, enabled: bool) -> AppResult<()> {
+    const KEY: &str = "resourcePacks:";
+    let options = game_dir.join("options.txt");
+    let text = fs::read_to_string(&options).unwrap_or_default();
+    let line_end = if text.contains("\r\n") { "\r\n" } else { "\n" };
+    let entry = format!("file/{file_name}");
+    let mut lines: Vec<String> = text.lines().map(str::to_owned).collect();
+
+    let position = lines.iter().position(|line| line.starts_with(KEY));
+    let mut packs: Vec<String> = match position {
+        Some(index) => serde_json::from_str(&lines[index][KEY.len()..]).map_err(|_| invalid("options.txt has an unexpected resource pack list"))?,
+        None if enabled => vec!["vanilla".to_owned()],
+        None => return Ok(()),
+    };
+    packs.retain(|pack| *pack != entry);
+    if enabled {
+        packs.push(entry);
+    }
+    let updated = format!("{KEY}{}", serde_json::to_string(&packs)?);
+    match position {
+        Some(index) => lines[index] = updated,
+        None => lines.push(updated),
+    }
+    fs::create_dir_all(game_dir)?;
+    fs::write(options, lines.join(line_end) + line_end)?;
+    Ok(())
+}
+
+fn place_in_instance(paths: &DataPaths, pack: &PackInfo, instance_id: &str) -> AppResult<()> {
     instances::get(paths, instance_id)?;
-    let folder = paths.instance_game_dir(instance_id).join("resourcepacks");
-    fs::create_dir_all(&folder)?;
-    let target = folder.join(format!("{}.zip", file_name_for(&pack.name)));
-    export(paths, id, &target)?;
-    Ok(target)
+    let target = instance_pack_file(paths, pack, instance_id);
+    if let Some(folder) = target.parent() {
+        fs::create_dir_all(folder)?;
+    }
+    export(paths, &pack.id, &target)?;
+    set_pack_enabled(&paths.instance_game_dir(instance_id), &file_name_for(pack), true)
+}
+
+fn remove_from_instance(paths: &DataPaths, pack: &PackInfo, instance_id: &str) {
+    let _ = fs::remove_file(instance_pack_file(paths, pack, instance_id));
+    let _ = set_pack_enabled(&paths.instance_game_dir(instance_id), &file_name_for(pack), false);
+}
+
+/// Best effort: the game may be running and holding the file, in which case the next launch catches up.
+fn refresh_copies(paths: &DataPaths, id: &str) {
+    if let Ok(pack) = info(paths, id) {
+        for instance_id in &pack.instances {
+            let _ = place_in_instance(paths, &pack, instance_id);
+        }
+    }
+}
+
+/// Makes exactly these instances use the pack: it is copied in and switched on, and taken away from the rest.
+pub fn use_in_instances(paths: &DataPaths, id: &str, instance_ids: Vec<String>) -> AppResult<PackInfo> {
+    let mut pack = info(paths, id)?;
+    let mut wanted: Vec<String> = Vec::new();
+    for instance_id in instance_ids {
+        instances::get(paths, &instance_id)?;
+        if !wanted.contains(&instance_id) {
+            wanted.push(instance_id);
+        }
+    }
+    for removed in pack.instances.iter().filter(|existing| !wanted.contains(existing)) {
+        remove_from_instance(paths, &pack, removed);
+    }
+    for instance_id in &wanted {
+        place_in_instance(paths, &pack, instance_id)?;
+    }
+    pack.instances = wanted;
+    write_info(&pack_dir(paths, id)?, &pack)?;
+    Ok(pack)
+}
+
+/// Called before a game starts so every pack the instance uses is current and switched on.
+pub fn prepare_for_launch(paths: &DataPaths, instance_id: &str) {
+    for pack in list(paths).unwrap_or_default() {
+        if pack.instances.iter().any(|linked| linked == instance_id) {
+            let _ = place_in_instance(paths, &pack, instance_id);
+        }
+    }
 }
 
 #[cfg(test)]
@@ -408,10 +493,85 @@ mod tests {
         let _ = fs::remove_dir_all(paths.root());
     }
 
+    fn instance_for(paths: &DataPaths) -> String {
+        let icon = crate::instances::model::IconInput::Preset { key: "cube".into() };
+        let new = crate::instances::model::NewInstance {
+            name: "Test".into(),
+            game_version: "1.21".into(),
+            icon,
+            loader: crate::instances::model::LoaderKind::Vanilla,
+            loader_version: None,
+        };
+        instances::create(paths, new).unwrap().id
+    }
+
     #[test]
-    fn names_pack_files_safely() {
-        assert_eq!(file_name_for("My: pack?"), "My_ pack_");
-        assert_eq!(file_name_for("???"), "___");
-        assert_eq!(file_name_for("  "), "texture-pack");
+    fn names_pack_files_safely_and_uniquely() {
+        let pack = |name: &str, id: &str| PackInfo {
+            id: id.into(),
+            name: name.into(),
+            game_version: "1.21".into(),
+            pack_format: 34,
+            ranged_format: false,
+            instances: Vec::new(),
+            created_at: Utc::now(),
+        };
+        assert_eq!(file_name_for(&pack("My: pack?", "1a2b3c4d")), "My_ pack_-1a2b.zip");
+        assert_eq!(file_name_for(&pack("???", "ffff0000")), "___-ffff.zip");
+        assert_eq!(file_name_for(&pack("  ", "abcd1234")), "texture-pack-abcd.zip");
+    }
+
+    #[test]
+    fn switches_packs_on_and_off_in_options_without_touching_other_lines() {
+        let paths = scratch("options", r#"{"pack_version": 34}"#);
+        let game = paths.root().join("game");
+        set_pack_enabled(&game, "a.zip", true).unwrap();
+        assert_eq!(fs::read_to_string(game.join("options.txt")).unwrap(), "resourcePacks:[\"vanilla\",\"file/a.zip\"]\n");
+
+        fs::write(game.join("options.txt"), "fov:70.0\r\nresourcePacks:[\"vanilla\",\"file/other.zip\"]\r\nlang:pl_pl\r\n").unwrap();
+        set_pack_enabled(&game, "a.zip", true).unwrap();
+        set_pack_enabled(&game, "a.zip", true).unwrap();
+        assert_eq!(
+            fs::read_to_string(game.join("options.txt")).unwrap(),
+            "fov:70.0\r\nresourcePacks:[\"vanilla\",\"file/other.zip\",\"file/a.zip\"]\r\nlang:pl_pl\r\n"
+        );
+        set_pack_enabled(&game, "a.zip", false).unwrap();
+        assert_eq!(
+            fs::read_to_string(game.join("options.txt")).unwrap(),
+            "fov:70.0\r\nresourcePacks:[\"vanilla\",\"file/other.zip\"]\r\nlang:pl_pl\r\n"
+        );
+
+        fs::write(game.join("options.txt"), "resourcePacks:not json\n").unwrap();
+        assert!(set_pack_enabled(&game, "a.zip", true).is_err());
+        assert_eq!(fs::read_to_string(game.join("options.txt")).unwrap(), "resourcePacks:not json\n");
+        let _ = fs::remove_dir_all(paths.root());
+    }
+
+    #[test]
+    fn linked_instances_get_an_up_to_date_pack_that_is_switched_on() {
+        let paths = scratch("linked", r#"{"pack_version": 34}"#);
+        let instance = instance_for(&paths);
+        let pack = create(&paths, "Mine", "1.21").unwrap();
+
+        let linked = use_in_instances(&paths, &pack.id, vec![instance.clone(), instance.clone()]).unwrap();
+        assert_eq!(linked.instances, vec![instance.clone()]);
+        let game = paths.instance_game_dir(&instance);
+        let file = game.join("resourcepacks").join(file_name_for(&linked));
+        assert!(file.is_file());
+        assert!(fs::read_to_string(game.join("options.txt")).unwrap().contains(&file_name_for(&linked)));
+
+        write_texture(&paths, &pack.id, FIRST_TEXTURE, &png(32, 32)).unwrap();
+        let mut zip = zip::ZipArchive::new(File::open(&file).unwrap()).unwrap();
+        assert!(zip.by_name("assets/minecraft/textures/block/stone.png").is_ok());
+
+        fs::remove_file(&file).unwrap();
+        prepare_for_launch(&paths, &instance);
+        assert!(file.is_file());
+
+        use_in_instances(&paths, &pack.id, Vec::new()).unwrap();
+        assert!(!file.exists());
+        assert!(!fs::read_to_string(game.join("options.txt")).unwrap().contains(&file_name_for(&linked)));
+        assert!(use_in_instances(&paths, &pack.id, vec!["missing".into()]).is_err());
+        let _ = fs::remove_dir_all(paths.root());
     }
 }

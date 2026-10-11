@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Download, FolderInput, RotateCcw, Save, Search } from "lucide-react";
+import { ArrowLeft, Download, RotateCcw, Save, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { useInstances } from "@/features/instances/useInstances";
 import { BrushPanel } from "@/features/pixel/BrushPanel";
 import { PixelCanvas } from "@/features/pixel/PixelCanvas";
@@ -17,14 +16,16 @@ import { loadImage } from "@/features/skins/editor/layout";
 import { errorMessage } from "@/lib/tauri/errors";
 import {
   exportTexturePack,
-  installTexturePack,
   listPackTextures,
   readPackTexture,
   resetPackTexture,
+  setTexturePackInstances,
   writePackTexture,
 } from "@/lib/tauri/texturepacks";
 import { cn } from "@/lib/utils";
+import { InstanceChecklist } from "./InstanceChecklist";
 import { textureKey, TextureThumb } from "./TextureThumb";
+import { PACKS_KEY } from "./usePacks";
 import { usePacks } from "./usePacks";
 
 const PAGE_SIZE = 240;
@@ -51,7 +52,6 @@ export function TexturePackPage() {
   const [category, setCategory] = useState(ALL);
   const [query, setQuery] = useState("");
   const [shown, setShown] = useState(PAGE_SIZE);
-  const [instanceId, setInstanceId] = useState("");
   const brush = useBrush(doc);
   useSyncExternalStore(doc.onHistory, () => doc.revision);
   const current = useRef({ doc, selected });
@@ -126,14 +126,14 @@ export function TexturePackPage() {
     onError: (error) => toast.error(errorMessage(t, error)),
   });
 
-  const install = useMutation({
-    mutationFn: async () => {
+  const useInInstances = useMutation({
+    mutationFn: async (instanceIds: string[]) => {
       await persist(doc, selected);
-      return installTexturePack(packId, instanceId);
+      return setTexturePackInstances(packId, instanceIds);
     },
-    onSuccess: () => {
-      const name = instances.data?.find((item) => item.id === instanceId)?.name ?? "";
-      toast.success(t("textures.installed", { name }));
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: PACKS_KEY });
+      toast.success(t("textures.usingSaved"));
     },
     onError: (error) => toast.error(errorMessage(t, error)),
   });
@@ -248,20 +248,13 @@ export function TexturePackPage() {
           </div>
 
           <div className="panel space-y-3 p-4">
-            <Field label={t("textures.addToInstance")} hint={t("textures.addHint")}>
-              <div className="flex gap-2">
-                <Select className="min-w-0 flex-1" value={instanceId} onChange={(event) => setInstanceId(event.target.value)}>
-                  <option value="">{t("textures.chooseInstance")}</option>
-                  {instances.data?.map((instance) => (
-                    <option key={instance.id} value={instance.id}>
-                      {instance.name}
-                    </option>
-                  ))}
-                </Select>
-                <Button variant="secondary" disabled={!instanceId || install.isPending} onClick={() => install.mutate()}>
-                  <FolderInput size={16} />
-                </Button>
-              </div>
+            <Field label={t("textures.useIn")} hint={t("textures.useInHint")}>
+              <InstanceChecklist
+                instances={instances.data ?? []}
+                gameVersion={pack?.gameVersion ?? ""}
+                selected={pack?.instances ?? []}
+                onChange={(ids) => useInInstances.mutate(ids)}
+              />
             </Field>
             <Button variant="secondary" className="w-full" disabled={exportZip.isPending} onClick={() => exportZip.mutate()}>
               <Download size={16} />

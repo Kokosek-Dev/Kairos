@@ -84,8 +84,11 @@ pub async fn export_texture_pack(app: AppHandle, state: State<'_, AppState>, pac
 }
 
 #[tauri::command]
-pub async fn install_texture_pack(state: State<'_, AppState>, pack_id: String, instance_id: String) -> AppResult<String> {
+pub async fn use_texture_pack_in_instances(
+    state: State<'_, AppState>,
+    pack_id: String,
+    instance_ids: Vec<String>,
+) -> AppResult<PackInfo> {
     let paths = state.paths.clone();
-    let installed = blocking(move || texturepacks::install(&paths, &pack_id, &instance_id)).await?;
-    Ok(installed.to_string_lossy().into_owned())
+    blocking(move || texturepacks::use_in_instances(&paths, &pack_id, instance_ids)).await
 }

@@ -7,7 +7,9 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { Field, Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { errorMessage } from "@/lib/tauri/errors";
-import { createTexturePack, listTextureVersions } from "@/lib/tauri/texturepacks";
+import { useInstances } from "@/features/instances/useInstances";
+import { createTexturePack, listTextureVersions, setTexturePackInstances } from "@/lib/tauri/texturepacks";
+import { InstanceChecklist } from "./InstanceChecklist";
 import { PACKS_KEY } from "./usePacks";
 
 interface CreatePackDialogProps {
@@ -21,17 +23,25 @@ export function CreatePackDialog({ open, onOpenChange }: CreatePackDialogProps) 
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [chosen, setChosen] = useState("");
+  const [unchecked, setUnchecked] = useState<string[]>([]);
+  const instances = useInstances();
   const versions = useQuery({ queryKey: ["texture-versions"], queryFn: listTextureVersions, enabled: open });
 
   const available = [...(versions.data ?? [])].sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
   const gameVersion = chosen || available[0] || "";
+  const matching = (instances.data ?? []).filter((instance) => instance.gameVersion === gameVersion);
+  const selected = matching.map((instance) => instance.id).filter((id) => !unchecked.includes(id));
 
   const create = useMutation({
-    mutationFn: () => createTexturePack(name, gameVersion),
+    mutationFn: async () => {
+      const pack = await createTexturePack(name, gameVersion);
+      return selected.length > 0 ? setTexturePackInstances(pack.id, selected) : pack;
+    },
     onSuccess: async (pack) => {
       await queryClient.invalidateQueries({ queryKey: PACKS_KEY });
       onOpenChange(false);
       setName("");
+      setUnchecked([]);
       navigate(`/textures/${pack.id}`);
     },
   });
@@ -64,6 +74,16 @@ export function CreatePackDialog({ open, onOpenChange }: CreatePackDialogProps) 
               </Select>
             )}
           </Field>
+        </div>
+
+        <div className="mt-4">
+          <p className="mb-2 text-sm font-medium">{t("textures.useIn")}</p>
+          <InstanceChecklist
+            instances={instances.data ?? []}
+            gameVersion={gameVersion}
+            selected={selected}
+            onChange={(ids) => setUnchecked(matching.map((instance) => instance.id).filter((id) => !ids.includes(id)))}
+          />
         </div>
 
         {create.isError && <p className="mt-3 text-sm text-danger">{errorMessage(t, create.error)}</p>}

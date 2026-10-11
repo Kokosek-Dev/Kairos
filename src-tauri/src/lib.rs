@@ -90,7 +90,7 @@ pub fn run() {
             commands::write_pack_texture,
             commands::reset_pack_texture,
             commands::export_texture_pack,
-            commands::install_texture_pack,
+            commands::use_texture_pack_in_instances,
             commands::add_skin_from_player,
             commands::save_current_skin,
             commands::remove_skin,

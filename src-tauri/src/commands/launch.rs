@@ -23,6 +23,9 @@ pub async fn launch_instance(
         None if offline => state.auth.offline_session().await?,
         None => state.auth.game_session(app_id::client_id).await?,
     };
+    let prepared = state.paths.clone();
+    let prepared_id = instance.id.clone();
+    crate::tasks::blocking(move || Ok(crate::texturepacks::prepare_for_launch(&prepared, &prepared_id))).await?;
     let (run_id, token) = state.runs.register(&instance.id);
     let started = Arc::new(Mutex::new(None::<Instant>));
     let paths = state.paths.clone();
