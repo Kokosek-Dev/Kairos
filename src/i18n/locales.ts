@@ -10,7 +10,7 @@ interface Translations {
 }
 
 export const en: Translations = {
-  nav: { home: "Home", library: "Library", versions: "Versions", discover: "Discover", settings: "Settings" },
+  nav: { home: "Home", library: "Library", versions: "Versions", discover: "Discover", settings: "Settings", recent: "Recent" },
   offline: {
     menu: "More ways to play",
     menuItem: "Play offline",
@@ -68,6 +68,10 @@ export const en: Translations = {
     subtitle: "All your game instances.",
     emptyTitle: "No instances yet",
     emptyBody: "Create your first instance to start playing.",
+    search: "Search instances",
+    sort: { recent: "Last played", name: "Name", version: "Game version" },
+    allLoaders: "All",
+    noMatches: "No instances match your filters.",
   },
   versions: {
     title: "Game versions",
@@ -284,7 +288,7 @@ export const en: Translations = {
 };
 
 export const pl: Translations = {
-  nav: { home: "Strona główna", library: "Biblioteka", versions: "Wersje", discover: "Odkrywaj", settings: "Ustawienia" },
+  nav: { home: "Strona główna", library: "Biblioteka", versions: "Wersje", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
   offline: {
     menu: "Inne sposoby gry",
     menuItem: "Graj offline",
@@ -342,6 +346,10 @@ export const pl: Translations = {
     subtitle: "Wszystkie Twoje instancje gry.",
     emptyTitle: "Brak instancji",
     emptyBody: "Utwórz pierwszą instancję, aby zacząć grać.",
+    search: "Szukaj instancji",
+    sort: { recent: "Ostatnio grane", name: "Nazwa", version: "Wersja gry" },
+    allLoaders: "Wszystkie",
+    noMatches: "Żadna instancja nie pasuje do filtrów.",
   },
   versions: {
     title: "Wersje gry",

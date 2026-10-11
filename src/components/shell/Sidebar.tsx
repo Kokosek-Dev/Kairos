@@ -5,6 +5,8 @@ import { Compass, Home, Layers, Library, Settings, Terminal, type LucideIcon } f
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { Logo } from "@/components/Logo";
+import { InstanceIcon } from "@/features/instances/InstanceIcon";
+import { useInstances } from "@/features/instances/useInstances";
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +41,32 @@ function ConsoleButton() {
       {t("console.title")}
       {isBusy(phase) && <span className="ml-auto size-2 animate-pulse rounded-full bg-success" />}
     </button>
+  );
+}
+
+function RecentInstances() {
+  const { t } = useTranslation();
+  const instances = useInstances();
+  const recent = [...(instances.data ?? [])]
+    .filter((instance) => instance.lastPlayedAt)
+    .sort((a, b) => (b.lastPlayedAt ?? "").localeCompare(a.lastPlayedAt ?? ""))
+    .slice(0, 5);
+  if (recent.length === 0) return null;
+
+  return (
+    <div className="mt-4 flex flex-col gap-1 border-t pt-3">
+      <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted/70">{t("nav.recent")}</p>
+      {recent.map((instance) => (
+        <NavLink
+          key={instance.id}
+          to={`/instances/${instance.id}`}
+          className="flex h-10 items-center gap-3 rounded-md px-3 text-muted transition-colors hover:bg-surface-raised hover:text-foreground"
+        >
+          <InstanceIcon icon={instance.icon} instanceId={instance.id} className="size-6 rounded-md" iconSize={13} />
+          <span className="truncate text-sm">{instance.name}</span>
+        </NavLink>
+      ))}
+    </div>
   );
 }
 
@@ -85,6 +113,7 @@ export function Sidebar() {
           )}
         </NavLink>
       ))}
+      <RecentInstances />
       <div className="mt-auto flex flex-col gap-1">
         <ConsoleButton />
         <Footer />
