@@ -224,7 +224,6 @@ export const es: Translations = {
   },
   incognito: {
     title: "Modo incógnito",
-    hint: "Juega sin conexión con el nombre de tu cuenta. Kairos deja de comunicarse con Microsoft, omite la búsqueda de actualizaciones y se oscurece.",
     needsAccount: "Inicia sesión con una cuenta que posea el juego para usar esto.",
     badge: "INCÓGNITO",
     heroTitle: "Estás fuera del radar",

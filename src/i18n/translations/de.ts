@@ -222,7 +222,6 @@ export const de: Translations = {
   },
   incognito: {
     title: "Inkognito-Modus",
-    hint: "Spielt offline unter deinem Kontonamen. Kairos hört auf, mit Microsoft zu sprechen, überspringt Update-Prüfungen und wird dunkel.",
     needsAccount: "Melde dich mit einem Konto an, das das Spiel besitzt, um das zu nutzen.",
     badge: "INKOGNITO",
     heroTitle: "Du bist unter dem Radar",

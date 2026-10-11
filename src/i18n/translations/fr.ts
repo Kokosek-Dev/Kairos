@@ -224,7 +224,6 @@ export const fr: Translations = {
   },
   incognito: {
     title: "Mode incognito",
-    hint: "Joue hors ligne sous le nom de votre compte. Kairos cesse de contacter Microsoft, ignore la recherche de mises à jour et passe en mode sombre.",
     needsAccount: "Connectez-vous avec un compte qui possède le jeu pour l'utiliser.",
     badge: "INCOGNITO",
     heroTitle: "Vous êtes sous le radar",

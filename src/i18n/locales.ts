@@ -236,7 +236,6 @@ export const en: Translations = {
   },
   incognito: {
     title: "Incognito mode",
-    hint: "Plays offline under your account name. Kairos stops talking to Microsoft, skips update checks and goes dark.",
     needsAccount: "Sign in with an account that owns the game to use this.",
     badge: "INCOGNITO",
     heroTitle: "You are off the grid",
@@ -794,7 +793,6 @@ export const pl: Translations = {
   },
   incognito: {
     title: "Tryb incognito",
-    hint: "Gra offline pod nazwą Twojego konta. Kairos przestaje łączyć się z Microsoft, pomija sprawdzanie aktualizacji i przyciemnia się.",
     needsAccount: "Zaloguj się kontem, które posiada grę, aby tego użyć.",
     badge: "INCOGNITO",
     heroTitle: "Jesteś poza zasięgiem",

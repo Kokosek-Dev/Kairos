@@ -9,5 +9,6 @@ export function useCanUseIncognito(): boolean {
 
 export function useIncognito(): boolean {
   const wanted = usePreferences((state) => state.incognito);
-  return wanted && useCanUseIncognito();
+  const allowed = useCanUseIncognito();
+  return wanted && allowed;
 }
