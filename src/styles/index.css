@@ -10,8 +10,9 @@
   --border: oklch(0.3 0.035 260 / 0.55);
   --foreground: oklch(0.96 0.01 250);
   --muted: oklch(0.7 0.03 255);
-  --accent: oklch(0.68 0.19 252);
-  --accent-strong: oklch(0.6 0.21 258);
+  --accent-hue: 252;
+  --accent: oklch(0.68 0.19 var(--accent-hue));
+  --accent-strong: oklch(0.6 0.21 calc(var(--accent-hue) + 6));
   --accent-foreground: oklch(0.99 0.005 250);
   --danger: oklch(0.65 0.22 25);
   --success: oklch(0.75 0.17 155);
@@ -38,7 +39,9 @@
   --font-sans: "Inter Variable", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
 
-  --shadow-glow: 0 0 0 1px oklch(0.68 0.19 252 / 0.35), 0 8px 32px -8px oklch(0.6 0.21 258 / 0.55);
+  --shadow-glow:
+    0 0 0 1px color-mix(in oklch, var(--accent) 35%, transparent),
+    0 8px 32px -8px color-mix(in oklch, var(--accent-strong) 55%, transparent);
 }
 
 @layer base {
@@ -54,8 +57,8 @@
 
   #root {
     background:
-      radial-gradient(900px 520px at 88% -8%, oklch(0.4 0.14 258 / 0.38), transparent 70%),
-      radial-gradient(700px 480px at -8% 108%, oklch(0.36 0.12 235 / 0.28), transparent 70%),
+      radial-gradient(900px 520px at 88% -8%, oklch(0.4 0.14 calc(var(--accent-hue) + 6) / 0.38), transparent 70%),
+      radial-gradient(700px 480px at -8% 108%, oklch(0.36 0.12 calc(var(--accent-hue) - 17) / 0.28), transparent 70%),
       var(--background);
   }
 

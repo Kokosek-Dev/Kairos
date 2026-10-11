@@ -282,3 +282,23 @@ async fn removing_an_account_deletes_its_secret_and_promotes_another() {
     assert!(fixture.secrets.get(&account.id).unwrap().is_none());
     assert!(fixture.service.accounts().await.unwrap().accounts.is_empty());
 }
+
+#[tokio::test]
+async fn offline_play_uses_the_saved_account_without_touching_the_network() {
+    let fixture = fixture(happy_routes()).await;
+    let (account, _, _) = sign_in(&fixture).await.unwrap();
+    let requests_after_sign_in = fixture.mock.requests.lock().unwrap().len();
+
+    let session = fixture.service.offline_session().await.unwrap();
+
+    assert_eq!((session.username.as_str(), session.uuid.as_str()), ("Steve", account.id.as_str()));
+    assert_ne!(session.access_token, "MC-TOKEN");
+    assert_eq!(fixture.mock.requests.lock().unwrap().len(), requests_after_sign_in);
+}
+
+#[tokio::test]
+async fn offline_play_is_refused_without_a_verified_account() {
+    let fixture = fixture(happy_routes()).await;
+
+    assert!(matches!(fixture.service.offline_session().await, Err(AppError::NotSignedIn)));
+}

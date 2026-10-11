@@ -123,6 +123,21 @@ impl AuthService {
         Ok(account)
     }
 
+    /// A session for playing without a network connection. It only exists for accounts that were
+    /// signed in (and therefore verified to own the game) before, and it cannot join online servers.
+    pub async fn offline_session(&self) -> AppResult<GameSession> {
+        let store = self.accounts.clone();
+        let account = blocking(move || store.active()).await?.ok_or(AppError::NotSignedIn)?;
+        Ok(GameSession {
+            username: account.username,
+            uuid: account.id,
+            access_token: "0".into(),
+            user_type: "legacy".into(),
+            xuid: "0".into(),
+            client_id: "0".into(),
+        })
+    }
+
     pub async fn game_session(&self, client_id: impl FnOnce() -> AppResult<String>) -> AppResult<GameSession> {
         let store = self.accounts.clone();
         let account = blocking(move || store.active())

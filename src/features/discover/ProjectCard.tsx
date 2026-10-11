@@ -86,7 +86,7 @@ export function ProjectCard({ hit, instance }: ProjectCardProps) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       onClick={() => navigate(`/discover/${hit.projectId}${search}`)}
-      className="flex cursor-pointer items-center gap-4 rounded-xl border bg-surface p-4 transition-colors hover:border-accent/40 hover:bg-surface-raised/60"
+      className="flex cursor-pointer items-center gap-4 rounded-xl border bg-surface p-4 transition-[border-color,box-shadow,background-color] hover:border-accent/40 hover:bg-surface-raised/60 hover:shadow-glow"
     >
       <ProjectIcon url={hit.iconUrl} />
       <div className="min-w-0 flex-1">

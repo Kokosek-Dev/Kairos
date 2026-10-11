@@ -9,6 +9,7 @@ use tauri::{ipc::Channel, State};
 pub async fn launch_instance(
     state: State<'_, AppState>,
     instance_id: String,
+    offline: bool,
     on_event: Channel<LaunchEvent>,
 ) -> AppResult<()> {
     let instance = store::get(&state.paths, &instance_id)?;
@@ -17,6 +18,7 @@ pub async fn launch_instance(
     }
     let session = match launch::session::development_override() {
         Some(session) => session,
+        None if offline => state.auth.offline_session().await?,
         None => state.auth.game_session(app_id::client_id).await?,
     };
     let (run_id, token) = state.runs.register(&instance.id);

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { LogIn, Plus, RotateCcw, Save, Shirt, Trash2, Upload } from "lucide-react";
+import { Boxes, LogIn, Plus, Puzzle, RotateCcw, Save, Shirt, Trash2, Upload } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -34,6 +34,18 @@ function SignedOutHero() {
         <LogIn size={18} />
         {t("home.signInButton")}
       </Button>
+      <ul className="mt-8 flex flex-wrap gap-3 text-sm text-muted">
+        {[
+          [Shirt, t("home.perks.skins")],
+          [Boxes, t("home.perks.instances")],
+          [Puzzle, t("home.perks.mods")],
+        ].map(([Icon, label]) => (
+          <li key={label as string} className="flex items-center gap-2 rounded-full border bg-background/40 px-3 py-1.5">
+            <Icon size={14} className="text-accent" />
+            {label as string}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -263,8 +275,8 @@ export function HomePage() {
           </div>
         )}
         <div className="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-4">
-          {recent.map((instance) => (
-            <InstanceCard key={instance.id} instance={instance} onDelete={setDeleting} />
+          {recent.map((instance, index) => (
+            <InstanceCard key={instance.id} instance={instance} index={index} onDelete={setDeleting} />
           ))}
         </div>
       </section>

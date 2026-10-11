@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Copy, FolderOpen, MoreHorizontal, Play, Settings2, Square, Trash2 } from "lucide-react";
+import { Copy, FolderOpen, MoreHorizontal, Settings2, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,22 +14,43 @@ import {
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { formatRelative } from "@/lib/format";
 import { duplicateInstance, openInstanceFolder, type Instance } from "@/lib/tauri/instances";
+import { cn } from "@/lib/utils";
 import { InstanceIcon } from "./InstanceIcon";
+import { PlayButton } from "./PlayButton";
+import { findPreset } from "./presets";
 import { INSTANCES_KEY } from "./useInstances";
 
 interface InstanceCardProps {
   instance: Instance;
+  index?: number;
   onDelete: (instance: Instance) => void;
 }
 
-export function InstanceCard({ instance, onDelete }: InstanceCardProps) {
+function bannerFor(instance: Instance): string {
+  const hue = instance.icon.kind === "preset" ? String(findPreset(instance.icon.key).hue) : "var(--accent-hue)";
+  return `linear-gradient(180deg, oklch(0.5 0.17 ${hue} / 0.5), transparent)`;
+}
+
+function Chip({ children, highlight }: { children: React.ReactNode; highlight?: boolean }) {
+  return (
+    <span
+      className={cn(
+        "rounded-full px-2 py-0.5 text-[11px] font-medium",
+        highlight ? "bg-accent/15 text-accent" : "bg-surface-raised text-muted",
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+export function InstanceCard({ instance, index = 0, onDelete }: InstanceCardProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { instanceId, phase, play, stop } = useGameStore();
+  const { instanceId, phase } = useGameStore();
 
   const thisRunning = instanceId === instance.id && isBusy(phase);
-  const otherRunning = !thisRunning && isBusy(phase);
   const settingsPath = `/instances/${instance.id}`;
 
   const duplicate = useMutation({
@@ -40,29 +61,38 @@ export function InstanceCard({ instance, onDelete }: InstanceCardProps) {
   return (
     <motion.article
       layout
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2 }}
-      transition={{ duration: 0.15 }}
-      className="group flex flex-col gap-4 rounded-xl border bg-surface p-4 transition-colors hover:border-accent/40 hover:bg-surface-raised/60"
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.25, delay: Math.min(index, 8) * 0.05 }}
+      className={cn(
+        "group relative flex flex-col gap-4 overflow-hidden rounded-2xl border bg-surface p-4 transition-[border-color,box-shadow] hover:border-accent/50 hover:shadow-glow",
+        thisRunning && "border-success/50",
+      )}
     >
-      <div className="flex items-start gap-3">
-        <button
-          type="button"
-          onClick={() => navigate(settingsPath)}
-          className="flex min-w-0 flex-1 items-center gap-3 text-left"
-        >
-          <InstanceIcon icon={instance.icon} instanceId={instance.id} className="size-14" />
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-40 opacity-70 transition-opacity group-hover:opacity-100"
+        style={{ background: bannerFor(instance) }}
+      />
+
+      <div className="relative flex items-start gap-3">
+        <button type="button" onClick={() => navigate(settingsPath)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+          <InstanceIcon icon={instance.icon} instanceId={instance.id} className="size-16 shadow-lg ring-1 ring-white/10" iconSize={30} />
           <div className="min-w-0">
-            <h3 className="truncate font-semibold">{instance.name}</h3>
-            <p className="text-xs text-muted">
-              {instance.gameVersion} · {t(`instances.loader.${instance.loader}`)}
-              {instance.loaderVersion ? ` ${instance.loaderVersion}` : ""}
-            </p>
-            <p className="mt-0.5 text-xs text-muted">
-              {instance.lastPlayedAt
-                ? t("instances.lastPlayed", { when: formatRelative(instance.lastPlayedAt, i18n.language) })
-                : t("instances.neverPlayed")}
+            <h3 className="truncate text-base font-semibold">{instance.name}</h3>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              <Chip>{instance.gameVersion}</Chip>
+              <Chip highlight={instance.loader !== "vanilla"}>
+                {t(`instances.loader.${instance.loader}`)}
+                {instance.loaderVersion ? ` ${instance.loaderVersion}` : ""}
+              </Chip>
+            </div>
+            <p className="mt-1.5 text-xs text-muted">
+              {thisRunning
+                ? t("instances.running")
+                : instance.lastPlayedAt
+                  ? t("instances.lastPlayed", { when: formatRelative(instance.lastPlayedAt, i18n.language) })
+                  : t("instances.neverPlayed")}
             </p>
           </div>
         </button>
@@ -95,17 +125,7 @@ export function InstanceCard({ instance, onDelete }: InstanceCardProps) {
         </DropdownMenu>
       </div>
 
-      {thisRunning ? (
-        <Button size="lg" variant="secondary" onClick={() => void stop()}>
-          <Square size={16} />
-          {t("console.stop")}
-        </Button>
-      ) : (
-        <Button size="lg" disabled={otherRunning} onClick={() => void play(instance.id, instance.name)}>
-          <Play size={18} />
-          {t("instances.play")}
-        </Button>
-      )}
+      <PlayButton instance={instance} className="relative" />
     </motion.article>
   );
 }

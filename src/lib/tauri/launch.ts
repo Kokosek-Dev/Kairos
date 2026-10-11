@@ -10,10 +10,14 @@ export type LaunchEvent =
   | { type: "log"; stream: LogStream; level: string | null; line: string }
   | { type: "exited"; code: number | null };
 
-export function launchInstance(instanceId: string, onEvent: (event: LaunchEvent) => void): Promise<void> {
+export function launchInstance(
+  instanceId: string,
+  offline: boolean,
+  onEvent: (event: LaunchEvent) => void,
+): Promise<void> {
   const channel = new Channel<LaunchEvent>();
   channel.onmessage = onEvent;
-  return invoke<void>("launch_instance", { instanceId, onEvent: channel });
+  return invoke<void>("launch_instance", { instanceId, offline, onEvent: channel });
 }
 
 export const stopGame = (runId: number) => invoke<void>("stop_game", { runId });

@@ -73,8 +73,8 @@ export function LibraryPage() {
 
       {instances.data && instances.data.length > 0 && (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-4">
-          {instances.data.map((instance) => (
-            <InstanceCard key={instance.id} instance={instance} onDelete={setDeleting} />
+          {instances.data.map((instance, index) => (
+            <InstanceCard key={instance.id} instance={instance} index={index} onDelete={setDeleting} />
           ))}
         </div>
       )}

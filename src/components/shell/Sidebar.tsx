@@ -1,7 +1,10 @@
-﻿import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { getVersion } from "@tauri-apps/api/app";
+import { motion } from "framer-motion";
 import { Compass, Home, Layers, Library, Settings, Terminal, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
+import { Logo } from "@/components/Logo";
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { cn } from "@/lib/utils";
 
@@ -28,12 +31,22 @@ function ConsoleButton() {
     <button
       type="button"
       onClick={() => setConsoleOpen(!consoleOpen)}
-      className="mt-auto flex h-10 items-center gap-3 rounded-md px-3 font-medium text-muted transition-colors hover:bg-surface-raised hover:text-foreground"
+      className="flex h-10 items-center gap-3 rounded-md px-3 font-medium text-muted transition-colors hover:bg-surface-raised hover:text-foreground"
     >
       <Terminal size={18} />
       {t("console.title")}
       {isBusy(phase) && <span className="ml-auto size-2 animate-pulse rounded-full bg-success" />}
     </button>
+  );
+}
+
+function Footer() {
+  const version = useQuery({ queryKey: ["app-version"], queryFn: getVersion, staleTime: Infinity });
+  return (
+    <div className="flex items-center gap-2 px-3 pt-2 text-xs text-muted/70">
+      <Logo className="size-4 opacity-70" />
+      <span>Zenith {version.data ? `v${version.data}` : ""}</span>
+    </div>
   );
 }
 
@@ -59,7 +72,7 @@ export function Sidebar() {
               {isActive && (
                 <motion.span
                   layoutId="nav-active"
-                  className="absolute inset-0 rounded-md bg-accent/15 shadow-[inset_0_0_0_1px_oklch(0.68_0.19_252/0.4)]"
+                  className="absolute inset-0 rounded-md bg-accent/15 shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--accent)_40%,transparent)]"
                   transition={{ type: "spring", stiffness: 500, damping: 40 }}
                 />
               )}
@@ -69,7 +82,10 @@ export function Sidebar() {
           )}
         </NavLink>
       ))}
-      <ConsoleButton />
+      <div className="mt-auto flex flex-col gap-1">
+        <ConsoleButton />
+        <Footer />
+      </div>
     </nav>
   );
 }

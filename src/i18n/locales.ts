@@ -11,9 +11,25 @@ interface Translations {
 
 export const en: Translations = {
   nav: { home: "Home", library: "Library", versions: "Versions", discover: "Discover", settings: "Settings" },
+  offline: {
+    menu: "More ways to play",
+    menuItem: "Play offline",
+    title: "Play offline?",
+    body: "Offline mode starts the game without contacting Microsoft, using the name of {{name}}.",
+    noServers: "You cannot join online servers.",
+    noSkin: "Your skin and cape will not be shown.",
+    ownersOnly: "It only works with an account that already owns the game.",
+    confirm: "Play offline",
+  },
+  appearance: {
+    title: "Appearance",
+    hint: "Pick the accent color of the launcher.",
+    colors: { blue: "Blue", violet: "Violet", pink: "Pink", orange: "Orange", green: "Green", teal: "Teal" },
+  },
   home: {
     welcome: "Welcome to Zenith",
     signInHint: "Sign in with your Microsoft account to play, see your skin and change it.",
+    perks: { skins: "3D skins and capes", instances: "Instances with any loader", mods: "Mods, modpacks and shaders" },
     signInButton: "Sign in with Microsoft",
     welcomeBack: "Welcome back",
     profileFailed: "Could not load your profile. Check your internet connection.",
@@ -128,6 +144,7 @@ export const en: Translations = {
     defaultName: "Minecraft {{version}}",
     create: "Create",
     play: "Play",
+    running: "Running now",
 
     lastPlayed: "Played {{when}}",
     neverPlayed: "Never played",
@@ -268,9 +285,25 @@ export const en: Translations = {
 
 export const pl: Translations = {
   nav: { home: "Strona główna", library: "Biblioteka", versions: "Wersje", discover: "Odkrywaj", settings: "Ustawienia" },
+  offline: {
+    menu: "Inne sposoby gry",
+    menuItem: "Graj offline",
+    title: "Grać offline?",
+    body: "Tryb offline uruchamia grę bez łączenia z Microsoft, z nickiem {{name}}.",
+    noServers: "Nie dołączysz do serwerów online.",
+    noSkin: "Twój skin i peleryna nie będą widoczne.",
+    ownersOnly: "Działa tylko z kontem, które już posiada grę.",
+    confirm: "Graj offline",
+  },
+  appearance: {
+    title: "Wygląd",
+    hint: "Wybierz kolor akcentu launchera.",
+    colors: { blue: "Niebieski", violet: "Fioletowy", pink: "Różowy", orange: "Pomarańczowy", green: "Zielony", teal: "Morski" },
+  },
   home: {
     welcome: "Witaj w Zenith",
     signInHint: "Zaloguj się kontem Microsoft, aby grać, zobaczyć swój skin i go zmieniać.",
+    perks: { skins: "Skiny 3D i peleryny", instances: "Instancje z dowolnym loaderem", mods: "Mody, modpacki i shadery" },
     signInButton: "Zaloguj się przez Microsoft",
     welcomeBack: "Witaj ponownie",
     profileFailed: "Nie udało się wczytać profilu. Sprawdź połączenie z internetem.",
@@ -385,6 +418,7 @@ export const pl: Translations = {
     defaultName: "Minecraft {{version}}",
     create: "Utwórz",
     play: "Graj",
+    running: "Gra działa",
 
     lastPlayed: "Grano {{when}}",
     neverPlayed: "Jeszcze nie grano",

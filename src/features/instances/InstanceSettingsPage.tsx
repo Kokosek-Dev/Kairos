@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Boxes, Copy, FileDown, FolderOpen, Play, Save, Square, Trash2 } from "lucide-react";
+import { ArrowLeft, Boxes, Copy, FileDown, FolderOpen, Save, Trash2 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -21,6 +21,7 @@ import {
   type LoaderKind,
 } from "@/lib/tauri/instances";
 import { DeleteInstanceDialog } from "./DeleteInstanceDialog";
+import { PlayButton } from "./PlayButton";
 import { IconPicker } from "./IconPicker";
 import { InstanceIcon } from "./InstanceIcon";
 import { LoaderPicker } from "./LoaderPicker";
@@ -63,7 +64,7 @@ function SettingsForm({ instance }: { instance: Instance }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { instanceId, phase, play, stop } = useGameStore();
+  const { instanceId, phase } = useGameStore();
 
   const [name, setName] = useState(instance.name);
   const [gameVersion, setGameVersion] = useState(instance.gameVersion);
@@ -167,17 +168,7 @@ function SettingsForm({ instance }: { instance: Instance }) {
             {t("content.open")}
           </Link>
         </Button>
-        {thisRunning ? (
-          <Button size="lg" variant="secondary" onClick={() => void stop()}>
-            <Square size={16} />
-            {t("console.stop")}
-          </Button>
-        ) : (
-          <Button size="lg" disabled={isBusy(phase)} onClick={() => void play(instance.id, instance.name)}>
-            <Play size={18} />
-            {t("instances.play")}
-          </Button>
-        )}
+        <PlayButton instance={instance} />
       </header>
 
       <Section title={t("instances.general")}>

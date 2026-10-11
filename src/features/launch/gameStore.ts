@@ -32,7 +32,7 @@ interface GameState {
   phase: GamePhase;
   lines: LogLine[];
   consoleOpen: boolean;
-  play: (instanceId: string, title: string) => Promise<void>;
+  play: (instanceId: string, title: string, offline?: boolean) => Promise<void>;
   stop: () => Promise<void>;
   clear: () => void;
   setConsoleOpen: (open: boolean) => void;
@@ -75,7 +75,7 @@ export const useGameStore = create<GameState>((set, get) => {
     lines: [],
     consoleOpen: false,
 
-    play: async (instanceId, title) => {
+    play: async (instanceId, title, offline = false) => {
       if (isBusy(get().phase)) return;
       set({
         instanceId,
@@ -86,7 +86,7 @@ export const useGameStore = create<GameState>((set, get) => {
         phase: { kind: "preparing", step: "version", doneBytes: 0, totalBytes: 0 },
       });
       try {
-        await launchInstance(instanceId, handle);
+        await launchInstance(instanceId, offline, handle);
       } catch (error) {
         if (isLauncherError(error) && error.code === "cancelled") {
           set({ phase: { kind: "idle" }, runId: null });

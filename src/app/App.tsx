@@ -10,6 +10,7 @@ import { InstanceSettingsPage } from "@/features/instances/InstanceSettingsPage"
 import { HomePage } from "@/features/home/HomePage";
 import { LibraryPage } from "@/features/library/LibraryPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
+import { OfflinePlayDialog } from "@/features/launch/OfflinePlayDialog";
 import { SignInDialog } from "@/features/accounts/SignInDialog";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
 import { VersionsPage } from "@/features/versions/VersionsPage";
@@ -48,6 +49,7 @@ export function App() {
       </div>
       <ConsoleDrawer />
       <SignInDialog />
+      <OfflinePlayDialog />
       <Toaster position="bottom-right" theme="dark" toastOptions={{ style: { background: "var(--surface-raised)", color: "var(--foreground)", border: "1px solid var(--border)" } }} />
       <WelcomeDialog />
     </div>
