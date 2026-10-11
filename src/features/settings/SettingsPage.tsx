@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/shell/PageHeader";
 
 import { AppearanceSection } from "@/features/settings/AppearanceSection";
 import { BehaviorSection } from "@/features/settings/BehaviorSection";
+import { HelpSection } from "@/features/settings/HelpSection";
 import { StorageSection } from "@/features/settings/StorageSection";
 import { AccountsSection } from "@/features/accounts/AccountsSection";
 
@@ -18,6 +19,7 @@ export function SettingsPage() {
         <AccountsSection />
         <AppearanceSection />
         <StorageSection />
+        <HelpSection />
         <BehaviorSection />
         <section className="panel p-5">
           <h2 className="flex items-center gap-2 font-semibold">

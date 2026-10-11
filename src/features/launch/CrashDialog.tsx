@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { FileSearch, Settings2 } from "lucide-react";
+import { FileSearch, LifeBuoy, Settings2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { analyzeCrash, revealFile, type CrashKind } from "@/lib/tauri/crash";
+import { useProblemReport } from "@/features/settings/useProblemReport";
 import { useGameStore } from "./gameStore";
 
 /** Kinds of crash that are fixed in the instance settings, so a shortcut is offered. */
@@ -14,6 +15,7 @@ export function CrashDialog() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { crash, dismissCrash } = useGameStore();
+  const report = useProblemReport();
   const analysis = useQuery({
     queryKey: ["crash", crash?.instanceId, crash?.startedAt],
     queryFn: () => analyzeCrash(crash?.instanceId ?? "", crash?.startedAt ?? 0),
@@ -53,6 +55,10 @@ export function CrashDialog() {
               {t("crash.openSettings")}
             </Button>
           )}
+          <Button variant="secondary" disabled={report.isPending} onClick={() => report.mutate(crash?.instanceId ?? null)}>
+            <LifeBuoy size={16} />
+            {t("help.saveReport")}
+          </Button>
           <Button onClick={dismissCrash}>{t("common.close")}</Button>
         </div>
       </DialogContent>

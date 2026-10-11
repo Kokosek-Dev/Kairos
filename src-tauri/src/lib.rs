@@ -1,6 +1,7 @@
 mod app_id;
 mod auth;
 mod commands;
+mod diagnostics;
 mod download;
 mod crash;
 mod error;
@@ -101,6 +102,7 @@ pub fn run() {
             commands::get_memory_advice,
             commands::analyze_crash,
             commands::reveal_file,
+            commands::save_problem_report,
             commands::pick_data_folder,
             commands::move_data_location,
             commands::restart_app,

@@ -19,3 +19,5 @@ export interface CrashAnalysis {
 export const analyzeCrash = (instanceId: string, startedMs: number) =>
   invoke<CrashAnalysis | null>("analyze_crash", { instanceId, startedMs });
 export const revealFile = (path: string) => invoke<void>("reveal_file", { path });
+export const saveProblemReport = (instanceId: string | null) =>
+  invoke<string | null>("save_problem_report", { instanceId });

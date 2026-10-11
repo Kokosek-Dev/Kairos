@@ -161,6 +161,12 @@ export const en: Translations = {
       },
     },
   },
+  help: {
+    title: "Help",
+    hint: "If something goes wrong, save a problem report and send it to whoever is helping you. It holds logs and a list of your instances and mods. Sign-in data and your user name are removed.",
+    saveReport: "Save a problem report",
+    saved: "Report saved to {{path}}",
+  },
   editor: {
     title: "Skin editor",
     subtitle: "Draw on the flat texture or straight on the 3D model.",
@@ -600,6 +606,12 @@ export const pl: Translations = {
         advice: "Otwórz raport poniżej. Jeśli prosisz o pomoc, wyślij go razem z prośbą.",
       },
     },
+  },
+  help: {
+    title: "Pomoc",
+    hint: "Gdy coś pójdzie nie tak, zapisz raport o problemie i wyślij go osobie, która pomaga. Zawiera logi oraz listę instancji i modów. Dane logowania i nazwa użytkownika są usunięte.",
+    saveReport: "Zapisz raport o problemie",
+    saved: "Raport zapisano w {{path}}",
   },
   editor: {
     title: "Edytor skinów",
