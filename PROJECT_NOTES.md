@@ -83,6 +83,8 @@ Stan na koniec sesji: Azure czeka na odpowiedź szkoły (właściciel liczy na o
 - `npm run tauri build` wymaga `TAURI_SIGNING_PRIVATE_KEY` (ścieżka do klucza) i `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (hasło). Puste hasło w PowerShell nie działa (zmienna znika i build czeka na hasło), dlatego klucz ma prawdziwe hasło.
 - Instalator po zbudowaniu: `src-tauri/target/release/bundle/nsis/`.
 
+- Logo i ikona: źródło to \ssets/icon-source.svg\ (K z iskrą). Zmiana: wyrenderuj do PNG 1024 jako \ssets/icon-source.png\ (np. Chrome headless), potem px tauri icon assets/icon-source.png\ i usuń wygenerowane foldery \src-tauri/icons/android\ i \ios\. Znak w aplikacji: \src/components/Logo.tsx\.
+
 ## 8. Pułapki, na które już się trafiło
 
 - PowerShell 5.1 psuje cytowanie i kodowanie. Do edycji plików używać narzędzia Write albo skryptów Pythona w
