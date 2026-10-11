@@ -78,7 +78,7 @@ export function ProjectPage() {
     enabled: tab === "versions" && project !== undefined,
   });
   const job = useJobsStore((state) => state.jobs[projectId]);
-  const { install, installModpack, dismiss } = useJobsStore();
+  const { install, installModpack } = useJobsStore();
 
   if (details.isPending) return <div className="skeleton h-96 max-w-4xl rounded-xl" />;
   if (details.isError || !project) {
@@ -126,33 +126,22 @@ export function ProjectPage() {
           </div>
         </div>
         <div className="flex flex-col items-end gap-2">
-          {job?.message ? (
-            <button
-              type="button"
-              onClick={() => dismiss(projectId)}
-              className={`max-w-60 text-right text-xs ${job.message.kind === "success" ? "text-success" : "text-danger"}`}
-            >
-              {job.message.text}
-            </button>
-          ) : (
-            <Button
-              disabled={blocker !== null || job?.progress !== undefined}
-              title={blocker ? t(`discover.blocked.${blocker}`) : undefined}
-              onClick={() =>
-                project.projectType === "modpack"
-                  ? void installModpack(t, project.id)
-                  : instance && void install(t, instance.id, project.id)
-              }
-            >
-              <Download size={16} />
-              {job?.progress
-                ? t("versions.resolving")
-                : project.projectType === "modpack"
-                  ? t("discover.installPack")
-                  : t("versions.install")}
-            </Button>
-          )}
-          {instance && project.projectType !== "modpack" && (
+          <Button
+            disabled={blocker !== null || job !== undefined}
+            title={blocker ? t(`discover.blocked.${blocker}`) : undefined}
+            onClick={() =>
+              project.projectType === "modpack"
+                ? void installModpack(t, project.id)
+                : instance && void install(t, instance.id, project.id)
+            }
+          >
+            <Download size={16} />
+            {job
+              ? t("versions.resolving")
+              : project.projectType === "modpack"
+                ? t("discover.installPack")
+                : t("versions.install")}
+          </Button>          {instance && project.projectType !== "modpack" && (
             <span className="text-xs text-muted">{t("discover.installingTo", { name: instance.name })}</span>
           )}
         </div>

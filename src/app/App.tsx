@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { Toaster } from "sonner";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TitleBar } from "@/components/shell/TitleBar";
@@ -6,6 +7,7 @@ import { DiscoverPage } from "@/features/discover/DiscoverPage";
 import { ProjectPage } from "@/features/discover/ProjectPage";
 import { ContentPage } from "@/features/instances/ContentPage";
 import { InstanceSettingsPage } from "@/features/instances/InstanceSettingsPage";
+import { HomePage } from "@/features/home/HomePage";
 import { LibraryPage } from "@/features/library/LibraryPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
 import { SignInDialog } from "@/features/accounts/SignInDialog";
@@ -31,7 +33,8 @@ export function App() {
               transition={{ duration: 0.15 }}
             >
               <Routes location={location}>
-                <Route path="/" element={<LibraryPage />} />
+                <Route path="/" element={<HomePage />} />
+                <Route path="/library" element={<LibraryPage />} />
                 <Route path="/instances/:id" element={<InstanceSettingsPage />} />
                 <Route path="/instances/:id/content" element={<ContentPage />} />
                 <Route path="/versions" element={<VersionsPage />} />
@@ -45,6 +48,7 @@ export function App() {
       </div>
       <ConsoleDrawer />
       <SignInDialog />
+      <Toaster position="bottom-right" theme="dark" toastOptions={{ style: { background: "var(--surface-raised)", color: "var(--foreground)", border: "1px solid var(--border)" } }} />
       <WelcomeDialog />
     </div>
   );

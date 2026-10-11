@@ -1,0 +1,7 @@
+﻿# Build-time settings for Zenith.
+#
+# ZENITH_MS_CLIENT_ID is the Application (client) ID of the Azure app registration that Zenith
+# uses for "Sign in with Microsoft" (see docs/AZURE_SETUP.md). It is baked into the launcher so
+# players never have to enter it. Client IDs are public identifiers, not secrets.
+[env]
+ZENITH_MS_CLIENT_ID = { value = "", force = false }

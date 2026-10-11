@@ -282,7 +282,7 @@ mod tests {
         let instance = store::create(&paths, new).unwrap();
 
         if !mods.is_empty() {
-            let api = crate::modrinth::api::ModrinthApi::new(build_client().unwrap(), None);
+            let api = crate::modrinth::api::ModrinthApi::new(build_client().unwrap());
             let context = crate::modrinth::install::Context { api: &api, paths: &paths };
             for slug in mods {
                 crate::modrinth::install::install_project(&context, &instance, slug, None, &CancellationToken::new(), |_, _| {})

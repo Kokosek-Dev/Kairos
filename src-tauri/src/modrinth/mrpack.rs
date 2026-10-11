@@ -460,7 +460,7 @@ mod tests {
     }
 
     async fn run_import(paths: &DataPaths, mock_base: &str, archive: &Path) -> AppResult<Instance> {
-        let api = ModrinthApi::with_base(reqwest::Client::new(), mock_base, None);
+        let api = ModrinthApi::with_base(reqwest::Client::new(), mock_base);
         let context = Context { api: &api, paths };
         import(&context, archive, &CancellationToken::new(), |_, _| {}).await
     }
@@ -636,7 +636,7 @@ mod tests {
     #[ignore = "installs a real modpack from Modrinth (tens of megabytes)"]
     async fn installs_a_real_modpack_from_modrinth() {
         let paths = scratch("live-modpack");
-        let api = ModrinthApi::new(reqwest::Client::new(), None);
+        let api = ModrinthApi::new(reqwest::Client::new());
         let context = Context { api: &api, paths: &paths };
 
         let instance = install_modpack(&context, "fabulously-optimized", None, &CancellationToken::new(), |_, _| {})

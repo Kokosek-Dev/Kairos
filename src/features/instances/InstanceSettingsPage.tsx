@@ -51,7 +51,7 @@ export function InstanceSettingsPage() {
       <div className="max-w-3xl space-y-3">
         <p className="text-danger">{errorMessage(t, instance.error)}</p>
         <Button asChild variant="secondary">
-          <Link to="/">{t("instances.back")}</Link>
+          <Link to="/library">{t("instances.back")}</Link>
         </Button>
       </div>
     );
@@ -115,7 +115,7 @@ function SettingsForm({ instance }: { instance: Instance }) {
     mutationFn: () => duplicateInstance(instance.id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: INSTANCES_KEY });
-      navigate("/");
+      navigate("/library");
     },
   });
 
@@ -147,7 +147,7 @@ function SettingsForm({ instance }: { instance: Instance }) {
 
   return (
     <div className="max-w-3xl space-y-5 pb-24">
-      <Link to="/" className="inline-flex items-center gap-2 text-muted transition-colors hover:text-foreground">
+      <Link to="/library" className="inline-flex items-center gap-2 text-muted transition-colors hover:text-foreground">
         <ArrowLeft size={16} />
         {t("instances.back")}
       </Link>
@@ -299,7 +299,7 @@ function SettingsForm({ instance }: { instance: Instance }) {
       <DeleteInstanceDialog
         instance={deleting ? instance : null}
         onClose={() => setDeleting(false)}
-        onDeleted={() => navigate("/")}
+        onDeleted={() => navigate("/library")}
       />
     </div>
   );

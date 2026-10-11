@@ -1,11 +1,7 @@
-import { motion } from "framer-motion";
-import { Compass, Layers, Library, LogIn, Settings, Terminal, type LucideIcon } from "lucide-react";
+﻿import { motion } from "framer-motion";
+import { Compass, Home, Layers, Library, Settings, Terminal, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { NavLink, useNavigate } from "react-router-dom";
-import { AccountAvatar } from "@/features/accounts/AccountAvatar";
-import { useAccounts } from "@/features/accounts/AccountsSection";
-import { useSignInStore } from "@/features/accounts/signInStore";
-import { Button } from "@/components/ui/button";
+import { NavLink } from "react-router-dom";
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { cn } from "@/lib/utils";
 
@@ -16,9 +12,10 @@ interface NavItem {
 }
 
 const ITEMS: NavItem[] = [
-  { to: "/", labelKey: "nav.library", icon: Library },
-  { to: "/versions", labelKey: "nav.versions", icon: Layers },
+  { to: "/", labelKey: "nav.home", icon: Home },
+  { to: "/library", labelKey: "nav.library", icon: Library },
   { to: "/discover", labelKey: "nav.discover", icon: Compass },
+  { to: "/versions", labelKey: "nav.versions", icon: Layers },
   { to: "/settings", labelKey: "nav.settings", icon: Settings },
 ];
 
@@ -40,39 +37,11 @@ function ConsoleButton() {
   );
 }
 
-function AccountChip() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const accounts = useAccounts();
-  const startSignIn = useSignInStore((state) => state.start);
-  const active = accounts.data?.accounts.find((account) => account.id === accounts.data?.activeId);
-
-  if (accounts.isPending) return <div className="skeleton mt-2 h-12 rounded-md" />;
-  if (!active) {
-    return (
-      <Button variant="secondary" className="mt-2 w-full" onClick={() => void startSignIn()}>
-        <LogIn size={16} />
-        {t("accounts.signIn")}
-      </Button>
-    );
-  }
-  return (
-    <button
-      type="button"
-      onClick={() => navigate("/settings")}
-      className="mt-2 flex h-12 items-center gap-3 rounded-md border bg-surface px-3 text-left transition-colors hover:bg-surface-raised"
-    >
-      <AccountAvatar name={active.username} className="size-7 text-xs" />
-      <span className="min-w-0 flex-1 truncate font-medium">{active.username}</span>
-    </button>
-  );
-}
-
 export function Sidebar() {
   const { t } = useTranslation();
 
   return (
-    <nav className="flex w-56 shrink-0 flex-col gap-1 border-r bg-surface/50 p-3">
+    <nav className="flex w-56 shrink-0 flex-col gap-1 border-r bg-surface/40 p-3 backdrop-blur-xl">
       {ITEMS.map(({ to, labelKey, icon: Icon }) => (
         <NavLink
           key={to}
@@ -90,7 +59,7 @@ export function Sidebar() {
               {isActive && (
                 <motion.span
                   layoutId="nav-active"
-                  className="absolute inset-0 rounded-md bg-accent/15 ring-1 ring-accent/40"
+                  className="absolute inset-0 rounded-md bg-accent/15 shadow-[inset_0_0_0_1px_oklch(0.68_0.19_252/0.4)]"
                   transition={{ type: "spring", stiffness: 500, damping: 40 }}
                 />
               )}
@@ -101,7 +70,6 @@ export function Sidebar() {
         </NavLink>
       ))}
       <ConsoleButton />
-      <AccountChip />
     </nav>
   );
 }

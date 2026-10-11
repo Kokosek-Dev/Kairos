@@ -187,6 +187,4 @@ export const exportMrpack = (instanceId: string, destination: string, name: stri
 export const pickMrpackFile = () => invoke<string | null>("pick_mrpack_file");
 export const pickMrpackDestination = (fileName: string) =>
   invoke<string | null>("pick_mrpack_destination", { fileName });
-export const getModrinthContact = () => invoke<string | null>("get_modrinth_contact");
-export const setModrinthContact = (contact: string | null) => invoke<void>("set_modrinth_contact", { contact });
 export const openExternalLink = (url: string) => invoke<void>("open_external_link", { url });

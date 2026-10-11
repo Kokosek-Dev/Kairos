@@ -5,20 +5,12 @@ use reqwest::{Client, Url};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::collections::HashMap;
-use std::sync::RwLock;
 
 const API_BASE: &str = "https://api.modrinth.com/v2";
 const MAX_PAGE_SIZE: u32 = 50;
 
-/// Modrinth asks for a uniquely identifying `User-Agent` with a way to contact the author:
-/// `<owner>/<project>/<version> (<contact>)`.
-fn user_agent(contact: Option<&str>) -> String {
-    let base = concat!("zenith-launcher/zenith/", env!("CARGO_PKG_VERSION"));
-    match contact {
-        Some(contact) if !contact.trim().is_empty() => format!("{base} ({})", contact.trim()),
-        _ => base.to_owned(),
-    }
-}
+/// The content service asks for a uniquely identifying `User-Agent`: `<owner>/<project>/<version>`.
+const USER_AGENT_VALUE: &str = concat!("zenith-launcher/zenith/", env!("CARGO_PKG_VERSION"));
 
 #[derive(Debug, Clone, Default, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -43,7 +35,6 @@ pub struct VersionFilter {
 pub struct ModrinthApi {
     client: Client,
     base: String,
-    user_agent: RwLock<String>,
 }
 
 pub fn build_facets(query: &SearchQuery) -> Vec<Vec<String>> {
@@ -68,20 +59,12 @@ fn json_list(values: &[String]) -> AppResult<String> {
 }
 
 impl ModrinthApi {
-    pub fn new(client: Client, contact: Option<&str>) -> Self {
-        Self::with_base(client, API_BASE, contact)
+    pub fn new(client: Client) -> Self {
+        Self::with_base(client, API_BASE)
     }
 
-    pub fn with_base(client: Client, base: &str, contact: Option<&str>) -> Self {
-        Self {
-            client,
-            base: base.trim_end_matches('/').to_owned(),
-            user_agent: RwLock::new(user_agent(contact)),
-        }
-    }
-
-    pub fn set_contact(&self, contact: Option<&str>) {
-        *self.user_agent.write().unwrap_or_else(std::sync::PoisonError::into_inner) = user_agent(contact);
+    pub fn with_base(client: Client, base: &str) -> Self {
+        Self { client, base: base.trim_end_matches('/').to_owned() }
     }
 
     fn url(&self, path: &str, query: &[(&str, String)]) -> AppResult<Url> {
@@ -92,15 +75,11 @@ impl ModrinthApi {
         Ok(url)
     }
 
-    fn agent(&self) -> String {
-        self.user_agent.read().unwrap_or_else(std::sync::PoisonError::into_inner).clone()
-    }
-
     async fn get<T: DeserializeOwned>(&self, path: &str, query: &[(&str, String)]) -> AppResult<T> {
         let response = self
             .client
             .get(self.url(path, query)?)
-            .header(USER_AGENT, self.agent())
+            .header(USER_AGENT, USER_AGENT_VALUE)
             .send()
             .await?;
         if !response.status().is_success() {
@@ -113,7 +92,7 @@ impl ModrinthApi {
         let response = self
             .client
             .post(self.url(path, &[])?)
-            .header(USER_AGENT, self.agent())
+            .header(USER_AGENT, USER_AGENT_VALUE)
             .json(body)
             .send()
             .await?;
@@ -221,7 +200,7 @@ mod tests {
     use crate::test_support::start;
 
     fn api(mock: &crate::test_support::Mock) -> ModrinthApi {
-        ModrinthApi::with_base(Client::new(), &mock.base, Some("me@example.com"))
+        ModrinthApi::with_base(Client::new(), &mock.base)
     }
 
     #[test]
@@ -241,14 +220,6 @@ mod tests {
             r#"[["project_type:mod"],["versions:1.21.1"],["categories:fabric"],["categories:optimization"]]"#
         );
         assert!(build_facets(&SearchQuery::default()).is_empty());
-    }
-
-    #[test]
-    fn user_agent_identifies_zenith_and_includes_the_contact_when_given() {
-        assert!(user_agent(None).starts_with("zenith-launcher/zenith/"));
-        assert!(!user_agent(None).contains('('));
-        assert!(user_agent(Some(" me@example.com ")).ends_with("(me@example.com)"));
-        assert!(!user_agent(Some("   ")).contains('('));
     }
 
     #[tokio::test]
@@ -273,7 +244,7 @@ mod tests {
         assert!(request.query.contains("index=downloads"));
         assert!(request.query.contains("query=sodium"));
         assert!(request.query.contains("project_type%3Amod"));
-        assert!(request.user_agent.unwrap().ends_with("(me@example.com)"));
+        assert_eq!(request.user_agent.as_deref(), Some(USER_AGENT_VALUE));
     }
 
     #[tokio::test]

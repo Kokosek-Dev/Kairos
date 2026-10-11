@@ -98,7 +98,7 @@ export function ContentPage() {
   const instance = useInstance(id);
   const items = useQuery({ queryKey: contentKey(id), queryFn: () => listContent(id) });
   const [updates, setUpdates] = useState<UpdateInfo[] | null>(null);
-  const { jobs, update, dismiss } = useJobsStore();
+  const { jobs, update } = useJobsStore();
   const updateJob = jobs[`update:${id}`];
 
   const check = useMutation({ mutationFn: () => checkContentUpdates(id), onSuccess: setUpdates });
@@ -141,7 +141,7 @@ export function ContentPage() {
           ) : (
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="font-medium">{t("content.updatesAvailable", { count: updates.length })}</p>
-              <Button size="sm" disabled={updateJob?.progress !== undefined} onClick={() => void updateAll()}>
+              <Button size="sm" disabled={updateJob !== undefined} onClick={() => void updateAll()}>
                 <ArrowUpCircle size={14} />
                 {t("content.updateAll")}
               </Button>
@@ -149,16 +149,6 @@ export function ContentPage() {
           )}
         </div>
       )}
-      {updateJob?.message && (
-        <button
-          type="button"
-          onClick={() => dismiss(`update:${id}`)}
-          className={cn("text-left text-sm", updateJob.message.kind === "success" ? "text-success" : "text-danger")}
-        >
-          {updateJob.message.text}
-        </button>
-      )}
-
       {items.isPending && Array.from({ length: 4 }, (_, index) => <div key={index} className="skeleton h-[60px] rounded-lg" />)}
       {items.isError && <p className="text-danger">{errorMessage(t, items.error)}</p>}
       {items.data?.length === 0 && (

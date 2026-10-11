@@ -1,6 +1,8 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Minus, Square, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Logo } from "@/components/Logo";
+import { AccountMenu } from "@/features/accounts/AccountMenu";
 import { cn } from "@/lib/utils";
 
 const appWindow = getCurrentWindow();
@@ -33,13 +35,12 @@ export function TitleBar() {
   const { t } = useTranslation();
 
   return (
-    <header className="flex h-10 shrink-0 items-center border-b bg-background">
+    <header className="flex h-11 shrink-0 items-center border-b bg-background/60 backdrop-blur-xl">
       <div data-tauri-drag-region className="flex h-full flex-1 items-center gap-2 px-4">
-        <span className="pointer-events-none size-2.5 rounded-full bg-accent shadow-glow" />
-        <span className="pointer-events-none text-xs font-semibold tracking-[0.2em] text-muted">
-          ZENITH
-        </span>
+        <Logo className="pointer-events-none size-5" />
+        <span className="pointer-events-none text-xs font-semibold tracking-[0.25em] text-foreground/80">ZENITH</span>
       </div>
+      <AccountMenu />
       <Control label={t("window.minimize")} onClick={() => void appWindow.minimize()}>
         <Minus size={16} />
       </Control>

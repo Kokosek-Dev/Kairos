@@ -1,6 +1,5 @@
 import { Check, ExternalLink, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
@@ -36,7 +35,6 @@ function Steps({ current }: { current: SignInStep }) {
 
 function Body({ phase, onClose }: { phase: SignInPhase; onClose: () => void }) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const retry = useSignInStore((state) => state.start);
 
   switch (phase.kind) {
@@ -84,17 +82,6 @@ function Body({ phase, onClose }: { phase: SignInPhase; onClose: () => void }) {
         <div className="mt-5">
           <p className="text-danger">{errorMessage(t, phase.error)}</p>
           <div className="mt-5 flex flex-wrap justify-end gap-2">
-            {code === "auth_not_configured" && (
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  onClose();
-                  navigate("/settings");
-                }}
-              >
-                {t("signIn.openSettings")}
-              </Button>
-            )}
             {code === "auth_app_not_approved" && (
               <Button variant="secondary" onClick={() => void openLoginPage(APPROVAL_FORM_URL)}>
                 <ExternalLink size={14} />

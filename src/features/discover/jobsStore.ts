@@ -1,8 +1,9 @@
+﻿import { toast } from "sonner";
 import { create } from "zustand";
-import { queryClient } from "@/lib/queryClient";
 import { INSTANCES_KEY } from "@/features/instances/useInstances";
-import { cancelInstall } from "@/lib/tauri/versions";
+import { queryClient } from "@/lib/queryClient";
 import { errorMessage, isLauncherError } from "@/lib/tauri/errors";
+import type { Instance } from "@/lib/tauri/instances";
 import {
   importMrpack,
   installContent,
@@ -10,26 +11,22 @@ import {
   updateContent,
   type InstallReport,
 } from "@/lib/tauri/modrinth";
-import type { InstallProgress } from "@/lib/tauri/versions";
-import type { Instance } from "@/lib/tauri/instances";
+import { cancelInstall, type InstallProgress } from "@/lib/tauri/versions";
 import type { TFunction } from "i18next";
 
 export const contentKey = (instanceId: string) => ["content", instanceId];
 
-export interface JobState {
-  progress?: InstallProgress;
-  message?: { kind: "success" | "error"; text: string };
-}
-
 interface JobsState {
-  jobs: Record<string, JobState>;
+  /** Progress of the jobs that are running right now, by job key. */
+  jobs: Record<string, InstallProgress>;
   install: (t: TFunction, instanceId: string, projectId: string, versionId?: string) => Promise<void>;
   installModpack: (t: TFunction, projectId: string) => Promise<Instance | null>;
   importPack: (t: TFunction, path: string) => Promise<Instance | null>;
   update: (t: TFunction, instanceId: string, updates: { projectId: string; versionId: string }[]) => Promise<void>;
   cancel: (key: string) => Promise<void>;
-  dismiss: (key: string) => void;
 }
+
+const STARTING: InstallProgress = { stage: "resolving", doneFiles: 0, totalFiles: 0, doneBytes: 0, totalBytes: 0 };
 
 function describe(t: TFunction, report: InstallReport): string {
   const dependencies = report.installed.filter((entry) => entry.dependency).length;
@@ -41,31 +38,35 @@ function describe(t: TFunction, report: InstallReport): string {
     : base;
 }
 
-export const useJobsStore = create<JobsState>((set, get) => {
-  const patch = (key: string, state: JobState | null) =>
+/** The backend registers cancellable jobs under these keys. */
+function cancelKey(key: string): string {
+  if (key.startsWith("update:")) return `modrinth-update:${key.slice("update:".length)}`;
+  return key === "mrpack-import" ? key : `modrinth:${key}`;
+}
+
+export const useJobsStore = create<JobsState>((set) => {
+  const setProgress = (key: string, progress: InstallProgress | null) =>
     set((current) => {
       const { [key]: _removed, ...rest } = current.jobs;
-      return { jobs: state ? { ...rest, [key]: state } : rest };
+      return { jobs: progress ? { ...rest, [key]: progress } : rest };
     });
 
   const run = async <T>(
     key: string,
     t: TFunction,
     work: (onProgress: (progress: InstallProgress) => void) => Promise<T>,
-    onSuccess: (result: T) => JobState["message"],
+    success: (result: T) => string,
   ): Promise<T | null> => {
-    patch(key, { progress: { stage: "resolving", doneFiles: 0, totalFiles: 0, doneBytes: 0, totalBytes: 0 } });
+    setProgress(key, STARTING);
     try {
-      const result = await work((progress) => patch(key, { progress }));
-      patch(key, { message: onSuccess(result) });
+      const result = await work((progress) => setProgress(key, progress));
+      toast.success(success(result));
       return result;
     } catch (error) {
-      if (isLauncherError(error) && error.code === "cancelled") {
-        patch(key, null);
-      } else {
-        patch(key, { message: { kind: "error", text: errorMessage(t, error) } });
-      }
+      if (!(isLauncherError(error) && error.code === "cancelled")) toast.error(errorMessage(t, error));
       return null;
+    } finally {
+      setProgress(key, null);
     }
   };
 
@@ -77,7 +78,7 @@ export const useJobsStore = create<JobsState>((set, get) => {
         projectId,
         t,
         (onProgress) => installContent(instanceId, projectId, versionId ?? null, onProgress),
-        (report) => ({ kind: "success", text: describe(t, report) }),
+        (report) => describe(t, report),
       );
       await queryClient.invalidateQueries({ queryKey: contentKey(instanceId) });
     },
@@ -87,7 +88,7 @@ export const useJobsStore = create<JobsState>((set, get) => {
         projectId,
         t,
         (onProgress) => installModpack(projectId, null, onProgress),
-        (created) => ({ kind: "success", text: t("content.modpackInstalled", { name: created.name }) }),
+        (created) => t("content.modpackInstalled", { name: created.name }),
       );
       await queryClient.invalidateQueries({ queryKey: INSTANCES_KEY });
       return instance;
@@ -98,7 +99,7 @@ export const useJobsStore = create<JobsState>((set, get) => {
         "mrpack-import",
         t,
         (onProgress) => importMrpack(path, onProgress),
-        (created) => ({ kind: "success", text: t("content.modpackInstalled", { name: created.name }) }),
+        (created) => t("content.modpackInstalled", { name: created.name }),
       );
       await queryClient.invalidateQueries({ queryKey: INSTANCES_KEY });
       return instance;
@@ -109,16 +110,11 @@ export const useJobsStore = create<JobsState>((set, get) => {
         `update:${instanceId}`,
         t,
         (onProgress) => updateContent(instanceId, updates, onProgress),
-        () => ({ kind: "success", text: t("content.updated", { count: updates.length }) }),
+        () => t("content.updated", { count: updates.length }),
       );
       await queryClient.invalidateQueries({ queryKey: contentKey(instanceId) });
     },
 
-    cancel: async (key) => {
-      const target = key.startsWith("update:") ? `modrinth-update:${key.slice(7)}` : key === "mrpack-import" ? key : `modrinth:${key}`;
-      await cancelInstall(target);
-    },
-
-    dismiss: (key) => get().jobs[key] && patch(key, null),
+    cancel: (key) => cancelInstall(cancelKey(key)),
   };
 });

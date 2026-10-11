@@ -1,5 +1,6 @@
 use crate::auth::AuthService;
 use crate::modrinth::api::ModrinthApi;
+use crate::skins::api::SkinsApi;
 use crate::error::{AppError, AppResult};
 use crate::paths::DataPaths;
 use reqwest::Client;
@@ -52,18 +53,20 @@ pub struct AppState {
     pub paths: DataPaths,
     pub auth: AuthService,
     pub modrinth: ModrinthApi,
+    pub skins: SkinsApi,
     pub runs: RunRegistry,
     sign_in: Mutex<Option<CancellationToken>>,
     installs: Mutex<HashMap<String, CancellationToken>>,
 }
 
 impl AppState {
-    pub fn new(client: Client, paths: DataPaths, auth: AuthService, modrinth: ModrinthApi) -> Self {
+    pub fn new(client: Client, paths: DataPaths, auth: AuthService, modrinth: ModrinthApi, skins: SkinsApi) -> Self {
         Self {
             client,
             paths,
             auth,
             modrinth,
+            skins,
             sign_in: Mutex::default(),
             runs: RunRegistry::default(),
             installs: Mutex::default(),

@@ -1,4 +1,4 @@
-﻿use super::blocking;
+use super::blocking;
 use crate::error::{AppError, AppResult};
 use crate::install::{InstallProgress, InstallStage};
 use crate::instances::model::Instance;
@@ -8,7 +8,6 @@ use crate::modrinth::content::{self, ContentItem, ContentKind};
 use crate::modrinth::install::{self, Context, InstallReport, UpdateInfo};
 use crate::modrinth::mrpack::{self, ExportOptions};
 use crate::modrinth::types::{Category, Project, SearchResults, TeamMember, Version};
-use crate::settings;
 use crate::state::AppState;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -241,19 +240,4 @@ pub async fn pick_mrpack_destination(app: AppHandle, file_name: String) -> AppRe
             .map_err(|error| AppError::Internal(error.to_string()))
     })
     .await
-}
-
-#[tauri::command]
-pub async fn get_modrinth_contact(state: State<'_, AppState>) -> AppResult<Option<String>> {
-    let paths = state.paths.clone();
-    blocking(move || settings::modrinth_contact(&paths)).await
-}
-
-#[tauri::command]
-pub async fn set_modrinth_contact(state: State<'_, AppState>, contact: Option<String>) -> AppResult<()> {
-    let paths = state.paths.clone();
-    let saved = contact.clone();
-    blocking(move || settings::set_modrinth_contact(&paths, saved)).await?;
-    state.modrinth.set_contact(contact.as_deref());
-    Ok(())
 }

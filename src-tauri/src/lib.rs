@@ -1,3 +1,4 @@
+mod app_id;
 mod auth;
 mod commands;
 mod download;
@@ -11,7 +12,7 @@ mod loaders;
 mod modrinth;
 mod mojang;
 mod paths;
-mod settings;
+mod skins;
 mod state;
 mod tasks;
 #[cfg(test)]
@@ -21,6 +22,7 @@ use auth::endpoints::Endpoints;
 use auth::store::{AccountStore, KeyringStore};
 use auth::AuthService;
 use modrinth::api::ModrinthApi;
+use skins::api::SkinsApi;
 use paths::DataPaths;
 use std::sync::Arc;
 use state::AppState;
@@ -35,9 +37,9 @@ pub fn run() {
             let client = http::build_client()?;
             let accounts = AccountStore::new(paths.accounts_file(), Arc::new(KeyringStore));
             let auth = AuthService::new(client.clone(), Endpoints::default(), accounts);
-            let contact = settings::modrinth_contact(&paths).ok().flatten();
-            let modrinth = ModrinthApi::new(client.clone(), contact.as_deref());
-            app.manage(AppState::new(client, paths, auth, modrinth));
+            let modrinth = ModrinthApi::new(client.clone());
+            let skins = SkinsApi::new(client.clone());
+            app.manage(AppState::new(client, paths, auth, modrinth, skins));
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -74,15 +76,21 @@ pub fn run() {
             commands::export_mrpack,
             commands::pick_mrpack_file,
             commands::pick_mrpack_destination,
-            commands::get_modrinth_contact,
-            commands::set_modrinth_contact,
+            commands::get_profile,
+            commands::list_skins,
+            commands::add_skin_from_file,
+            commands::add_skin_from_player,
+            commands::save_current_skin,
+            commands::remove_skin,
+            commands::apply_skin,
+            commands::reset_skin,
+            commands::set_cape,
+            commands::pick_skin_file,
             commands::get_accounts,
             commands::sign_in,
             commands::cancel_sign_in,
             commands::set_active_account,
             commands::remove_account,
-            commands::get_auth_config,
-            commands::set_ms_client_id,
             commands::open_login_page,
             commands::open_external_link,
         ])

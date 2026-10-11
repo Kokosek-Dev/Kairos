@@ -83,6 +83,8 @@ pub enum AppError {
     NoCompatibleVersion(String),
     #[error("the modpack is invalid: {0}")]
     InvalidModpack(String),
+    #[error("skin not found")]
+    SkinNotFound,
     #[error("operation cancelled")]
     Cancelled,
     #[error("{0}")]
@@ -106,6 +108,7 @@ impl AppError {
             Self::InstanceRunning => "instance_running",
             Self::NoCompatibleVersion(_) => "no_compatible_version",
             Self::InvalidModpack(_) => "invalid_modpack",
+            Self::SkinNotFound => "skin_not_found",
             Self::Cancelled => "cancelled",
             Self::Internal(_) => "internal",
         }

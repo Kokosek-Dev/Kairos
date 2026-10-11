@@ -34,35 +34,23 @@ export function InstallControl({ hit, instance }: ProjectCardProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const job = useJobsStore((state) => state.jobs[hit.projectId]);
-  const { install, installModpack, cancel, dismiss } = useJobsStore();
+  const { install, installModpack, cancel } = useJobsStore();
   const blocker = installBlocker(hit.projectType, instance);
 
-  if (job?.progress) {
-    const percent = job.progress.totalBytes > 0 ? (job.progress.doneBytes / job.progress.totalBytes) * 100 : 0;
+  if (job) {
+    const percent = job.totalBytes > 0 ? (job.doneBytes / job.totalBytes) * 100 : 0;
     return (
       <div className="w-44">
         <div className="h-1.5 overflow-hidden rounded-full bg-surface-raised">
           <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${Math.max(percent, 4)}%` }} />
         </div>
         <div className="mt-1.5 flex items-center justify-between text-xs text-muted">
-          <span>{job.progress.totalBytes > 0 ? formatBytes(job.progress.doneBytes) : t("versions.resolving")}</span>
+          <span>{job.totalBytes > 0 ? formatBytes(job.doneBytes) : t("versions.resolving")}</span>
           <button type="button" onClick={() => void cancel(hit.projectId)} aria-label={t("versions.cancel")}>
             <X size={14} />
           </button>
         </div>
       </div>
-    );
-  }
-
-  if (job?.message) {
-    return (
-      <button
-        type="button"
-        onClick={() => dismiss(hit.projectId)}
-        className={`max-w-56 text-left text-xs ${job.message.kind === "success" ? "text-success" : "text-danger"}`}
-      >
-        {job.message.text}
-      </button>
     );
   }
 

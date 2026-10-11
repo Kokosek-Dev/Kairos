@@ -1,9 +1,12 @@
+import { toast } from "sonner";
 import { create } from "zustand";
+import i18n from "@/i18n";
 import { isLauncherError } from "@/lib/tauri/errors";
 import { queryClient } from "@/lib/queryClient";
 import { cancelSignIn, signIn, type SignInEvent, type SignInStep } from "@/lib/tauri/auth";
 
 export const ACCOUNTS_KEY = ["accounts"];
+const CLOSE_DELAY_MS = 1200;
 
 export type SignInPhase =
   | { kind: "idle" }
@@ -39,6 +42,8 @@ export const useSignInStore = create<SignInState>((set, get) => {
         const account = await signIn(handle);
         set({ phase: { kind: "done", username: account.username } });
         await queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
+        toast.success(i18n.t("signIn.done", { name: account.username }));
+        setTimeout(() => get().phase.kind === "done" && get().close(), CLOSE_DELAY_MS);
       } catch (error) {
         if (isLauncherError(error) && error.code === "cancelled") {
           set({ open: false, phase: { kind: "idle" } });

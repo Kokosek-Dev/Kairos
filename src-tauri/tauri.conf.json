@@ -1,32 +1,58 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Zenith",
-  "version": "0.1.0",
-  "identifier": "dev.zenith.launcher",
-  "build": {
-    "beforeDevCommand": "npm run dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "npm run build",
-    "frontendDist": "../dist"
-  },
-  "app": {
-    "windows": [
-      {
-        "label": "main",
-        "title": "Zenith",
-        "width": 1180,
-        "height": 740,
-        "minWidth": 900,
-        "minHeight": 600,
-        "decorations": false,
-        "center": true
-      }
-    ],
-    "security": { "csp": null }
-  },
-  "bundle": {
-    "active": true,
-    "targets": "all",
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"]
-  }
+    "$schema":  "https://schema.tauri.app/config/2",
+    "productName":  "Zenith",
+    "version":  "0.1.0",
+    "identifier":  "dev.zenith.launcher",
+    "build":  {
+                  "beforeDevCommand":  "npm run dev",
+                  "devUrl":  "http://localhost:1420",
+                  "beforeBuildCommand":  "npm run build",
+                  "frontendDist":  "../dist"
+              },
+    "app":  {
+                "windows":  [
+                                {
+                                    "label":  "main",
+                                    "title":  "Zenith",
+                                    "width":  1180,
+                                    "height":  740,
+                                    "minWidth":  900,
+                                    "minHeight":  600,
+                                    "decorations":  false,
+                                    "center":  true
+                                }
+                            ],
+                "security":  {
+                                 "csp":  null
+                             }
+            },
+    "bundle":  {
+                   "active":  true,
+                   "icon":  [
+                                "icons/32x32.png",
+                                "icons/128x128.png",
+                                "icons/128x128@2x.png",
+                                "icons/icon.icns",
+                                "icons/icon.ico"
+                            ],
+                   "targets":  [
+                                   "nsis"
+                               ],
+                   "publisher":  "Zenith",
+                   "copyright":  "Copyright (c) 2026 Zenith contributors. MIT License.",
+                   "category":  "Game",
+                   "shortDescription":  "An independent launcher for Minecraft: Java Edition",
+                   "longDescription":  "Zenith is an independent, community-made launcher for Minecraft: Java Edition. It is not affiliated with Mojang or Microsoft.",
+                   "licenseFile":  "../LICENSE",
+                   "windows":  {
+                                   "nsis":  {
+                                                "languages":  [
+                                                                  "English",
+                                                                  "Polish"
+                                                              ],
+                                                "displayLanguageSelector":  true,
+                                                "installMode":  "currentUser"
+                                            }
+                               }
+               }
 }

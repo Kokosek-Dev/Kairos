@@ -17,9 +17,8 @@ export function LibraryPage() {
   const instances = useInstances();
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState<Instance | null>(null);
-  const { jobs, importPack: runImport, dismiss } = useJobsStore();
-  const importJob = jobs["mrpack-import"];
-  const importing = importJob?.progress !== undefined;
+  const { jobs, importPack: runImport } = useJobsStore();
+  const importing = jobs["mrpack-import"] !== undefined;
 
   const importPack = async () => {
     const path = await pickMrpackFile();
@@ -42,17 +41,7 @@ export function LibraryPage() {
         </div>
       </div>
 
-      {importJob?.progress && <p className="mb-4 text-sm text-muted">{t("content.importing")}</p>}
-      {importJob?.message && (
-        <button
-          type="button"
-          onClick={() => dismiss("mrpack-import")}
-          className={`mb-4 block text-left text-sm ${importJob.message.kind === "success" ? "text-success" : "text-danger"}`}
-        >
-          {importJob.message.text}
-        </button>
-      )}
-
+      {importing && <p className="mb-4 text-sm text-muted">{t("content.importing")}</p>}
       {instances.isPending && (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-4">
           {Array.from({ length: 3 }, (_, index) => (

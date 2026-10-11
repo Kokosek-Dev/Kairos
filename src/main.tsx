@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { App } from "@/app/App";
 import { queryClient } from "@/lib/queryClient";
+import "@fontsource-variable/inter";
 import "@/i18n";
 import "@/styles/index.css";
 

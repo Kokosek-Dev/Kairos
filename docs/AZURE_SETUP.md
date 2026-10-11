@@ -38,16 +38,20 @@ Nowe aplikacje Azure nie mają domyślnie dostępu do `api.minecraftservices.com
 - Starsze aplikacje (utworzone przed wprowadzeniem tego wymogu) działają bez zgody.
 - Nie potrafię wskazać oficjalnego czasu rozpatrzenia ani kryteriów: formularz renderuje się w JavaScript i nie dało się go odczytać automatycznie. Źródła społecznościowe wspominają też o rejestracji w programie deweloperskim Xbox, ale to niepotwierdzone. Zapytaj w formularzu lub na stronie pomocy Microsoft.
 
-## 5. Podaj identyfikator w Zenith
+## 5. Wbuduj identyfikator w launcher
 
-Do wyboru (w tej kolejności pierwszeństwa):
+Identyfikator wpisujesz **raz, jako twórca launchera**. Gracze go nie widzą i nie muszą nic konfigurować: klikają „Zaloguj się", otwiera się strona Microsoft, a po zalogowaniu wracają do launchera.
 
-1. Zmienna środowiskowa `ZENITH_MS_CLIENT_ID` (w czasie działania).
-2. **Ustawienia → Konta → Identyfikator aplikacji Microsoft** (zapis w `settings.json`).
-3. Zmienna `ZENITH_MS_CLIENT_ID` ustawiona podczas budowania (wbudowana w plik wykonywalny).
+Wklej Application (client) ID do pliku `src-tauri/.cargo/config.toml`:
 
-Wydając własny launcher, wbuduj swój zatwierdzony identyfikator (opcja 3). Każdy wydawca potrzebuje własnej, zatwierdzonej aplikacji.
+```toml
+[env]
+ZENITH_MS_CLIENT_ID = { value = "00000000-0000-0000-0000-000000000000", force = false }
+```
 
+i zbuduj launcher (`npm run tauri dev` albo `npm run tauri build`). Identyfikator klienta nie jest sekretem, więc plik można commitować. Do szybkich testów można też ustawić zmienną środowiskową `ZENITH_MS_CLIENT_ID` przy uruchamianiu, ma ona pierwszeństwo.
+
+Każdy, kto wydaje własny launcher, potrzebuje własnej, zatwierdzonej aplikacji.
 ## Przechowywanie danych
 
 - Zapisywany jest wyłącznie **refresh token**, w systemowym magazynie poświadczeń (Windows Credential Manager, macOS Keychain, Secret Service na Linuksie). Metadane kont (nazwa, UUID) są w `accounts.json` bez żadnych tokenów.

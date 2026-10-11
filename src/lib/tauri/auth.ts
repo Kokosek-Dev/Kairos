@@ -11,11 +11,6 @@ export interface Accounts {
   accounts: Account[];
 }
 
-export interface AuthConfig {
-  clientId: string | null;
-  configured: boolean;
-}
-
 export type SignInStep = "xbox" | "xsts" | "minecraft" | "profile";
 
 export type SignInEvent =
@@ -35,6 +30,4 @@ export function signIn(onEvent: (event: SignInEvent) => void): Promise<Account> 
 export const cancelSignIn = () => invoke<void>("cancel_sign_in");
 export const setActiveAccount = (accountId: string) => invoke<void>("set_active_account", { accountId });
 export const removeAccount = (accountId: string) => invoke<void>("remove_account", { accountId });
-export const getAuthConfig = () => invoke<AuthConfig>("get_auth_config");
-export const setMsClientId = (clientId: string | null) => invoke<void>("set_ms_client_id", { clientId });
 export const openLoginPage = (url: string) => invoke<void>("open_login_page", { url });
