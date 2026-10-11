@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { HeroCube } from "@/components/HeroCube";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { useSignInStore } from "@/features/accounts/signInStore";
@@ -26,16 +27,18 @@ function SignedOutHero() {
   const { t } = useTranslation();
   const startSignIn = useSignInStore((state) => state.start);
   return (
-    <section className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-accent/20 via-surface to-surface p-10">
+    <section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-accent/25 via-surface to-accent-2/15 p-10">
+      <div className="grid-pattern pointer-events-none absolute inset-0" />
+      <HeroCube size={130} className="absolute right-16 top-1/2 hidden -translate-y-1/2 md:block" />
       <div className="animate-drift pointer-events-none absolute -right-16 -top-16 size-72 rounded-full bg-accent/25 blur-3xl" />
       <div className="animate-drift pointer-events-none absolute -bottom-24 left-1/3 size-56 rounded-full bg-accent-strong/20 blur-3xl [animation-delay:-7s]" />
-      <h1 className="text-3xl font-bold tracking-tight">{t("home.welcome")}</h1>
-      <p className="mt-2 max-w-md text-muted">{t("home.signInHint")}</p>
-      <Button size="lg" className="mt-6" onClick={() => void startSignIn()}>
+      <h1 className="text-gradient relative text-4xl font-extrabold tracking-tight">{t("home.welcome")}</h1>
+      <p className="relative mt-2 max-w-md text-muted">{t("home.signInHint")}</p>
+      <Button size="lg" className="relative mt-6" onClick={() => void startSignIn()}>
         <LogIn size={18} />
         {t("home.signInButton")}
       </Button>
-      <ul className="mt-8 flex flex-wrap gap-3 text-sm text-muted">
+      <ul className="relative mt-8 flex flex-wrap gap-3 text-sm text-muted">
         {[
           [Shirt, t("home.perks.skins")],
           [Boxes, t("home.perks.instances")],
@@ -86,7 +89,8 @@ function SkinHero() {
   const activeCape = data?.capes.find((entry) => entry.active) ?? null;
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-accent/15 via-surface to-surface">
+    <section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-accent/20 via-surface to-accent-2/15">
+      <div className="grid-pattern pointer-events-none absolute inset-0" />
       <div className="animate-drift pointer-events-none absolute -left-10 bottom-0 size-72 rounded-full bg-accent/20 blur-3xl" />
       <div className="animate-drift pointer-events-none absolute -right-10 -top-10 size-60 rounded-full bg-accent-strong/20 blur-3xl [animation-delay:-5s]" />
       <div className="relative flex flex-wrap items-center gap-8 p-6">
@@ -106,7 +110,7 @@ function SkinHero() {
 
         <div className="min-w-64 flex-1">
           <p className="text-sm text-muted">{t("home.welcomeBack")}</p>
-          <h1 className="text-3xl font-bold tracking-tight">{data?.name ?? active?.username}</h1>
+          <h1 className="text-gradient text-4xl font-extrabold tracking-tight">{data?.name ?? active?.username}</h1>
           {data && (
             <p className="mt-1 text-xs text-muted">
               {t(`skins.variant.${data.variant}`)} · {activeCape ? activeCape.alias : t("skins.noCape")}

@@ -14,6 +14,7 @@ import {
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { formatRelative } from "@/lib/format";
 import { duplicateInstance, openInstanceFolder, type Instance } from "@/lib/tauri/instances";
+import { loaderChipStyle } from "@/lib/loaderColors";
 import { cn } from "@/lib/utils";
 import { InstanceIcon } from "./InstanceIcon";
 import { PlayButton } from "./PlayButton";
@@ -31,13 +32,11 @@ function bannerFor(instance: Instance): string {
   return `linear-gradient(180deg, oklch(0.5 0.17 ${hue} / 0.5), transparent)`;
 }
 
-function Chip({ children, highlight }: { children: React.ReactNode; highlight?: boolean }) {
+function Chip({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <span
-      className={cn(
-        "rounded-full px-2 py-0.5 text-[11px] font-medium",
-        highlight ? "bg-accent/15 text-accent" : "bg-surface-raised text-muted",
-      )}
+      className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", !style && "bg-surface-raised text-muted")}
+      style={style}
     >
       {children}
     </span>
@@ -82,7 +81,7 @@ export function InstanceCard({ instance, index = 0, onDelete }: InstanceCardProp
             <h3 className="truncate text-base font-semibold">{instance.name}</h3>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               <Chip>{instance.gameVersion}</Chip>
-              <Chip highlight={instance.loader !== "vanilla"}>
+              <Chip style={loaderChipStyle(instance.loader)}>
                 {t(`instances.loader.${instance.loader}`)}
                 {instance.loaderVersion ? ` ${instance.loaderVersion}` : ""}
               </Chip>

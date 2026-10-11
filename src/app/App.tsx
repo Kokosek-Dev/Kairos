@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Toaster } from "sonner";
+import { Aurora } from "@/components/Aurora";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TitleBar } from "@/components/shell/TitleBar";
@@ -20,7 +21,9 @@ export function App() {
   const location = useLocation();
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative h-full">
+      <Aurora />
+      <div className="relative z-10 flex h-full flex-col">
       <TitleBar />
       <div className="flex min-h-0 flex-1">
         <Sidebar />
@@ -48,6 +51,7 @@ export function App() {
         </main>
       </div>
       <ConsoleDrawer />
+      </div>
       <SignInDialog />
       <OfflinePlayDialog />
       <Toaster position="bottom-right" theme="dark" toastOptions={{ style: { background: "var(--surface-raised)", color: "var(--foreground)", border: "1px solid var(--border)" } }} />

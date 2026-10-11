@@ -12,14 +12,16 @@ interface NavItem {
   to: string;
   labelKey: string;
   icon: LucideIcon;
+  /** Hue offset from the accent, so every section has its own color. */
+  shift: number;
 }
 
 const ITEMS: NavItem[] = [
-  { to: "/", labelKey: "nav.home", icon: Home },
-  { to: "/library", labelKey: "nav.library", icon: Library },
-  { to: "/discover", labelKey: "nav.discover", icon: Compass },
-  { to: "/versions", labelKey: "nav.versions", icon: Layers },
-  { to: "/settings", labelKey: "nav.settings", icon: Settings },
+  { to: "/", labelKey: "nav.home", icon: Home, shift: 0 },
+  { to: "/library", labelKey: "nav.library", icon: Library, shift: 50 },
+  { to: "/discover", labelKey: "nav.discover", icon: Compass, shift: 110 },
+  { to: "/versions", labelKey: "nav.versions", icon: Layers, shift: 170 },
+  { to: "/settings", labelKey: "nav.settings", icon: Settings, shift: 230 },
 ];
 
 function ConsoleButton() {
@@ -55,11 +57,12 @@ export function Sidebar() {
 
   return (
     <nav className="flex w-56 shrink-0 flex-col gap-1 border-r bg-surface/40 p-3 backdrop-blur-xl">
-      {ITEMS.map(({ to, labelKey, icon: Icon }) => (
+      {ITEMS.map(({ to, labelKey, icon: Icon, shift }) => (
         <NavLink
           key={to}
           to={to}
           end={to === "/"}
+          style={{ ["--item" as string]: `oklch(0.78 0.15 calc(var(--accent-hue) + ${shift}))` }}
           className={({ isActive }) =>
             cn(
               "relative flex h-10 items-center gap-3 rounded-md px-3 font-medium text-muted transition-colors hover:text-foreground",
@@ -72,11 +75,11 @@ export function Sidebar() {
               {isActive && (
                 <motion.span
                   layoutId="nav-active"
-                  className="absolute inset-0 rounded-md bg-accent/15 shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--accent)_40%,transparent)]"
+                  className="absolute inset-0 rounded-md shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--item)_45%,transparent)]" style={{ background: "color-mix(in oklch, var(--item) 14%, transparent)" }}
                   transition={{ type: "spring", stiffness: 500, damping: 40 }}
                 />
               )}
-              <Icon size={18} className={cn("relative", isActive && "text-accent")} />
+              <Icon size={18} className="relative" style={{ color: "var(--item)", opacity: isActive ? 1 : 0.75 }} />
               <span className="relative">{t(labelKey)}</span>
             </>
           )}

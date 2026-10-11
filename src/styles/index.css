@@ -13,6 +13,8 @@
   --accent-hue: 252;
   --accent: oklch(0.68 0.19 var(--accent-hue));
   --accent-strong: oklch(0.6 0.21 calc(var(--accent-hue) + 6));
+  --hue-2: calc(var(--accent-hue) + 46);
+  --accent-2: oklch(0.74 0.17 var(--hue-2));
   --accent-foreground: oklch(0.99 0.005 250);
   --danger: oklch(0.65 0.22 25);
   --success: oklch(0.75 0.17 155);
@@ -27,6 +29,7 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
+  --color-accent-2: var(--accent-2);
   --color-accent-foreground: var(--accent-foreground);
   --color-danger: var(--danger);
   --color-success: var(--success);
@@ -132,4 +135,80 @@
 
 @utility animate-drift {
   animation: drift 14s ease-in-out infinite;
+}
+
+@utility text-gradient {
+  background: linear-gradient(95deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility bg-brand {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+}
+
+@utility grid-pattern {
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 0.045) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(ellipse at 70% 40%, black, transparent 70%);
+}
+
+@keyframes aurora-a {
+  0%,
+  100% {
+    transform: translate3d(-8%, -6%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(10%, 8%, 0) scale(1.15);
+  }
+}
+
+@keyframes aurora-b {
+  0%,
+  100% {
+    transform: translate3d(8%, 6%, 0) scale(1.1);
+  }
+  50% {
+    transform: translate3d(-10%, -8%, 0) scale(0.95);
+  }
+}
+
+@keyframes cube-spin {
+  from {
+    transform: rotateX(-24deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(-24deg) rotateY(360deg);
+  }
+}
+
+@keyframes cube-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@utility animate-aurora-a {
+  animation: aurora-a 22s ease-in-out infinite;
+}
+
+@utility animate-aurora-b {
+  animation: aurora-b 28s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
