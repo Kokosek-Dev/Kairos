@@ -16,11 +16,14 @@ import { errorMessage } from "@/lib/tauri/errors";
 import { applySkin, listSkins, saveSkinPng, type SavedSkin, type SkinVariant } from "@/lib/tauri/skins";
 import { SKINS_KEY, useActiveAccount, useSetProfile } from "../useProfile";
 import { drawSkinImage, faceRects, loadImage, partLabels } from "./layout";
-import { ModelPane } from "./ModelPane";
+import { ModelPane, type Layer } from "./ModelPane";
 import { SkinDocument } from "./SkinDocument";
 
 const BLANK = "blank";
 const VIEW_SIZE = 768;
+const SMALL_VIEW_SIZE = 256;
+
+type Mode = "texture" | "model";
 
 function drawLabel(ctx: CanvasRenderingContext2D, text: string, centerX: number, centerY: number, fontSize: number) {
   const [first, ...rest] = text.split(" ");
@@ -47,6 +50,8 @@ export function SkinEditorPage() {
   const brush = useBrush(doc);
   const skins = useQuery({ queryKey: SKINS_KEY, queryFn: listSkins });
 
+  const [mode, setMode] = useState<Mode>("texture");
+  const [layer, setLayer] = useState<Layer>("base");
   const [showOverlay, setShowOverlay] = useState(true);
   const [showLabels, setShowLabels] = useState(true);
   const [variant, setVariant] = useState<SkinVariant>(doc.variant);
@@ -123,25 +128,59 @@ export function SkinEditorPage() {
         </Button>
       </div>
 
+      <div className="mb-4 max-w-sm">
+        <Segmented
+          value={mode}
+          onChange={setMode}
+          options={[
+            { value: "texture", label: t("editor.modeTexture") },
+            { value: "model", label: t("editor.modeModel") },
+          ]}
+        />
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-[14rem_minmax(0,1fr)_minmax(0,19rem)]">
-        <aside className="panel p-4">
+        <aside className="panel space-y-5 p-4">
           <BrushPanel doc={doc} brush={brush} />
+          {mode === "model" && (
+            <Field label={t("editor.layer")} hint={t("editor.layerHint")}>
+              <Segmented
+                value={layer}
+                onChange={setLayer}
+                options={[
+                  { value: "base", label: t("editor.layerBase") },
+                  { value: "overlay", label: t("editor.layerOverlay") },
+                ]}
+              />
+            </Field>
+          )}
         </aside>
 
-        <section className="space-y-3">
-          <PixelCanvas doc={doc} brush={brush.brush} onPick={brush.pickColor} guides={guides} viewSize={VIEW_SIZE} />
-          <p className="text-center text-xs text-muted">{t("editor.overlayHint")}</p>
-          <label className="flex items-center justify-center gap-2 text-sm text-muted">
-            <input type="checkbox" checked={showLabels} onChange={(event) => setShowLabels(event.target.checked)} />
-            {t("editor.showLabels")}
-          </label>
-        </section>
+        {mode === "texture" ? (
+          <section className="space-y-3">
+            <PixelCanvas doc={doc} brush={brush.brush} onPick={brush.pickColor} guides={guides} viewSize={VIEW_SIZE} />
+            <p className="text-center text-xs text-muted">{t("editor.overlayHint")}</p>
+            <label className="flex items-center justify-center gap-2 text-sm text-muted">
+              <input type="checkbox" checked={showLabels} onChange={(event) => setShowLabels(event.target.checked)} />
+              {t("editor.showLabels")}
+            </label>
+          </section>
+        ) : (
+          <section className="panel relative min-h-[36rem] overflow-hidden">
+            <ModelPane doc={doc} showOverlay={showOverlay} paint={{ brush: brush.brush, layer, onPick: brush.pickColor }} />
+            <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs text-muted">{t("editor.modelHint")}</p>
+          </section>
+        )}
 
         <aside className="space-y-4">
-          <div className="panel relative h-80 overflow-hidden">
-            <ModelPane doc={doc} showOverlay={showOverlay} />
-            <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs text-muted">{t("editor.previewHint")}</p>
-          </div>
+          {mode === "texture" ? (
+            <div className="panel relative h-80 overflow-hidden">
+              <ModelPane doc={doc} showOverlay={showOverlay} />
+              <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs text-muted">{t("editor.previewHint")}</p>
+            </div>
+          ) : (
+            <PixelCanvas doc={doc} brush={brush.brush} onPick={brush.pickColor} guides={guides} viewSize={SMALL_VIEW_SIZE} />
+          )}
           <label className="flex items-center gap-2 px-1 text-sm text-muted">
             <input type="checkbox" checked={showOverlay} onChange={(event) => setShowOverlay(event.target.checked)} />
             {t("editor.showOverlay")}
