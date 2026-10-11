@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Toaster } from "sonner";
-import { Aurora } from "@/components/Aurora";
+import { Backdrop } from "@/components/Backdrop";
+import { Mascot } from "@/components/Mascot";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TitleBar } from "@/components/shell/TitleBar";
@@ -24,7 +25,8 @@ export function App() {
 
   return (
     <div className="relative h-full">
-      <Aurora />
+      <Backdrop />
+      <Mascot />
       <div className="relative z-10 flex h-full flex-col">
       <TitleBar />
       <div className="flex min-h-0 flex-1">

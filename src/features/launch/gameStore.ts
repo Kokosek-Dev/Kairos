@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { useSignInStore } from "@/features/accounts/signInStore";
+import { updateBeforeLaunch } from "@/features/instances/autoUpdate";
 import { isLauncherError } from "@/lib/tauri/errors";
 import {
   launchInstance,
@@ -86,6 +87,7 @@ export const useGameStore = create<GameState>((set, get) => {
         phase: { kind: "preparing", step: "version", doneBytes: 0, totalBytes: 0 },
       });
       try {
+        await updateBeforeLaunch(instanceId);
         await launchInstance(instanceId, offline, handle);
       } catch (error) {
         if (isLauncherError(error) && error.code === "cancelled") {

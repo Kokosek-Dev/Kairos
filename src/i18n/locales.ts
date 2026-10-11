@@ -24,6 +24,11 @@ export const en: Translations = {
   appearance: {
     title: "Appearance",
     hint: "Pick the accent color of the launcher.",
+    background: "Background",
+    backgrounds: { aurora: "Aurora", calm: "Calm", plain: "Plain", image: "Your picture" },
+    chooseImage: "Choose a picture",
+    dim: "Darkening",
+    imageFailed: "That picture could not be read.",
     colors: { blue: "Blue", violet: "Violet", pink: "Pink", orange: "Orange", green: "Green", teal: "Teal" },
   },
   home: {
@@ -89,6 +94,20 @@ export const en: Translations = {
     total: "Total playtime",
     favorite: "Most played",
     instances: "Instances",
+  },
+  updates: {
+    running_one: "Updating {{count}} mod before launch…",
+    running_other: "Updating {{count}} mods before launch…",
+    done_one: "Updated {{count}} mod",
+    done_other: "Updated {{count}} mods",
+    failed: "Mods could not be updated: {{reason}}",
+  },
+  behavior: {
+    title: "Behavior",
+    autoUpdate: "Update mods automatically",
+    autoUpdateHint: "Before a game starts, Zenith updates the mods in that instance to the newest compatible versions.",
+    mascot: "Little player on screen",
+    mascotHint: "Now and then a tiny player wearing your skin runs across the window or pops up to wave.",
   },
   editor: {
     title: "Skin editor",
@@ -388,6 +407,11 @@ export const pl: Translations = {
   appearance: {
     title: "Wygląd",
     hint: "Wybierz kolor akcentu launchera.",
+    background: "Tło",
+    backgrounds: { aurora: "Zorza", calm: "Spokojne", plain: "Gładkie", image: "Twój obraz" },
+    chooseImage: "Wybierz obraz",
+    dim: "Przyciemnienie",
+    imageFailed: "Nie udało się odczytać tego obrazu.",
     colors: { blue: "Niebieski", violet: "Fioletowy", pink: "Różowy", orange: "Pomarańczowy", green: "Zielony", teal: "Morski" },
   },
   home: {
@@ -453,6 +477,24 @@ export const pl: Translations = {
     total: "Łączny czas gry",
     favorite: "Najczęściej grane",
     instances: "Instancje",
+  },
+  updates: {
+    running_one: "Aktualizuję {{count}} mod przed startem…",
+    running_few: "Aktualizuję {{count}} mody przed startem…",
+    running_many: "Aktualizuję {{count}} modów przed startem…",
+    running_other: "Aktualizuję {{count}} modów przed startem…",
+    done_one: "Zaktualizowano {{count}} mod",
+    done_few: "Zaktualizowano {{count}} mody",
+    done_many: "Zaktualizowano {{count}} modów",
+    done_other: "Zaktualizowano {{count}} modów",
+    failed: "Nie udało się zaktualizować modów: {{reason}}",
+  },
+  behavior: {
+    title: "Zachowanie",
+    autoUpdate: "Aktualizuj mody automatycznie",
+    autoUpdateHint: "Przed startem gry Zenith aktualizuje mody w tej instancji do najnowszych zgodnych wersji.",
+    mascot: "Mały gracz na ekranie",
+    mascotHint: "Co jakiś czas maleńki gracz z Twoim skinem przebiega przez okno albo wyskakuje w rogu i macha.",
   },
   editor: {
     title: "Edytor skinów",
