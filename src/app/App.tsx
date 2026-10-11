@@ -19,6 +19,7 @@ import { SignInDialog } from "@/features/accounts/SignInDialog";
 import { CrashDialog } from "@/features/launch/CrashDialog";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
 import { VersionsPage } from "@/features/versions/VersionsPage";
+import { UpdateWatcher } from "@/features/updates/UpdateWatcher";
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
 
 export function App() {
@@ -64,6 +65,7 @@ export function App() {
       <OfflinePlayDialog />
       <Toaster position="bottom-right" theme="dark" toastOptions={{ style: { background: "var(--surface-raised)", color: "var(--foreground)", border: "1px solid var(--border)" } }} />
       <WelcomeDialog />
+      <UpdateWatcher />
     </div>
   );
 }

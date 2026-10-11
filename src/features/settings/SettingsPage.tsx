@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/shell/PageHeader";
 
 import { AppearanceSection } from "@/features/settings/AppearanceSection";
 import { BehaviorSection } from "@/features/settings/BehaviorSection";
+import { UpdatesSection } from "@/features/settings/UpdatesSection";
 import { HelpSection } from "@/features/settings/HelpSection";
 import { StorageSection } from "@/features/settings/StorageSection";
 import { AccountsSection } from "@/features/accounts/AccountsSection";
@@ -19,6 +20,7 @@ export function SettingsPage() {
         <AccountsSection />
         <AppearanceSection />
         <StorageSection />
+        <UpdatesSection />
         <HelpSection />
         <BehaviorSection />
         <section className="panel p-5">
