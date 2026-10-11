@@ -27,7 +27,8 @@ function SignedOutHero() {
   const startSignIn = useSignInStore((state) => state.start);
   return (
     <section className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-accent/20 via-surface to-surface p-10">
-      <div className="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-accent/20 blur-3xl" />
+      <div className="animate-drift pointer-events-none absolute -right-16 -top-16 size-72 rounded-full bg-accent/25 blur-3xl" />
+      <div className="animate-drift pointer-events-none absolute -bottom-24 left-1/3 size-56 rounded-full bg-accent-strong/20 blur-3xl [animation-delay:-7s]" />
       <h1 className="text-3xl font-bold tracking-tight">{t("home.welcome")}</h1>
       <p className="mt-2 max-w-md text-muted">{t("home.signInHint")}</p>
       <Button size="lg" className="mt-6" onClick={() => void startSignIn()}>
@@ -86,7 +87,8 @@ function SkinHero() {
 
   return (
     <section className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-accent/15 via-surface to-surface">
-      <div className="pointer-events-none absolute -left-10 bottom-0 size-72 rounded-full bg-accent/15 blur-3xl" />
+      <div className="animate-drift pointer-events-none absolute -left-10 bottom-0 size-72 rounded-full bg-accent/20 blur-3xl" />
+      <div className="animate-drift pointer-events-none absolute -right-10 -top-10 size-60 rounded-full bg-accent-strong/20 blur-3xl [animation-delay:-5s]" />
       <div className="relative flex flex-wrap items-center gap-8 p-6">
         <div className="grid shrink-0 place-items-center" style={{ width: VIEWER.width, height: VIEWER.height }}>
           {profile.isPending && <div className="skeleton h-full w-40 rounded-xl" />}

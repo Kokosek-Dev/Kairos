@@ -95,6 +95,13 @@
   }
 }
 
+@utility panel {
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, var(--surface), color-mix(in oklch, var(--surface) 55%, transparent));
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.04), 0 10px 30px -18px oklch(0 0 0 / 0.7);
+}
+
 @utility glass {
   background: oklch(0.18 0.025 260 / 0.6);
   backdrop-filter: blur(20px) saturate(140%);
@@ -111,4 +118,18 @@
   to {
     background-position: -200% 0;
   }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(24px, -18px, 0) scale(1.08);
+  }
+}
+
+@utility animate-drift {
+  animation: drift 14s ease-in-out infinite;
 }

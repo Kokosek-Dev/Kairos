@@ -1,3 +1,4 @@
+import { Languages } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguagePicker } from "@/components/LanguagePicker";
 import { PageHeader } from "@/components/shell/PageHeader";
@@ -14,8 +15,11 @@ export function SettingsPage() {
       <div className="max-w-3xl space-y-5">
         <AccountsSection />
         <AppearanceSection />
-        <section className="rounded-xl border bg-surface p-5">
-          <h2 className="font-semibold">{t("settings.language")}</h2>
+        <section className="panel p-5">
+          <h2 className="flex items-center gap-2 font-semibold">
+            <Languages size={16} className="text-accent" />
+            {t("settings.language")}
+          </h2>
           <p className="mb-4 mt-1 text-muted">{t("settings.languageHint")}</p>
           <LanguagePicker />
         </section>

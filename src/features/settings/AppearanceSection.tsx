@@ -1,4 +1,4 @@
-﻿import { Check } from "lucide-react";
+import { Check, Palette } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ACCENT_COLORS, applyAccent, currentAccent } from "@/lib/accent";
@@ -9,8 +9,11 @@ export function AppearanceSection() {
   const [hue, setHue] = useState(currentAccent);
 
   return (
-    <section className="rounded-xl border bg-surface p-5">
-      <h2 className="font-semibold">{t("appearance.title")}</h2>
+    <section className="panel p-5">
+      <h2 className="flex items-center gap-2 font-semibold">
+        <Palette size={16} className="text-accent" />
+        {t("appearance.title")}
+      </h2>
       <p className="mb-4 mt-1 text-muted">{t("appearance.hint")}</p>
       <div className="flex flex-wrap gap-3">
         {ACCENT_COLORS.map((color) => (

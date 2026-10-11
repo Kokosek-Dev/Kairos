@@ -34,7 +34,7 @@ const MEMORY_STEP_MB = 256;
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="space-y-4 rounded-xl border bg-surface p-5">
+    <section className="space-y-4 panel p-5">
       <h2 className="font-semibold">{title}</h2>
       {children}
     </section>

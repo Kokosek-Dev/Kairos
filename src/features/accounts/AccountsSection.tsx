@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Plus, Trash2 } from "lucide-react";
+import { Check, Plus, Trash2, UserRound } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { getAccounts, removeAccount, setActiveAccount } from "@/lib/tauri/auth";
@@ -22,10 +22,13 @@ export function AccountsSection() {
   const remove = useMutation({ mutationFn: removeAccount, onSuccess: refresh });
 
   return (
-    <section className="rounded-xl border bg-surface p-5">
+    <section className="panel p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="font-semibold">{t("accounts.title")}</h2>
+          <h2 className="flex items-center gap-2 font-semibold">
+            <UserRound size={16} className="text-accent" />
+            {t("accounts.title")}
+          </h2>
           <p className="mt-1 text-muted">{t("accounts.subtitle")}</p>
         </div>
         <Button size="sm" onClick={() => void startSignIn()}>
