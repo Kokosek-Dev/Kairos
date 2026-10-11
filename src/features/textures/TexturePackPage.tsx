@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/input";
+import { Segmented } from "@/components/ui/segmented";
 import { useInstances } from "@/features/instances/useInstances";
 import { BrushPanel } from "@/features/pixel/BrushPanel";
 import { PixelCanvas } from "@/features/pixel/PixelCanvas";
@@ -24,12 +25,16 @@ import {
 } from "@/lib/tauri/texturepacks";
 import { cn } from "@/lib/utils";
 import { InstanceChecklist } from "./InstanceChecklist";
+import { TexturePreview3D } from "./TexturePreview3D";
 import { textureKey, TextureThumb } from "./TextureThumb";
 import { PACKS_KEY } from "./usePacks";
 import { usePacks } from "./usePacks";
 
 const PAGE_SIZE = 240;
 const ALL = "all";
+const EDITOR_SIZE = 288;
+
+type Sort = "name" | "edited";
 
 function categoryOf(path: string): string {
   const [first] = path.split("/");
@@ -52,6 +57,8 @@ export function TexturePackPage() {
   const [category, setCategory] = useState(ALL);
   const [query, setQuery] = useState("");
   const [shown, setShown] = useState(PAGE_SIZE);
+  const [sort, setSort] = useState<Sort>("name");
+  const [editedOnly, setEditedOnly] = useState(false);
   const brush = useBrush(doc);
   useSyncExternalStore(doc.onHistory, () => doc.revision);
   const current = useRef({ doc, selected });
@@ -146,10 +153,14 @@ export function TexturePackPage() {
   }, [listing.data]);
   const matching = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return (listing.data?.textures ?? []).filter(
-      (path) => (category === ALL || categoryOf(path) === category) && (needle === "" || path.includes(needle)),
+    const found = (listing.data?.textures ?? []).filter(
+      (path) =>
+        (category === ALL || categoryOf(path) === category) &&
+        (needle === "" || path.includes(needle)) &&
+        (!editedOnly || edited.has(path)),
     );
-  }, [listing.data, category, query]);
+    return sort === "edited" ? [...found].sort((a, b) => Number(edited.has(b)) - Number(edited.has(a))) : found;
+  }, [listing.data, category, query, editedOnly, sort, edited]);
 
   if (packs.data && !pack) {
     return <p className="py-12 text-center text-muted">{t("textures.missing")}</p>;
@@ -184,6 +195,29 @@ export function TexturePackPage() {
             </label>
             <span className="text-xs text-muted">{t("textures.editedCount", { count: edited.size })}</span>
           </div>
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-muted">
+              <input
+                type="checkbox"
+                checked={editedOnly}
+                onChange={(event) => {
+                  setEditedOnly(event.target.checked);
+                  setShown(PAGE_SIZE);
+                }}
+              />
+              {t("textures.editedOnly")}
+            </label>
+            <div className="ml-auto w-56">
+              <Segmented
+                value={sort}
+                onChange={setSort}
+                options={[
+                  { value: "name", label: t("textures.sortName") },
+                  { value: "edited", label: t("textures.sortEdited") },
+                ]}
+              />
+            </div>
+          </div>
           <div className="mb-3 flex flex-wrap gap-1.5">
             {[ALL, ...categories].map((key) => (
               <button
@@ -202,8 +236,9 @@ export function TexturePackPage() {
               </button>
             ))}
           </div>
-          <div className="grid flex-1 grid-cols-[repeat(auto-fill,minmax(4.25rem,1fr))] content-start gap-2 overflow-y-auto pr-1">
-            {listing.isPending && Array.from({ length: 24 }, (_, index) => <div key={index} className="skeleton aspect-square rounded-lg" />)}
+          <div className="grid flex-1 grid-cols-[repeat(auto-fill,minmax(5.25rem,1fr))] content-start gap-2 overflow-y-auto pr-1">
+            {listing.isPending && Array.from({ length: 24 }, (_, index) => <div key={index} className="skeleton h-24 rounded-lg" />)}
+            {listing.data && matching.length === 0 && <p className="col-span-full py-10 text-center text-muted">{t("textures.noResults")}</p>}
             {matching.slice(0, shown).map((path) => (
               <TextureThumb key={path} packId={packId} path={path} selected={path === selected} edited={edited.has(path)} onSelect={() => void open(path)} />
             ))}
@@ -227,7 +262,7 @@ export function TexturePackPage() {
                   {doc.dirty && ` · ${t("textures.unsaved")}`}
                 </p>
               </div>
-              <PixelCanvas key={selected} doc={doc} brush={brush.brush} onPick={brush.pickColor} />
+              <PixelCanvas key={selected} doc={doc} brush={brush.brush} onPick={brush.pickColor} viewSize={EDITOR_SIZE} />
               <div className="grid grid-cols-2 gap-2">
                 <Button disabled={!doc.dirty || save.isPending} onClick={() => save.mutate()}>
                   <Save size={16} />
@@ -241,6 +276,14 @@ export function TexturePackPage() {
             </div>
           ) : (
             <div className="panel p-6 text-center text-muted">{t("textures.pick")}</div>
+          )}
+
+          {selected && (
+            <div className="panel relative h-48 overflow-hidden">
+              <TexturePreview3D doc={doc} block={selected.startsWith("block/")} />
+              <p className="pointer-events-none absolute left-3 top-2 text-xs font-medium text-muted">{t("textures.preview")}</p>
+              <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs text-muted">{t("textures.previewHint")}</p>
+            </div>
           )}
 
           <div className="panel p-4">

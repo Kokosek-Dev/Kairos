@@ -13,6 +13,10 @@ interface TextureThumbProps {
   onSelect: () => void;
 }
 
+function shortName(path: string): string {
+  return (path.split("/").pop() ?? path).replace(/\.png$/, "").replace(/_/g, " ");
+}
+
 /** Loads its picture only once it scrolls into view, since a game has thousands of textures. */
 export function TextureThumb({ packId, path, selected, edited, onSelect }: TextureThumbProps) {
   const element = useRef<HTMLButtonElement>(null);
@@ -32,7 +36,6 @@ export function TextureThumb({ packId, path, selected, edited, onSelect }: Textu
     return () => observer.disconnect();
   }, []);
 
-  const label = path.replace(/\.png$/, "").split("/").slice(1).join("/") || path;
   return (
     <button
       ref={element}
@@ -40,12 +43,17 @@ export function TextureThumb({ packId, path, selected, edited, onSelect }: Textu
       title={path}
       onClick={onSelect}
       className={cn(
-        "checker relative grid aspect-square place-items-center rounded-lg border p-1.5 transition-all hover:border-accent/60",
-        selected && "border-accent ring-2 ring-accent/50",
+        "group flex flex-col gap-1.5 rounded-lg border bg-surface/40 p-1.5 text-left transition-all hover:-translate-y-0.5 hover:border-accent/60 hover:bg-surface-raised/60",
+        selected && "border-accent bg-accent/10 ring-2 ring-accent/50",
       )}
     >
-      {picture.data && <img src={picture.data} alt={label} draggable={false} className="max-h-full max-w-full object-contain [image-rendering:pixelated]" />}
-      {edited && <span className="absolute right-1 top-1 size-2 rounded-full bg-success" />}
+      <span className="checker relative grid aspect-square place-items-center overflow-hidden rounded-md">
+        {picture.data && (
+          <img src={picture.data} alt="" draggable={false} className="max-h-full max-w-full object-contain transition-transform group-hover:scale-110 [image-rendering:pixelated]" />
+        )}
+        {edited && <span className="absolute right-1 top-1 size-2 rounded-full bg-success shadow-[0_0_6px_var(--success)]" />}
+      </span>
+      <span className="truncate text-[10px] capitalize text-muted group-hover:text-foreground">{shortName(path)}</span>
     </button>
   );
 }
