@@ -1,13 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Boxes, Copy, FileDown, FolderOpen, Save, Trash2 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/input";
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { joinArgs, splitArgs } from "@/lib/args";
+import { MomentsSection } from "@/features/moments/MomentsSection";
 import { formatMemory } from "@/lib/format";
+import { createSafetyMoment } from "@/lib/tauri/moments";
 import { exportMrpack, pickMrpackDestination } from "@/lib/tauri/modrinth";
 import { errorMessage } from "@/lib/tauri/errors";
 import {
@@ -99,8 +101,10 @@ function SettingsForm({ instance }: { instance: Instance }) {
   };
 
   const save = useMutation({
-    mutationFn: () =>
-      updateInstance(instance.id, {
+    mutationFn: async () => {
+      const changesGame = gameVersion !== instance.gameVersion || loader !== instance.loader || loaderVersion !== instance.loaderVersion;
+      if (changesGame) await createSafetyMoment(instance.id, "before_change").catch(() => undefined);
+      return updateInstance(instance.id, {
         name,
         gameVersion,
         loader,
@@ -108,7 +112,8 @@ function SettingsForm({ instance }: { instance: Instance }) {
         memoryMb,
         jvmArgs: splitArgs(jvmText),
         javaPath,
-      }),
+      });
+    },
     onSuccess: refresh,
   });
 
@@ -145,6 +150,9 @@ function SettingsForm({ instance }: { instance: Instance }) {
     setJavaPath(instance.javaPath);
     save.reset();
   };
+
+  // Going back to a moment changes the instance behind this form's back, so the form follows it.
+  useEffect(reset, [instance]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const browseJava = async () => {
     const path = await pickJavaFile();
@@ -291,6 +299,8 @@ function SettingsForm({ instance }: { instance: Instance }) {
         </div>
       </Section>
       </div>
+
+      <MomentsSection instanceId={instance.id} />
 
       {error && <p className="text-sm text-danger">{errorMessage(t, error)}</p>}
 

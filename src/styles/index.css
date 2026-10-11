@@ -18,6 +18,7 @@
   --accent-foreground: oklch(0.99 0.005 250);
   --danger: oklch(0.65 0.22 25);
   --success: oklch(0.75 0.17 155);
+  --warning: oklch(0.82 0.15 85);
 }
 
 @theme inline {
@@ -33,6 +34,7 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-danger: var(--danger);
   --color-success: var(--success);
+  --color-warning: var(--warning);
 
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;

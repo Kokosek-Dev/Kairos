@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { contentKey, useJobsStore } from "@/features/discover/jobsStore";
+import { createSafetyMoment } from "@/lib/tauri/moments";
 import { formatBytes } from "@/lib/format";
 import { errorMessage } from "@/lib/tauri/errors";
 import {
@@ -104,6 +105,7 @@ export function ContentPage() {
   const check = useMutation({ mutationFn: () => checkContentUpdates(id), onSuccess: setUpdates });
   const updateAll = async () => {
     if (!updates) return;
+    await createSafetyMoment(id, "before_update").catch(() => undefined);
     await update(t, id, updates.map((entry) => ({ projectId: entry.projectId, versionId: entry.newVersionId })));
     setUpdates(null);
   };

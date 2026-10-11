@@ -245,6 +245,7 @@ pub fn duplicate(paths: &DataPaths, id: &str) -> AppResult<Instance> {
 
     let copy = || -> AppResult<Instance> {
         copy_directory(&paths.instance_dir(id), &paths.instance_dir(&new_id))?;
+        let _ = fs::remove_dir_all(paths.instance_dir(&new_id).join("moments"));
         let instance = Instance {
             id: new_id.clone(),
             name,

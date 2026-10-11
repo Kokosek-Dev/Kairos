@@ -14,6 +14,7 @@ mod location;
 mod loaders;
 mod memory;
 mod modrinth;
+mod moments;
 mod mojang;
 mod paths;
 mod skins;
@@ -101,6 +102,13 @@ pub fn run() {
             commands::use_texture_pack_in_instances,
             commands::get_data_location,
             commands::get_memory_advice,
+            commands::list_moments,
+            commands::create_moment,
+            commands::create_safety_moment,
+            commands::restore_moment,
+            commands::delete_moment,
+            commands::compare_moment,
+            commands::moment_sizes,
             commands::analyze_crash,
             commands::reveal_file,
             commands::save_problem_report,

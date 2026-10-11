@@ -58,7 +58,7 @@ Etapy 1-8 (wersje, instancje, Java, loadery, logowanie, skiny, mody i modpacki, 
 skinów (model 3D w środku i płaska tekstura), kreator paczek tekstur (beta) z podglądem, czas gry i statystyki,
 automatyczna aktualizacja modów przed grą, tła i animowany bohater, wybór miejsca zapisu, podpowiedź RAM, analiza
 crashy, raport o problemie, kreator pierwszego uruchomienia, aktualizacje launchera, GitHub Actions (CI i wydania),
-paleta poleceń (Ctrl+K).
+paleta poleceń (Ctrl+K), **Chwile** (zdjęcia stanu instancji z cofaniem: `src-tauri/src/moments`, `src/features/moments`; zapisują się same przed aktualizacją modów i zmianą wersji, trzymane w `instances/<id>/moments`).
 
 ## 6. Co zostało (w tej kolejności)
 
