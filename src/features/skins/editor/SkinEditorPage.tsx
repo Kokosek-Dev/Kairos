@@ -20,10 +20,7 @@ import { ModelPane, type Layer } from "./ModelPane";
 import { SkinDocument } from "./SkinDocument";
 
 const BLANK = "blank";
-const VIEW_SIZE = 768;
-const SMALL_VIEW_SIZE = 256;
-
-type Mode = "texture" | "model";
+const VIEW_SIZE = 512;
 
 function drawLabel(ctx: CanvasRenderingContext2D, text: string, centerX: number, centerY: number, fontSize: number) {
   const [first, ...rest] = text.split(" ");
@@ -50,7 +47,6 @@ export function SkinEditorPage() {
   const brush = useBrush(doc);
   const skins = useQuery({ queryKey: SKINS_KEY, queryFn: listSkins });
 
-  const [mode, setMode] = useState<Mode>("texture");
   const [layer, setLayer] = useState<Layer>("base");
   const [showOverlay, setShowOverlay] = useState(true);
   const [showLabels, setShowLabels] = useState(true);
@@ -128,59 +124,33 @@ export function SkinEditorPage() {
         </Button>
       </div>
 
-      <div className="mb-4 max-w-sm">
-        <Segmented
-          value={mode}
-          onChange={setMode}
-          options={[
-            { value: "texture", label: t("editor.modeTexture") },
-            { value: "model", label: t("editor.modeModel") },
-          ]}
-        />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-[14rem_minmax(0,1fr)_minmax(0,19rem)]">
+      <div className="grid gap-4 lg:grid-cols-[14rem_minmax(0,1fr)_minmax(0,24rem)]">
         <aside className="panel space-y-5 p-4">
           <BrushPanel doc={doc} brush={brush} />
-          {mode === "model" && (
-            <Field label={t("editor.layer")} hint={t("editor.layerHint")}>
-              <Segmented
-                value={layer}
-                onChange={setLayer}
-                options={[
-                  { value: "base", label: t("editor.layerBase") },
-                  { value: "overlay", label: t("editor.layerOverlay") },
-                ]}
-              />
-            </Field>
-          )}
+          <Field label={t("editor.layer")} hint={t("editor.layerHint")}>
+            <Segmented
+              value={layer}
+              onChange={setLayer}
+              options={[
+                { value: "base", label: t("editor.layerBase") },
+                { value: "overlay", label: t("editor.layerOverlay") },
+              ]}
+            />
+          </Field>
         </aside>
 
-        {mode === "texture" ? (
-          <section className="space-y-3">
-            <PixelCanvas doc={doc} brush={brush.brush} onPick={brush.pickColor} guides={guides} viewSize={VIEW_SIZE} />
-            <p className="text-center text-xs text-muted">{t("editor.overlayHint")}</p>
-            <label className="flex items-center justify-center gap-2 text-sm text-muted">
-              <input type="checkbox" checked={showLabels} onChange={(event) => setShowLabels(event.target.checked)} />
-              {t("editor.showLabels")}
-            </label>
-          </section>
-        ) : (
-          <section className="panel relative min-h-[36rem] overflow-hidden">
-            <ModelPane doc={doc} showOverlay={showOverlay} paint={{ brush: brush.brush, layer, onPick: brush.pickColor }} />
-            <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs text-muted">{t("editor.modelHint")}</p>
-          </section>
-        )}
+        <section className="panel relative min-h-[36rem] overflow-hidden">
+          <ModelPane doc={doc} showOverlay={showOverlay} paint={{ brush: brush.brush, layer, onPick: brush.pickColor }} />
+          <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs text-muted">{t("editor.modelHint")}</p>
+        </section>
 
         <aside className="space-y-4">
-          {mode === "texture" ? (
-            <div className="panel relative h-80 overflow-hidden">
-              <ModelPane doc={doc} showOverlay={showOverlay} />
-              <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs text-muted">{t("editor.previewHint")}</p>
-            </div>
-          ) : (
-            <PixelCanvas doc={doc} brush={brush.brush} onPick={brush.pickColor} guides={guides} viewSize={SMALL_VIEW_SIZE} />
-          )}
+          <PixelCanvas doc={doc} brush={brush.brush} onPick={brush.pickColor} guides={guides} viewSize={VIEW_SIZE} />
+          <p className="text-center text-xs text-muted">{t("editor.overlayHint")}</p>
+          <label className="flex items-center gap-2 px-1 text-sm text-muted">
+            <input type="checkbox" checked={showLabels} onChange={(event) => setShowLabels(event.target.checked)} />
+            {t("editor.showLabels")}
+          </label>
           <label className="flex items-center gap-2 px-1 text-sm text-muted">
             <input type="checkbox" checked={showOverlay} onChange={(event) => setShowOverlay(event.target.checked)} />
             {t("editor.showOverlay")}

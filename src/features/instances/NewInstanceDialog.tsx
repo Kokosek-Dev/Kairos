@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { Brush } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,6 @@ import { Field, Input } from "@/components/ui/input";
 import { CreatePackDialog } from "@/features/textures/CreatePackDialog";
 import { errorMessage } from "@/lib/tauri/errors";
 import { createInstance, type IconInput, type LoaderKind } from "@/lib/tauri/instances";
-import { installContent } from "@/lib/tauri/modrinth";
 import { PlaceholderTile, PresetTile } from "./InstanceIcon";
 import { IconPicker } from "./IconPicker";
 import { LoaderPicker } from "./LoaderPicker";
@@ -22,9 +20,6 @@ interface NewInstanceDialogProps {
 }
 
 const DEFAULT_ICON: IconInput = { kind: "preset", key: DEFAULT_PRESET.key };
-
-/** Catalogue id of the Simple Voice Chat mod, which works on every mod loader. */
-const VOICE_CHAT_PROJECT = "9eGKb6K1";
 
 function fileName(path: string): string {
   return path.split(/[\\/]/).pop() ?? path;
@@ -41,7 +36,6 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
   const [loader, setLoader] = useState<LoaderKind>("vanilla");
   const [loaderVersion, setLoaderVersion] = useState<string | null>(null);
   const [texturesOpen, setTexturesOpen] = useState(false);
-  const [voiceChat, setVoiceChat] = useState(false);
 
   const latestRelease = manifest.data?.latest.release;
   useEffect(() => {
@@ -59,20 +53,12 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
     setIcon(DEFAULT_ICON);
     setLoader("vanilla");
     setLoaderVersion(null);
-    setVoiceChat(false);
     create.reset();
   };
 
   const create = useMutation({
     mutationFn: () => createInstance({ name, gameVersion, icon, loader, loaderVersion }),
-    onSuccess: async (instance) => {
-      if (voiceChat && loader !== "vanilla") {
-        try {
-          await installContent(instance.id, VOICE_CHAT_PROJECT, null, () => undefined);
-        } catch (error) {
-          toast.error(t("instances.voiceChatFailed", { reason: errorMessage(t, error) }));
-        }
-      }
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["instances"] });
       onOpenChange(false);
       reset();
@@ -125,15 +111,6 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
               }}
             />
           </Field>
-          {loader !== "vanilla" && (
-            <label className="flex items-start gap-3 rounded-lg border bg-surface/60 p-3 text-sm">
-              <input type="checkbox" className="mt-1" checked={voiceChat} onChange={(event) => setVoiceChat(event.target.checked)} />
-              <span>
-                <span className="block font-medium">{t("instances.voiceChat")}</span>
-                <span className="text-muted">{t("instances.voiceChatHint")}</span>
-              </span>
-            </label>
-          )}
         </div>
 
         {create.isError && <p className="mt-3 text-sm text-danger">{errorMessage(t, create.error)}</p>}
