@@ -39,6 +39,8 @@ pub struct Instance {
     pub java_path: Option<String>,
     pub created_at: DateTime<Utc>,
     pub last_played_at: Option<DateTime<Utc>>,
+    #[serde(default)]
+    pub play_time_secs: u64,
 }
 
 #[derive(Debug, Clone, Deserialize)]

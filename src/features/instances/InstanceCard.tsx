@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
-import { formatRelative } from "@/lib/format";
+import { formatPlayTime, formatRelative } from "@/lib/format";
 import { duplicateInstance, openInstanceFolder, type Instance } from "@/lib/tauri/instances";
 import { loaderChipStyle } from "@/lib/loaderColors";
 import { cn } from "@/lib/utils";
@@ -92,6 +92,7 @@ export function InstanceCard({ instance, index = 0, onDelete }: InstanceCardProp
                 : instance.lastPlayedAt
                   ? t("instances.lastPlayed", { when: formatRelative(instance.lastPlayedAt, i18n.language) })
                   : t("instances.neverPlayed")}
+              {instance.playTimeSecs >= 60 && ` · ${formatPlayTime(instance.playTimeSecs, i18n.language)}`}
             </p>
           </div>
         </button>

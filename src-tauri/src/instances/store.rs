@@ -161,6 +161,7 @@ pub fn create(paths: &DataPaths, new: NewInstance) -> AppResult<Instance> {
             java_path: None,
             created_at: Utc::now(),
             last_played_at: None,
+            play_time_secs: 0,
         };
         save(paths, &instance)?;
         Ok(instance)
@@ -249,6 +250,7 @@ pub fn duplicate(paths: &DataPaths, id: &str) -> AppResult<Instance> {
             name,
             created_at: Utc::now(),
             last_played_at: None,
+            play_time_secs: 0,
             ..source
         };
         save(paths, &instance)?;
@@ -282,6 +284,12 @@ pub fn delete(paths: &DataPaths, id: &str) -> AppResult<()> {
 pub fn touch_last_played(paths: &DataPaths, id: &str) -> AppResult<()> {
     let mut instance = get(paths, id)?;
     instance.last_played_at = Some(Utc::now());
+    save(paths, &instance)
+}
+
+pub fn add_play_time(paths: &DataPaths, id: &str, seconds: u64) -> AppResult<()> {
+    let mut instance = get(paths, id)?;
+    instance.play_time_secs = instance.play_time_secs.saturating_add(seconds);
     save(paths, &instance)
 }
 
@@ -470,6 +478,18 @@ mod tests {
         assert_eq!((instance.loader, instance.loader_version), (LoaderKind::Vanilla, None));
         let _ = fs::remove_dir_all(paths.instances());
     }
+    #[test]
+    fn accumulates_play_time_and_resets_it_for_copies() {
+        let paths = scratch("playtime");
+        let original = create(&paths, new("Timed")).unwrap();
+        add_play_time(&paths, &original.id, 90).unwrap();
+        add_play_time(&paths, &original.id, 30).unwrap();
+        assert_eq!(get(&paths, &original.id).unwrap().play_time_secs, 120);
+        let copy = duplicate(&paths, &original.id).unwrap();
+        assert_eq!(copy.play_time_secs, 0);
+        let _ = fs::remove_dir_all(paths.root());
+    }
+
     #[test]
     fn failed_creation_leaves_no_directory_behind() {
         let paths = scratch("rollback");

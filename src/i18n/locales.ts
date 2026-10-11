@@ -85,6 +85,11 @@ export const en: Translations = {
       other: "Other",
     },
   },
+  stats: {
+    total: "Total playtime",
+    favorite: "Most played",
+    instances: "Instances",
+  },
   editor: {
     title: "Skin editor",
     subtitle: "Draw on the flat texture or straight on the 3D model.",
@@ -443,6 +448,11 @@ export const pl: Translations = {
       trims: "Zdobienia zbroi",
       other: "Inne",
     },
+  },
+  stats: {
+    total: "Łączny czas gry",
+    favorite: "Najczęściej grane",
+    instances: "Instancje",
   },
   editor: {
     title: "Edytor skinów",

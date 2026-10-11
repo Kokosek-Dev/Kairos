@@ -36,3 +36,12 @@ export function formatMemory(megabytes: number): string {
 export function formatCount(value: number, locale: string): string {
   return new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
+
+export function formatPlayTime(seconds: number, locale: string): string {
+  const unit = (value: number, name: "hour" | "minute") =>
+    new Intl.NumberFormat(locale, { style: "unit", unit: name, unitDisplay: "narrow" }).format(value);
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (hours === 0) return unit(minutes, "minute");
+  return `${unit(hours, "hour")} ${unit(minutes, "minute")}`;
+}

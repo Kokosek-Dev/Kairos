@@ -3,6 +3,8 @@ use crate::instances::store;
 use crate::launch::{self, LaunchEvent, LaunchRequest};
 use crate::app_id;
 use crate::state::AppState;
+use std::sync::{Arc, Mutex};
+use std::time::Instant;
 use tauri::{ipc::Channel, State};
 
 #[tauri::command]
@@ -22,7 +24,19 @@ pub async fn launch_instance(
         None => state.auth.game_session(app_id::client_id).await?,
     };
     let (run_id, token) = state.runs.register(&instance.id);
+    let started = Arc::new(Mutex::new(None::<Instant>));
+    let paths = state.paths.clone();
+    let played_id = instance.id.clone();
     let emit = move |event: LaunchEvent| {
+        match &event {
+            LaunchEvent::Running { .. } => *started.lock().unwrap() = Some(Instant::now()),
+            LaunchEvent::Exited { .. } => {
+                if let Some(start) = started.lock().unwrap().take() {
+                    let _ = store::add_play_time(&paths, &played_id, start.elapsed().as_secs());
+                }
+            }
+            _ => {}
+        }
         let _ = on_event.send(event);
     };
     emit(LaunchEvent::Queued { run_id });

@@ -9,6 +9,7 @@ import { HeroCube } from "@/components/HeroCube";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { useSignInStore } from "@/features/accounts/signInStore";
+import { PlayStats } from "@/features/home/PlayStats";
 import { DeleteInstanceDialog } from "@/features/instances/DeleteInstanceDialog";
 import { InstanceCard } from "@/features/instances/InstanceCard";
 import { useInstances } from "@/features/instances/useInstances";
@@ -276,6 +277,8 @@ export function HomePage() {
   return (
     <div className="space-y-8 pb-6">
       {isPending ? <div className="skeleton h-[390px] rounded-2xl" /> : active ? <SkinHero /> : <SignedOutHero />}
+
+      <PlayStats instances={instances.data ?? []} />
 
       <section>
         <div className="mb-3 flex items-center justify-between">

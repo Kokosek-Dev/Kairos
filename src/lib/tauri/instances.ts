@@ -23,6 +23,7 @@ export interface Instance {
   javaPath: string | null;
   createdAt: string;
   lastPlayedAt: string | null;
+  playTimeSecs: number;
 }
 
 export interface NewInstance {
