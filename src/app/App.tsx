@@ -12,6 +12,7 @@ import { ContentPage } from "@/features/instances/ContentPage";
 import { InstanceSettingsPage } from "@/features/instances/InstanceSettingsPage";
 import { HomePage } from "@/features/home/HomePage";
 import { SkinEditorPage } from "@/features/skins/editor/SkinEditorPage";
+import { TexturesPage } from "@/features/textures/TexturesPage";
 import { TexturePackPage } from "@/features/textures/TexturePackPage";
 import { LibraryPage } from "@/features/library/LibraryPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
@@ -20,7 +21,6 @@ import { SignInDialog } from "@/features/accounts/SignInDialog";
 import { CommandPalette } from "@/features/palette/CommandPalette";
 import { CrashDialog } from "@/features/launch/CrashDialog";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
-import { VersionsPage } from "@/features/versions/VersionsPage";
 import { UpdateWatcher } from "@/features/updates/UpdateWatcher";
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
 
@@ -49,10 +49,10 @@ export function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/library" element={<LibraryPage />} />
                 <Route path="/skins/editor" element={<SkinEditorPage />} />
+                <Route path="/textures" element={<TexturesPage />} />
                 <Route path="/textures/:packId" element={<TexturePackPage />} />
                 <Route path="/instances/:id" element={<InstanceSettingsPage />} />
                 <Route path="/instances/:id/content" element={<ContentPage />} />
-                <Route path="/versions" element={<VersionsPage />} />
                 <Route path="/discover" element={<DiscoverPage />} />
                 <Route path="/discover/:projectId" element={<ProjectPage />} />
                 <Route path="/settings" element={<SettingsPage />} />

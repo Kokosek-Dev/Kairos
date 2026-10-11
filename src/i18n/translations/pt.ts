@@ -1,7 +1,7 @@
 import type { Translations } from "../locales";
 
 export const pt: Translations = {
-  nav: { home: "Início", library: "Biblioteca", versions: "Versões", discover: "Descobrir", settings: "Configurações", recent: "Recentes" },
+  nav: { home: "Início", library: "Biblioteca", textures: "Texturas", discover: "Descobrir", settings: "Configurações", recent: "Recentes" },
   offline: {
     menu: "Mais formas de jogar",
     menuItem: "Jogar offline",
@@ -42,7 +42,8 @@ export const pt: Translations = {
     createTitle: "Novo pacote de texturas",
     createSubtitle: "Escolha uma versão do jogo e redesenhe qualquer uma de suas texturas.",
     name: "Nome do pacote",
-    noVersions: "Primeiro instale uma versão do jogo na página",
+    noVersions: "Primeiro jogue uma instância uma vez para baixar os arquivos do jogo. Você a encontra na",
+    pageSubtitle: "Skins, criador de skins e pacotes de texturas em um só lugar.",
     create: "Criar",
     packs: "Pacotes de texturas",
     packsEmpty: "Ainda não há pacotes de texturas. Crie um para redesenhar blocos, itens e mais.",
@@ -334,16 +335,11 @@ export const pt: Translations = {
     noMatches: "Nenhuma instância corresponde aos seus filtros.",
   },
   versions: {
-    title: "Versões do jogo",
-    subtitle: "Baixe versões oficiais do jogo dos servidores da Mojang.",
     filter: { release: "Lançamentos", snapshot: "Snapshots", old: "Antigas" },
-    kind: { release: "Lançamento", snapshot: "Snapshot", old_beta: "Beta", old_alpha: "Alfa" },
     search: "Buscar versões",
-    installed: "Instalada",
     install: "Instalar",
     cancel: "Cancelar",
     resolving: "Preparando o download...",
-    progress: "{{done}} / {{total}} · {{files}} / {{totalFiles}} arquivos",
     empty: "Nenhuma versão corresponde à sua busca.",
     loadFailed: "Não foi possível carregar a lista de versões",
     loadFailedHint: "Verifique sua conexão com a internet e tente novamente.",

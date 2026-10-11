@@ -62,8 +62,8 @@ export function CreatePackDialog({ open, onOpenChange }: CreatePackDialogProps) 
             {available.length === 0 && !versions.isPending ? (
               <p className="text-sm text-muted">
                 {t("textures.noVersions")}{" "}
-                <Link to="/versions" className="text-accent hover:underline" onClick={() => onOpenChange(false)}>
-                  {t("nav.versions")}
+                <Link to="/library" className="text-accent hover:underline" onClick={() => onOpenChange(false)}>
+                  {t("nav.library")}
                 </Link>
               </p>
             ) : (

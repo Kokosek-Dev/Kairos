@@ -1,7 +1,7 @@
 import type { Translations } from "../locales";
 
 export const ru: Translations = {
-  nav: { home: "Главная", library: "Библиотека", versions: "Версии", discover: "Обзор", settings: "Настройки", recent: "Недавние" },
+  nav: { home: "Главная", library: "Библиотека", textures: "Текстуры", discover: "Обзор", settings: "Настройки", recent: "Недавние" },
   offline: {
     menu: "Другие способы игры",
     menuItem: "Играть офлайн",
@@ -42,7 +42,8 @@ export const ru: Translations = {
     createTitle: "Новый набор текстур",
     createSubtitle: "Выберите версию игры и перерисуйте любые её текстуры.",
     name: "Название набора",
-    noVersions: "Сначала установите версию игры на странице",
+    noVersions: "Сначала запустите любой экземпляр один раз, чтобы скачались файлы игры. Он находится в разделе",
+    pageSubtitle: "Скины, редактор скинов и наборы текстур в одном месте.",
     create: "Создать",
     packs: "Наборы текстур",
     packsEmpty: "Наборов текстур пока нет. Создайте один, чтобы перерисовать блоки, предметы и не только.",
@@ -336,16 +337,11 @@ export const ru: Translations = {
     noMatches: "Ни одна сборка не подходит под ваши фильтры.",
   },
   versions: {
-    title: "Версии игры",
-    subtitle: "Скачивайте официальные версии игры с серверов Mojang.",
     filter: { release: "Релизы", snapshot: "Снапшоты", old: "Старые" },
-    kind: { release: "Релиз", snapshot: "Снапшот", old_beta: "Бета", old_alpha: "Альфа" },
     search: "Поиск версий",
-    installed: "Установлена",
     install: "Установить",
     cancel: "Отмена",
     resolving: "Подготовка загрузки...",
-    progress: "{{done}} / {{total}} · {{files}} / {{totalFiles}} файлов",
     empty: "Ни одна версия не подходит под ваш запрос.",
     loadFailed: "Не удалось загрузить список версий",
     loadFailedHint: "Проверьте подключение к интернету и попробуйте снова.",

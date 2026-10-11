@@ -15,7 +15,7 @@ export interface Translations {
 }
 
 export const en: Translations = {
-  nav: { home: "Home", library: "Library", versions: "Versions", discover: "Discover", settings: "Settings", recent: "Recent" },
+  nav: { home: "Home", library: "Library", textures: "Textures", discover: "Discover", settings: "Settings", recent: "Recent" },
   offline: {
     menu: "More ways to play",
     menuItem: "Play offline",
@@ -56,7 +56,8 @@ export const en: Translations = {
     createTitle: "New texture pack",
     createSubtitle: "Pick a game version, then redraw any of its textures.",
     name: "Pack name",
-    noVersions: "Install a game version first on the",
+    noVersions: "Play an instance once first so its game files get downloaded. Find it in the",
+    pageSubtitle: "Skins, the skin creator and texture packs in one place.",
     create: "Create",
     packs: "Texture packs",
     packsEmpty: "No texture packs yet. Create one to redraw blocks, items and more.",
@@ -346,17 +347,12 @@ export const en: Translations = {
     noMatches: "No instances match your filters.",
   },
   versions: {
-    title: "Game versions",
-    subtitle: "Download official game versions from Mojang servers.",
     filter: { release: "Releases", snapshot: "Snapshots", old: "Old" },
-    kind: { release: "Release", snapshot: "Snapshot", old_beta: "Beta", old_alpha: "Alpha" },
     search: "Search versions",
-    installed: "Installed",
     install: "Install",
 
     cancel: "Cancel",
     resolving: "Preparing download...",
-    progress: "{{done}} / {{total}} · {{files}} / {{totalFiles}} files",
     empty: "No versions match your search.",
     loadFailed: "Could not load the version list",
     loadFailedHint: "Check your internet connection and try again.",
@@ -602,7 +598,7 @@ export const en: Translations = {
 };
 
 export const pl: Translations = {
-  nav: { home: "Strona główna", library: "Biblioteka", versions: "Wersje", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
+  nav: { home: "Strona główna", library: "Biblioteka", textures: "Tekstury", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
   offline: {
     menu: "Inne sposoby gry",
     menuItem: "Graj offline",
@@ -643,7 +639,8 @@ export const pl: Translations = {
     createTitle: "Nowa paczka tekstur",
     createSubtitle: "Wybierz wersję gry i przerysuj dowolne tekstury.",
     name: "Nazwa paczki",
-    noVersions: "Najpierw zainstaluj wersję gry na stronie",
+    noVersions: "Najpierw uruchom raz jakąś instancję, żeby pobrały się pliki gry. Znajdziesz ją w zakładce",
+    pageSubtitle: "Skiny, kreator skinów i paczki tekstur w jednym miejscu.",
     create: "Utwórz",
     packs: "Paczki tekstur",
     packsEmpty: "Brak paczek tekstur. Utwórz pierwszą, by przerysować bloki, przedmioty i nie tylko.",
@@ -937,17 +934,12 @@ export const pl: Translations = {
     noMatches: "Żadna instancja nie pasuje do filtrów.",
   },
   versions: {
-    title: "Wersje gry",
-    subtitle: "Pobieraj oficjalne wersje gry z serwerów Mojang.",
     filter: { release: "Wydania", snapshot: "Snapshoty", old: "Stare" },
-    kind: { release: "Wydanie", snapshot: "Snapshot", old_beta: "Beta", old_alpha: "Alfa" },
     search: "Szukaj wersji",
-    installed: "Zainstalowana",
     install: "Zainstaluj",
 
     cancel: "Anuluj",
     resolving: "Przygotowywanie pobierania...",
-    progress: "{{done}} / {{total}} · {{files}} / {{totalFiles}} plików",
     empty: "Żadna wersja nie pasuje do wyszukiwania.",
     loadFailed: "Nie udało się wczytać listy wersji",
     loadFailedHint: "Sprawdź połączenie z internetem i spróbuj ponownie.",

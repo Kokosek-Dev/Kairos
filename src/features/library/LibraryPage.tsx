@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { Button } from "@/components/ui/button";
 import { ImportCodeDialog } from "@/features/share/ImportCodeDialog";
-import { TexturePacksSection } from "@/features/textures/TexturePacksSection";
 import { useJobsStore } from "@/features/discover/jobsStore";
 import { pickMrpackFile } from "@/lib/tauri/modrinth";
 import { DeleteInstanceDialog } from "@/features/instances/DeleteInstanceDialog";
@@ -162,8 +161,6 @@ export function LibraryPage() {
           )}
         </>
       )}
-
-      <TexturePacksSection />
 
       <ImportCodeDialog open={importingCode} onOpenChange={setImportingCode} />
       <NewInstanceDialog open={creating} onOpenChange={setCreating} />
