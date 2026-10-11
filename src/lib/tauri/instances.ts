@@ -59,3 +59,11 @@ export const deleteInstance = (instanceId: string) => invoke<void>("delete_insta
 export const openInstanceFolder = (instanceId: string) => invoke<void>("open_instance_folder", { instanceId });
 export const pickIconFile = () => invoke<string | null>("pick_icon_file");
 export const pickJavaFile = () => invoke<string | null>("pick_java_file");
+
+export interface MemoryAdvice {
+  totalMb: number;
+  recommendedMb: number;
+  maxMb: number;
+}
+
+export const getMemoryAdvice = (modded: boolean) => invoke<MemoryAdvice>("get_memory_advice", { modded });

@@ -1,7 +1,8 @@
 ﻿use super::blocking;
 use crate::error::{AppError, AppResult};
-use crate::instances::model::{IconInput, Instance, InstanceSettings, NewInstance};
+use crate::instances::model::{IconInput, Instance, InstanceSettings, LoaderKind, NewInstance};
 use crate::instances::store;
+use crate::memory::{self, MemoryAdvice};
 use crate::state::AppState;
 use std::path::PathBuf;
 use tauri::{AppHandle, State};
@@ -105,4 +106,9 @@ async fn pick_file(app: AppHandle, label: &'static str, extensions: &'static [&'
         Ok(Some(path.to_string_lossy().into_owned()))
     })
     .await
+}
+
+#[tauri::command]
+pub async fn get_memory_advice(modded: bool) -> AppResult<MemoryAdvice> {
+    blocking(move || Ok(memory::advise(memory::total_mb(), modded))).await
 }

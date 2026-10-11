@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Boxes, Copy, FileDown, FolderOpen, Save, Trash2 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -12,6 +12,7 @@ import { exportMrpack, pickMrpackDestination } from "@/lib/tauri/modrinth";
 import { errorMessage } from "@/lib/tauri/errors";
 import {
   duplicateInstance,
+  getMemoryAdvice,
   openInstanceFolder,
   pickJavaFile,
   setInstanceIcon,
@@ -29,7 +30,7 @@ import { INSTANCES_KEY, useInstance } from "./useInstances";
 import { VersionPicker } from "./VersionPicker";
 
 const MIN_MEMORY_MB = 512;
-const SLIDER_MAX_MB = 16384;
+const FALLBACK_MAX_MB = 16384;
 const MEMORY_STEP_MB = 256;
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -74,6 +75,13 @@ function SettingsForm({ instance }: { instance: Instance }) {
   const [jvmText, setJvmText] = useState(joinArgs(instance.jvmArgs));
   const [javaPath, setJavaPath] = useState(instance.javaPath);
   const [deleting, setDeleting] = useState(false);
+
+  const advice = useQuery({
+    queryKey: ["memory-advice", loader !== "vanilla"],
+    queryFn: () => getMemoryAdvice(loader !== "vanilla"),
+    staleTime: Infinity,
+  });
+  const sliderMax = advice.data?.maxMb ?? FALLBACK_MAX_MB;
 
   const thisRunning = instanceId === instance.id && isBusy(phase);
   const dirty =
@@ -199,14 +207,28 @@ function SettingsForm({ instance }: { instance: Instance }) {
           <input
             type="range"
             min={MIN_MEMORY_MB}
-            max={SLIDER_MAX_MB}
+            max={sliderMax}
             step={MEMORY_STEP_MB}
-            value={Math.min(memoryMb, SLIDER_MAX_MB)}
+            value={Math.min(memoryMb, sliderMax)}
             onChange={(event) => setMemoryMb(Number(event.target.value))}
             className="h-2 flex-1 cursor-pointer accent-accent"
           />
           <span className="w-16 text-right font-semibold">{formatMemory(memoryMb)}</span>
         </div>
+        {advice.data && (
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <p className={memoryMb > advice.data.maxMb ? "text-danger" : "text-muted"}>
+              {memoryMb > advice.data.maxMb
+                ? t("instances.memoryTooMuch", { max: formatMemory(advice.data.maxMb) })
+                : t("instances.memoryAdvice", { total: formatMemory(advice.data.totalMb), recommended: formatMemory(advice.data.recommendedMb) })}
+            </p>
+            {memoryMb !== advice.data.recommendedMb && (
+              <Button variant="secondary" size="sm" onClick={() => setMemoryMb(advice.data.recommendedMb)}>
+                {t("instances.memoryUse")}
+              </Button>
+            )}
+          </div>
+        )}
         <Field label={t("instances.memoryMb")}>
           <Input
             type="number"

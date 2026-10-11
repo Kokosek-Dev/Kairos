@@ -10,6 +10,7 @@ mod java;
 mod launch;
 mod location;
 mod loaders;
+mod memory;
 mod modrinth;
 mod mojang;
 mod paths;
@@ -96,6 +97,7 @@ pub fn run() {
             commands::export_texture_pack,
             commands::use_texture_pack_in_instances,
             commands::get_data_location,
+            commands::get_memory_advice,
             commands::pick_data_folder,
             commands::move_data_location,
             commands::restart_app,
