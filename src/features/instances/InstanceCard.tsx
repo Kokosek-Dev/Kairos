@@ -65,7 +65,7 @@ export function InstanceCard({ instance, index = 0, onDelete }: InstanceCardProp
       whileHover={{ y: -3 }}
       transition={{ duration: 0.25, delay: Math.min(index, 8) * 0.05 }}
       className={cn(
-        "group relative flex flex-col gap-4 overflow-hidden rounded-2xl border bg-surface p-4 transition-[border-color,box-shadow] hover:border-accent/50 hover:shadow-glow",
+        "glow-follow group relative flex flex-col gap-4 overflow-hidden rounded-2xl border bg-surface p-4 transition-[border-color,box-shadow] hover:border-accent/50 hover:shadow-glow",
         thisRunning && "border-success/50",
       )}
     >

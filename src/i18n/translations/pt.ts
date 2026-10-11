@@ -2,6 +2,28 @@ import type { Translations } from "../locales";
 
 export const pt: Translations = {
   nav: { home: "Início", library: "Biblioteca", textures: "Texturas", discover: "Descobrir", settings: "Configurações", recent: "Recentes" },
+  detective: {
+    title: "Detetive de mods",
+    button: "Encontrar o mod culpado",
+    body: "O Kairos desativa metade dos seus mods, inicia o jogo e reduz a busca até sobrar um só mod.",
+    needsMods: "Você precisa de pelo menos dois mods ativados.",
+    safety: "Primeiro um momento é salvo e, no fim, todos os mods voltam a ficar ativados. Mods que podem ser testados: {{count}}.",
+    start: "Começar a busca",
+    round: "Rodada {{round}} · suspeitos restantes: {{suspects}} · mods ativados: {{enabled}}",
+    checking: "Verificação final: iniciando o jogo sem {{name}}.",
+    running: "O jogo está em execução. Veja se o problema aparece e feche o jogo.",
+    ask: "O problema apareceu?",
+    yes: "Sim, apareceu",
+    no: "Não, tudo certo",
+    stopRestore: "Parar e restaurar os mods",
+    foundTitle: "O culpado é {{name}}",
+    foundBody: "Sem este mod o problema desaparece. Ele fica desativado até você decidir outra coisa.",
+    remove: "Remover",
+    keepOff: "Deixar desativado",
+    multipleTitle: "Mais de um mod está envolvido",
+    multipleBody: "O problema continua mesmo sem o último suspeito, então vem de uma combinação de mods ou de outra coisa, como Java ou as configurações de memória. Todos os mods foram ativados de novo.",
+    error: "Não foi possível continuar a busca. Use o botão abaixo para ativar seus mods novamente.",
+  },
   offline: {
     menu: "Mais formas de jogar",
     menuItem: "Jogar offline",

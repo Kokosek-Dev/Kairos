@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Toaster } from "sonner";
 import { Backdrop } from "@/components/Backdrop";
+import { GlowFollow } from "@/components/GlowFollow";
 import { Mascot } from "@/components/Mascot";
 import { IncognitoTheme } from "@/features/incognito/IncognitoTheme";
 import { Route, Routes, useLocation } from "react-router-dom";
@@ -20,6 +21,7 @@ import { OfflinePlayDialog } from "@/features/launch/OfflinePlayDialog";
 import { SignInDialog } from "@/features/accounts/SignInDialog";
 import { CommandPalette } from "@/features/palette/CommandPalette";
 import { CrashDialog } from "@/features/launch/CrashDialog";
+import { DetectiveDialog } from "@/features/detective/DetectiveDialog";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
 import { UpdateWatcher } from "@/features/updates/UpdateWatcher";
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
@@ -31,6 +33,7 @@ export function App() {
     <div className="relative h-full">
       <Backdrop />
       <Mascot />
+      <GlowFollow />
       <IncognitoTheme />
       <div className="relative z-10 flex h-full flex-col">
       <TitleBar />
@@ -65,6 +68,7 @@ export function App() {
       <CrashDialog />
       <CommandPalette />
       </div>
+      <DetectiveDialog />
       <SignInDialog />
       <OfflinePlayDialog />
       <Toaster position="bottom-right" theme="dark" toastOptions={{ style: { background: "var(--surface-raised)", color: "var(--foreground)", border: "1px solid var(--border)" } }} />

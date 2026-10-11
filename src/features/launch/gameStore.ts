@@ -43,7 +43,7 @@ interface GameState {
   consoleOpen: boolean;
   startedAt: number | null;
   crash: CrashInfo | null;
-  play: (instanceId: string, title: string, offline?: boolean) => Promise<void>;
+  play: (instanceId: string, title: string, offline?: boolean, skipUpdates?: boolean) => Promise<void>;
   stop: () => Promise<void>;
   clear: () => void;
   setConsoleOpen: (open: boolean) => void;
@@ -97,7 +97,7 @@ export const useGameStore = create<GameState>((set, get) => {
     startedAt: null,
     crash: null,
 
-    play: async (instanceId, title, offline = false) => {
+    play: async (instanceId, title, offline = false, skipUpdates = false) => {
       if (isBusy(get().phase)) return;
       stopRequested = false;
       set({
@@ -111,7 +111,7 @@ export const useGameStore = create<GameState>((set, get) => {
         phase: { kind: "preparing", step: "version", doneBytes: 0, totalBytes: 0 },
       });
       try {
-        if (!offline) await updateBeforeLaunch(instanceId);
+        if (!offline && !skipUpdates) await updateBeforeLaunch(instanceId);
         const { discordPresence, incognito } = usePreferences.getState();
         await launchInstance(instanceId, offline, discordPresence && !incognito, handle);
       } catch (error) {

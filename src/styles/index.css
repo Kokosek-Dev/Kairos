@@ -100,7 +100,20 @@
   }
 }
 
+.panel::before,
+.glow-follow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--glow, 0);
+  transition: opacity 0.3s ease;
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklch, var(--accent) 15%, transparent), transparent 65%);
+}
+
 @utility panel {
+  position: relative;
   border: 1px solid var(--border);
   border-radius: 1rem;
   background: linear-gradient(180deg, var(--surface), color-mix(in oklch, var(--surface) 55%, transparent));

@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { FileSearch, LifeBuoy, Settings2 } from "lucide-react";
+import { FileSearch, LifeBuoy, Search, Settings2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { analyzeCrash, revealFile, type CrashKind } from "@/lib/tauri/crash";
+import { useDetectiveStore } from "@/features/detective/detectiveStore";
 import { useProblemReport } from "@/features/settings/useProblemReport";
 import { useGameStore } from "./gameStore";
 
@@ -16,6 +17,7 @@ export function CrashDialog() {
   const navigate = useNavigate();
   const { crash, dismissCrash } = useGameStore();
   const report = useProblemReport();
+  const openDetective = useDetectiveStore((state) => state.open);
   const analysis = useQuery({
     queryKey: ["crash", crash?.instanceId, crash?.startedAt],
     queryFn: () => analyzeCrash(crash?.instanceId ?? "", crash?.startedAt ?? 0),
@@ -41,6 +43,18 @@ export function CrashDialog() {
             <Button variant="secondary" onClick={() => void revealFile(result.reportPath ?? "")}>
               <FileSearch size={16} />
               {t("crash.showReport")}
+            </Button>
+          )}
+          {crash && !SETTINGS_FIXES.includes(kind) && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                void openDetective(crash.instanceId, crash.title);
+                dismissCrash();
+              }}
+            >
+              <Search size={16} />
+              {t("detective.button")}
             </Button>
           )}
           {crash && SETTINGS_FIXES.includes(kind) && (

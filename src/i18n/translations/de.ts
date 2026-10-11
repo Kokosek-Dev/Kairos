@@ -2,6 +2,28 @@ import type { Translations } from "../locales";
 
 export const de: Translations = {
   nav: { home: "Start", library: "Bibliothek", textures: "Texturen", discover: "Entdecken", settings: "Einstellungen", recent: "Zuletzt" },
+  detective: {
+    title: "Mod-Detektiv",
+    button: "Schuldigen Mod finden",
+    body: "Kairos schaltet die Hälfte deiner Mods aus, startet das Spiel und grenzt die Suche ein, bis ein Mod übrig bleibt.",
+    needsMods: "Du brauchst mindestens zwei eingeschaltete Mods.",
+    safety: "Zuerst wird ein Moment gespeichert, am Ende sind alle Mods wieder eingeschaltet. Mods, die getestet werden können: {{count}}.",
+    start: "Suche starten",
+    round: "Runde {{round}} · Verdächtige übrig: {{suspects}} · eingeschaltete Mods: {{enabled}}",
+    checking: "Letzte Prüfung: Das Spiel startet ohne {{name}}.",
+    running: "Das Spiel läuft. Prüfe, ob das Problem auftritt, und schließe das Spiel.",
+    ask: "Ist das Problem aufgetreten?",
+    yes: "Ja, es ist aufgetreten",
+    no: "Nein, alles in Ordnung",
+    stopRestore: "Abbrechen und Mods wiederherstellen",
+    foundTitle: "Schuldig ist {{name}}",
+    foundBody: "Ohne diesen Mod ist das Problem weg. Er bleibt ausgeschaltet, bis du etwas anderes entscheidest.",
+    remove: "Entfernen",
+    keepOff: "Ausgeschaltet lassen",
+    multipleTitle: "Mehr als ein Mod ist beteiligt",
+    multipleBody: "Das Problem bleibt auch ohne den letzten Verdächtigen, es kommt also von einer Kombination aus Mods oder von etwas anderem, etwa Java oder den Speichereinstellungen. Alle Mods sind wieder eingeschaltet.",
+    error: "Die Suche konnte nicht fortgesetzt werden. Mit der Schaltfläche unten schaltest du deine Mods wieder ein.",
+  },
   offline: {
     menu: "Weitere Spielmöglichkeiten",
     menuItem: "Offline spielen",

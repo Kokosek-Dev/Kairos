@@ -2,6 +2,28 @@ import type { Translations } from "../locales";
 
 export const fr: Translations = {
   nav: { home: "Accueil", library: "Bibliothèque", textures: "Textures", discover: "Découvrir", settings: "Paramètres", recent: "Récents" },
+  detective: {
+    title: "Détective de mods",
+    button: "Trouver le mod coupable",
+    body: "Kairos désactive la moitié de tes mods, lance le jeu et réduit la recherche jusqu'à ce qu'il ne reste qu'un mod.",
+    needsMods: "Il faut au moins deux mods activés.",
+    safety: "Un moment est d'abord enregistré, et à la fin tous les mods sont réactivés. Mods pouvant être testés : {{count}}.",
+    start: "Lancer la recherche",
+    round: "Manche {{round}} · suspects restants : {{suspects}} · mods activés : {{enabled}}",
+    checking: "Dernière vérification : lancement du jeu sans {{name}}.",
+    running: "Le jeu est lancé. Vérifie si le problème apparaît, puis ferme le jeu.",
+    ask: "Le problème est-il apparu ?",
+    yes: "Oui, il est apparu",
+    no: "Non, tout va bien",
+    stopRestore: "Arrêter et restaurer les mods",
+    foundTitle: "Le coupable est {{name}}",
+    foundBody: "Sans ce mod, le problème disparaît. Il reste désactivé tant que tu n'en décides pas autrement.",
+    remove: "Le supprimer",
+    keepOff: "Le laisser désactivé",
+    multipleTitle: "Plusieurs mods sont impliqués",
+    multipleBody: "Le problème persiste même sans le dernier suspect, il vient donc d'une combinaison de mods ou d'autre chose, comme Java ou les réglages de mémoire. Tous les mods sont de nouveau activés.",
+    error: "La recherche n'a pas pu continuer. Utilise le bouton ci-dessous pour réactiver tes mods.",
+  },
   offline: {
     menu: "Autres façons de jouer",
     menuItem: "Jouer hors ligne",

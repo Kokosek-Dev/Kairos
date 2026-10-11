@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ArrowUpCircle, Compass, Package, RefreshCw, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowUpCircle, Compass, Package, RefreshCw, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useDetectiveStore } from "@/features/detective/detectiveStore";
 import { contentKey, useJobsStore } from "@/features/discover/jobsStore";
 import { createSafetyMoment } from "@/lib/tauri/moments";
 import { formatBytes } from "@/lib/format";
@@ -97,6 +98,7 @@ export function ContentPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const instance = useInstance(id);
+  const openDetective = useDetectiveStore((state) => state.open);
   const items = useQuery({ queryKey: contentKey(id), queryFn: () => listContent(id) });
   const [updates, setUpdates] = useState<UpdateInfo[] | null>(null);
   const { jobs, update } = useJobsStore();
@@ -122,6 +124,14 @@ export function ContentPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold tracking-tight">{t("content.title", { name: instance.data?.name ?? "" })}</h1>
         <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            disabled={modsBlocked || !instance.data}
+            onClick={() => instance.data && void openDetective(id, instance.data.name)}
+          >
+            <Search size={15} />
+            {t("detective.button")}
+          </Button>
           <Button variant="secondary" disabled={check.isPending || modsBlocked} onClick={() => check.mutate()}>
             <RefreshCw size={15} className={cn(check.isPending && "animate-spin")} />
             {t("content.checkUpdates")}
