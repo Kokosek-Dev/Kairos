@@ -1,13 +1,7 @@
+import type { Rect } from "@/features/pixel/PixelDocument";
 import type { SkinVariant } from "@/lib/tauri/skins";
 
 export const SKIN_SIZE = 64;
-
-export interface Rect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
 
 type Size = [width: number, height: number, depth: number];
 
@@ -74,13 +68,6 @@ export function paintableMask(variant: SkinVariant): Uint8Array {
 
 export function faceAt(variant: SkinVariant, x: number, y: number): Rect | null {
   return faceRects(variant).find((rect) => x >= rect.x && x < rect.x + rect.w && y >= rect.y && y < rect.y + rect.h) ?? null;
-}
-
-export function createSkinCanvas(): HTMLCanvasElement {
-  const canvas = document.createElement("canvas");
-  canvas.width = SKIN_SIZE;
-  canvas.height = SKIN_SIZE;
-  return canvas;
 }
 
 function fill(ctx: CanvasRenderingContext2D, rect: Rect, color: string) {

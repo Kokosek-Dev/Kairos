@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { SkinViewer } from "skinview3d";
 import { Raycaster, Vector2 } from "three";
-import type { SkinDocument } from "./document";
+import { applyTool, type BrushSettings } from "@/features/pixel/tools";
 import { SKIN_SIZE } from "./layout";
-import { applyTool, type BrushSettings, type Layer } from "./tools";
+import type { SkinDocument } from "./SkinDocument";
+
+export type Layer = "base" | "overlay";
 
 interface ModelPaneProps {
   doc: SkinDocument;

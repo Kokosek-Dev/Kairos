@@ -15,6 +15,7 @@ mod paths;
 mod skins;
 mod state;
 mod tasks;
+mod texturepacks;
 #[cfg(test)]
 mod test_support;
 
@@ -80,6 +81,16 @@ pub fn run() {
             commands::list_skins,
             commands::add_skin_from_file,
             commands::save_skin_png,
+            commands::list_texture_versions,
+            commands::create_texture_pack,
+            commands::list_texture_packs,
+            commands::delete_texture_pack,
+            commands::list_pack_textures,
+            commands::read_pack_texture,
+            commands::write_pack_texture,
+            commands::reset_pack_texture,
+            commands::export_texture_pack,
+            commands::install_texture_pack,
             commands::add_skin_from_player,
             commands::save_current_skin,
             commands::remove_skin,

@@ -1,8 +1,6 @@
-import type { SkinDocument } from "./document";
-import { faceAt, SKIN_SIZE, type Rect } from "./layout";
+import type { PixelDocument, Rect } from "./PixelDocument";
 
 export type Tool = "pencil" | "eraser" | "fill" | "picker";
-export type Layer = "base" | "overlay";
 
 export interface BrushSettings {
   tool: Tool;
@@ -19,12 +17,11 @@ function parseHex(color: string): [number, number, number] {
   return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
 }
 
-function stamp(doc: SkinDocument, x: number, y: number, size: number, color: string | null) {
+function stamp(doc: PixelDocument, x: number, y: number, size: number, color: string | null) {
   const offset = Math.floor((size - 1) / 2);
   for (let row = y - offset; row < y - offset + size; row++) {
     for (let column = x - offset; column < x - offset + size; column++) {
-      if (column < 0 || row < 0 || column >= SKIN_SIZE || row >= SKIN_SIZE) continue;
-      if (!doc.mask[row * SKIN_SIZE + column]) continue;
+      if (!doc.isPaintable(column, row)) continue;
       if (color === null) {
         doc.ctx.clearRect(column, row, 1, 1);
       } else {
@@ -35,20 +32,20 @@ function stamp(doc: SkinDocument, x: number, y: number, size: number, color: str
   }
 }
 
-function floodFill(doc: SkinDocument, face: Rect, startX: number, startY: number, color: string) {
-  const image = doc.ctx.getImageData(face.x, face.y, face.w, face.h);
+function floodFill(doc: PixelDocument, region: Rect, startX: number, startY: number, color: string) {
+  const image = doc.ctx.getImageData(region.x, region.y, region.w, region.h);
   const { data } = image;
-  const at = (x: number, y: number) => (y * face.w + x) * 4;
-  const origin = at(startX - face.x, startY - face.y);
+  const at = (x: number, y: number) => (y * region.w + x) * 4;
+  const origin = at(startX - region.x, startY - region.y);
   const target = [data[origin], data[origin + 1], data[origin + 2], data[origin + 3]];
   const [r, g, b] = parseHex(color);
   if (target[0] === r && target[1] === g && target[2] === b && target[3] === 255) return;
 
   const matches = (index: number) => target.every((value, channel) => data[index + channel] === value);
-  const stack = [[startX - face.x, startY - face.y]];
+  const stack = [[startX - region.x, startY - region.y]];
   while (stack.length > 0) {
     const [x, y] = stack.pop() as [number, number];
-    if (x < 0 || y < 0 || x >= face.w || y >= face.h) continue;
+    if (x < 0 || y < 0 || x >= region.w || y >= region.h) continue;
     const index = at(x, y);
     if (!matches(index)) continue;
     data[index] = r;
@@ -57,23 +54,23 @@ function floodFill(doc: SkinDocument, face: Rect, startX: number, startY: number
     data[index + 3] = 255;
     stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
   }
-  doc.ctx.putImageData(image, face.x, face.y);
+  doc.ctx.putImageData(image, region.x, region.y);
 }
 
-function pick(doc: SkinDocument, x: number, y: number): string | null {
+function pick(doc: PixelDocument, x: number, y: number): string | null {
   const [r, g, b, a] = doc.ctx.getImageData(x, y, 1, 1).data;
   return a === 0 ? null : toHex(r, g, b);
 }
 
 /** Applies the active tool to one pixel. Returns the picked color for the picker tool. */
-export function applyTool(doc: SkinDocument, brush: BrushSettings, x: number, y: number): string | null {
-  if (x < 0 || y < 0 || x >= SKIN_SIZE || y >= SKIN_SIZE) return null;
+export function applyTool(doc: PixelDocument, brush: BrushSettings, x: number, y: number): string | null {
+  if (x < 0 || y < 0 || x >= doc.width || y >= doc.height) return null;
   switch (brush.tool) {
     case "picker":
       return pick(doc, x, y);
     case "fill": {
-      const face = faceAt(doc.variant, x, y);
-      if (face) floodFill(doc, face, x, y, brush.color);
+      const region = doc.regionAt(x, y);
+      if (region) floodFill(doc, region, x, y, brush.color);
       break;
     }
     case "eraser":

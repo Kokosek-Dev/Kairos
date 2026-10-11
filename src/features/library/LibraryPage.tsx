@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { Button } from "@/components/ui/button";
+import { TexturePacksSection } from "@/features/textures/TexturePacksSection";
 import { useJobsStore } from "@/features/discover/jobsStore";
 import { pickMrpackFile } from "@/lib/tauri/modrinth";
 import { DeleteInstanceDialog } from "@/features/instances/DeleteInstanceDialog";
@@ -155,6 +156,8 @@ export function LibraryPage() {
           )}
         </>
       )}
+
+      <TexturePacksSection />
 
       <NewInstanceDialog open={creating} onOpenChange={setCreating} />
       <DeleteInstanceDialog instance={deleting} onClose={() => setDeleting(null)} />

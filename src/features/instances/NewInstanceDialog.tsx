@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Brush } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Field, Input } from "@/components/ui/input";
+import { CreatePackDialog } from "@/features/textures/CreatePackDialog";
 import { errorMessage } from "@/lib/tauri/errors";
 import { createInstance, type IconInput, type LoaderKind } from "@/lib/tauri/instances";
 import { PlaceholderTile, PresetTile } from "./InstanceIcon";
@@ -33,6 +35,7 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
   const [icon, setIcon] = useState<IconInput>(DEFAULT_ICON);
   const [loader, setLoader] = useState<LoaderKind>("vanilla");
   const [loaderVersion, setLoaderVersion] = useState<string | null>(null);
+  const [texturesOpen, setTexturesOpen] = useState(false);
 
   const latestRelease = manifest.data?.latest.release;
   useEffect(() => {
@@ -112,8 +115,14 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
 
         {create.isError && <p className="mt-3 text-sm text-danger">{errorMessage(t, create.error)}</p>}
 
-        <div className="mt-5 flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+        <div className="mt-5 flex items-center justify-between gap-2">
+          <Button variant="ghost" onClick={() => setTexturesOpen(true)}>
+            <Brush size={16} />
+            {t("textures.createOwn")}
+            <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">{t("textures.beta")}</span>
+          </Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
           <Button
@@ -122,8 +131,10 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
           >
             {t("instances.create")}
           </Button>
+          </div>
         </div>
       </DialogContent>
+      <CreatePackDialog open={texturesOpen} onOpenChange={setTexturesOpen} />
     </Dialog>
   );
 }

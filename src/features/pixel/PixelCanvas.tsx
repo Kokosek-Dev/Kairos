@@ -1,33 +1,41 @@
 import { useEffect, useRef } from "react";
-import type { SkinDocument } from "./document";
-import { faceRects, SKIN_SIZE } from "./layout";
+import type { PixelDocument } from "./PixelDocument";
 import { applyTool, forEachOnLine, type BrushSettings } from "./tools";
 
-const SCALE = 8;
-const VIEW = SKIN_SIZE * SCALE;
+const VIEW_SIZE = 512;
+const GRID_MIN_SCALE = 8;
 
-interface FlatPaneProps {
-  doc: SkinDocument;
+interface PixelCanvasProps {
+  doc: PixelDocument;
   brush: BrushSettings;
   onPick: (color: string) => void;
+  /** Extra guides drawn above the picture, e.g. the outline of every body part of a skin. */
+  guides?: (ctx: CanvasRenderingContext2D, scale: number) => void;
 }
 
-function drawGuides(ctx: CanvasRenderingContext2D, doc: SkinDocument) {
-  ctx.clearRect(0, 0, VIEW, VIEW);
-  ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
-  ctx.fillRect(0, 0, VIEW, VIEW);
-  const rects = faceRects(doc.variant);
-  for (const { x, y, w, h } of rects) ctx.clearRect(x * SCALE, y * SCALE, w * SCALE, h * SCALE);
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+function drawGrid(ctx: CanvasRenderingContext2D, doc: PixelDocument, scale: number) {
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
   ctx.lineWidth = 1;
-  for (const { x, y, w, h } of rects) ctx.strokeRect(x * SCALE + 0.5, y * SCALE + 0.5, w * SCALE - 1, h * SCALE - 1);
+  ctx.beginPath();
+  for (let x = 1; x < doc.width; x++) {
+    ctx.moveTo(x * scale + 0.5, 0);
+    ctx.lineTo(x * scale + 0.5, doc.height * scale);
+  }
+  for (let y = 1; y < doc.height; y++) {
+    ctx.moveTo(0, y * scale + 0.5);
+    ctx.lineTo(doc.width * scale, y * scale + 0.5);
+  }
+  ctx.stroke();
 }
 
-/** The flat skin texture, magnified, for precise pixel work. */
-export function FlatPane({ doc, brush, onPick }: FlatPaneProps) {
+/** The flat picture, magnified, for precise pixel work. */
+export function PixelCanvas({ doc, brush, onPick, guides }: PixelCanvasProps) {
   const view = useRef<HTMLCanvasElement>(null);
-  const guides = useRef<HTMLCanvasElement>(null);
+  const overlay = useRef<HTMLCanvasElement>(null);
   const live = useRef({ brush, onPick });
+  const scale = Math.max(1, Math.floor(VIEW_SIZE / Math.max(doc.width, doc.height)));
+  const viewWidth = doc.width * scale;
+  const viewHeight = doc.height * scale;
 
   useEffect(() => {
     live.current = { brush, onPick };
@@ -35,17 +43,19 @@ export function FlatPane({ doc, brush, onPick }: FlatPaneProps) {
 
   useEffect(() => {
     const target = view.current?.getContext("2d");
-    const overlay = guides.current?.getContext("2d");
-    if (!target || !overlay) return;
+    const top = overlay.current?.getContext("2d");
+    if (!target || !top) return;
     let frame = 0;
 
     const draw = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         target.imageSmoothingEnabled = false;
-        target.clearRect(0, 0, VIEW, VIEW);
-        target.drawImage(doc.canvas, 0, 0, VIEW, VIEW);
-        drawGuides(overlay, doc);
+        target.clearRect(0, 0, viewWidth, viewHeight);
+        target.drawImage(doc.canvas, 0, 0, viewWidth, viewHeight);
+        top.clearRect(0, 0, viewWidth, viewHeight);
+        if (guides) guides(top, scale);
+        else if (scale >= GRID_MIN_SCALE) drawGrid(top, doc, scale);
       });
     };
 
@@ -55,18 +65,18 @@ export function FlatPane({ doc, brush, onPick }: FlatPaneProps) {
       cancelAnimationFrame(frame);
       unsubscribe();
     };
-  }, [doc]);
+  }, [doc, guides, scale, viewWidth, viewHeight]);
 
   useEffect(() => {
-    const element = guides.current;
+    const element = overlay.current;
     if (!element) return;
     let last: { x: number; y: number } | null = null;
 
     const pixel = (event: PointerEvent) => {
       const bounds = element.getBoundingClientRect();
       return {
-        x: Math.floor(((event.clientX - bounds.left) / bounds.width) * SKIN_SIZE),
-        y: Math.floor(((event.clientY - bounds.top) / bounds.height) * SKIN_SIZE),
+        x: Math.floor(((event.clientX - bounds.left) / bounds.width) * doc.width),
+        y: Math.floor(((event.clientY - bounds.top) / bounds.height) * doc.height),
       };
     };
 
@@ -110,9 +120,12 @@ export function FlatPane({ doc, brush, onPick }: FlatPaneProps) {
   }, [doc]);
 
   return (
-    <div className="checker relative aspect-square w-full max-w-[32rem] overflow-hidden rounded-lg border">
-      <canvas ref={view} width={VIEW} height={VIEW} className="absolute inset-0 size-full" />
-      <canvas ref={guides} width={VIEW} height={VIEW} className="absolute inset-0 size-full cursor-crosshair touch-none" />
+    <div
+      className="checker relative mx-auto w-full max-w-[32rem] overflow-hidden rounded-lg border"
+      style={{ aspectRatio: `${doc.width} / ${doc.height}` }}
+    >
+      <canvas ref={view} width={viewWidth} height={viewHeight} className="absolute inset-0 size-full" />
+      <canvas ref={overlay} width={viewWidth} height={viewHeight} className="absolute inset-0 size-full cursor-crosshair touch-none" />
     </div>
   );
 }

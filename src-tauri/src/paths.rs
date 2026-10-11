@@ -74,6 +74,10 @@ impl DataPaths {
         self.root.join("skins")
     }
 
+    pub fn texture_packs(&self) -> PathBuf {
+        self.root.join("texturepacks")
+    }
+
     pub fn instances(&self) -> PathBuf {
         self.root.join("instances")
     }
