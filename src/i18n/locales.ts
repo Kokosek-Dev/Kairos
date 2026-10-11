@@ -111,6 +111,7 @@ export const en: Translations = {
     mascotTry: "Try it now:",
     mascotRun: "Run",
     mascotWave: "Wave",
+    mascotFly: "Fly",
   },
   storage: {
     title: "Storage",
@@ -584,6 +585,7 @@ export const pl: Translations = {
     mascotTry: "Zobacz teraz:",
     mascotRun: "Bieg",
     mascotWave: "Machanie",
+    mascotFly: "Lot",
   },
   storage: {
     title: "Miejsce zapisu",

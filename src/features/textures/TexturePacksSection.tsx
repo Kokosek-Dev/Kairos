@@ -3,6 +3,7 @@ import { Brush, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
 import { formatRelative } from "@/lib/format";
 import { deleteTexturePack } from "@/lib/tauri/texturepacks";
@@ -34,8 +35,8 @@ export function TexturePacksSection() {
       </div>
       {packs.data?.length === 0 && <div className="rounded-xl border border-dashed p-8 text-center text-muted">{t("textures.packsEmpty")}</div>}
       <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3">
-        {packs.data?.map((pack) => (
-          <article key={pack.id} className="panel flex items-center gap-3 p-4">
+        {packs.data?.map((pack, index) => (
+          <Reveal key={pack.id} index={index} className="panel flex items-center gap-3 p-4">
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium">{pack.name}</p>
               <p className="text-xs text-muted">
@@ -58,7 +59,7 @@ export function TexturePacksSection() {
             >
               <Trash2 size={15} />
             </Button>
-          </article>
+          </Reveal>
         ))}
       </div>
       <CreatePackDialog open={creating} onOpenChange={setCreating} />

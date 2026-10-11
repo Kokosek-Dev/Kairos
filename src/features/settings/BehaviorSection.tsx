@@ -49,6 +49,9 @@ export function BehaviorSection() {
           <Button variant="secondary" size="sm" onClick={() => showMascot("peek")}>
             {t("behavior.mascotWave")}
           </Button>
+          <Button variant="secondary" size="sm" onClick={() => showMascot("fly")}>
+            {t("behavior.mascotFly")}
+          </Button>
         </div>
       </div>
     </section>

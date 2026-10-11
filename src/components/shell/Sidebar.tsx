@@ -60,7 +60,7 @@ function RecentInstances() {
         <NavLink
           key={instance.id}
           to={`/instances/${instance.id}`}
-          className="flex h-10 items-center gap-3 rounded-md px-3 text-muted transition-colors hover:bg-surface-raised hover:text-foreground"
+          className="flex h-10 items-center gap-3 rounded-md px-3 text-muted transition-all hover:translate-x-1 hover:bg-surface-raised hover:text-foreground"
         >
           <InstanceIcon icon={instance.icon} instanceId={instance.id} className="size-6 rounded-md" iconSize={13} />
           <span className="truncate text-sm">{instance.name}</span>
@@ -107,7 +107,9 @@ export function Sidebar() {
                   transition={{ type: "spring", stiffness: 500, damping: 40 }}
                 />
               )}
-              <Icon size={18} className="relative" style={{ color: "var(--item)", opacity: isActive ? 1 : 0.75 }} />
+              <motion.span className="relative grid" whileHover={{ scale: 1.2, rotate: -8 }} transition={{ type: "spring", stiffness: 400, damping: 14 }}>
+                <Icon size={18} style={{ color: "var(--item)", opacity: isActive ? 1 : 0.75 }} />
+              </motion.span>
               <span className="relative">{t(labelKey)}</span>
             </>
           )}

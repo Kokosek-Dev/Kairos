@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 import { create } from "zustand";
 import { useEffect, useRef, useState } from "react";
-import { RunningAnimation, SkinViewer, WaveAnimation } from "skinview3d";
+import { FlyingAnimation, RunningAnimation, SkinViewer, WaveAnimation } from "skinview3d";
 import { usePreferences } from "@/features/settings/preferences";
 import { SkinDocument } from "@/features/skins/editor/SkinDocument";
 import { useProfile } from "@/features/skins/useProfile";
 
-export type Act = "run" | "peek";
+export type Act = "run" | "peek" | "fly";
 
 interface MascotRequests {
   pending: Act | null;
@@ -16,6 +16,7 @@ interface MascotRequests {
 /** Lets the settings page ask for the mascot right away instead of waiting for its next visit. */
 export const useMascotRequests = create<MascotRequests>((set) => ({ pending: null, show: (act) => set({ pending: act }) }));
 
+const ACTS: Act[] = ["run", "peek", "fly"];
 const WIDTH = 130;
 const HEIGHT = 170;
 const FIRST_DELAY = [20_000, 40_000];
@@ -37,8 +38,8 @@ function Figure({ act }: { act: Act }) {
     if (!element) return;
     const viewer = new SkinViewer({ canvas: element, width: WIDTH, height: HEIGHT, zoom: 0.8 });
     viewer.controls.enabled = false;
-    viewer.animation = act === "run" ? new RunningAnimation() : new WaveAnimation();
-    viewer.playerWrapper.rotation.y = act === "run" ? Math.PI / 2 : -0.4;
+    viewer.animation = act === "run" ? new RunningAnimation() : act === "fly" ? new FlyingAnimation() : new WaveAnimation();
+    viewer.playerWrapper.rotation.y = act === "peek" ? -0.4 : Math.PI / 2;
     const fallback = () => viewer.loadSkin(new SkinDocument().canvas);
     if (skinUrl) void viewer.loadSkin(skinUrl, { model: variant }).catch(fallback);
     else fallback();
@@ -65,13 +66,13 @@ export function Mascot() {
     if (!enabled || act !== null || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const timer = setTimeout(() => {
       appeared.current = true;
-      setAct(Math.random() < 0.5 ? "run" : "peek");
+      setAct(ACTS[Math.floor(Math.random() * ACTS.length)]);
     }, between(appeared.current ? NEXT_DELAY : FIRST_DELAY));
     return () => clearTimeout(timer);
   }, [enabled, act]);
 
   const done = () => setAct(null);
-  const width = window.innerWidth;
+  const { innerWidth: width, innerHeight: height } = window;
 
   return (
     <div aria-hidden="true" className="pointer-events-none fixed bottom-0 left-0 z-30">
@@ -83,6 +84,16 @@ export function Mascot() {
           onAnimationComplete={done}
         >
           <Figure act="run" />
+        </motion.div>
+      )}
+      {act === "fly" && (
+        <motion.div
+          initial={{ x: -WIDTH, y: -height * 0.45 }}
+          animate={{ x: width, y: [-height * 0.45, -height * 0.7, -height * 0.5, -height * 0.75] }}
+          transition={{ duration: Math.max(7, width / 150), ease: "easeInOut" }}
+          onAnimationComplete={done}
+        >
+          <Figure act="fly" />
         </motion.div>
       )}
       {act === "peek" && (
