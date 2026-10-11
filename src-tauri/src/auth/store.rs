@@ -5,7 +5,7 @@ use std::fs;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-const KEYRING_SERVICE: &str = "zenith-launcher";
+const KEYRING_SERVICE: &str = "kairos-launcher";
 
 pub trait SecretStore: Send + Sync {
     fn set(&self, key: &str, secret: &[u8]) -> AppResult<()>;
@@ -173,7 +173,7 @@ mod keyring_tests {
     #[ignore = "uses the real operating system credential store"]
     fn the_system_keyring_stores_a_token_sized_secret() {
         let store = KeyringStore;
-        let key = format!("zenith-test-{}", std::process::id());
+        let key = format!("kairos-test-{}", std::process::id());
         let secret = "M.C5_".to_owned() + &"x".repeat(2000);
 
         store.set(&key, secret.as_bytes()).unwrap();

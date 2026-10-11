@@ -37,7 +37,7 @@ impl ContentKind {
 
 }
 
-/// What Zenith knows about a file it installed. Files dropped into the folders by hand
+/// What Kairos knows about a file it installed. Files dropped into the folders by hand
 /// have no entry and are listed by file name only.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -188,7 +188,7 @@ mod tests {
     }
 
     fn scratch(name: &str) -> DataPaths {
-        let paths = DataPaths::new(std::env::temp_dir().join(format!("zenith-content-{name}-{}", std::process::id())));
+        let paths = DataPaths::new(std::env::temp_dir().join(format!("kairos-content-{name}-{}", std::process::id())));
         let _ = fs::remove_dir_all(paths.root());
         fs::create_dir_all(paths.instance_dir("pack")).unwrap();
         paths

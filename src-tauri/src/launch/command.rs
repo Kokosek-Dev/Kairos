@@ -4,7 +4,7 @@ use crate::paths::DataPaths;
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-const LAUNCHER_NAME: &str = "zenith";
+const LAUNCHER_NAME: &str = "kairos";
 const LEGACY_JVM_ARGUMENTS: [&str; 5] = [
     "-Djava.library.path=${natives_directory}",
     "-Dminecraft.launcher.brand=${launcher_name}",

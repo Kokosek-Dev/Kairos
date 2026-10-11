@@ -33,7 +33,7 @@ pub async fn save_problem_report(app: AppHandle, state: State<'_, AppState>, ins
     let paths = state.paths.clone();
     let version = app.package_info().version.to_string();
     blocking(move || {
-        let chosen = app.dialog().file().add_filter("Zip", &["zip"]).set_file_name("zenith-problem-report.zip").blocking_save_file();
+        let chosen = app.dialog().file().add_filter("Zip", &["zip"]).set_file_name("kairos-problem-report.zip").blocking_save_file();
         let Some(chosen) = chosen else { return Ok(None) };
         let destination = chosen.into_path().map_err(|error| AppError::Internal(error.to_string()))?;
         diagnostics::write_report(&paths, instance_id.as_deref(), &destination, &version, memory::total_mb())?;

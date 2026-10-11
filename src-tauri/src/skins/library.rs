@@ -138,7 +138,7 @@ mod tests {
     use super::*;
 
     fn scratch(name: &str) -> DataPaths {
-        let paths = DataPaths::new(std::env::temp_dir().join(format!("zenith-skins-{name}-{}", std::process::id())));
+        let paths = DataPaths::new(std::env::temp_dir().join(format!("kairos-skins-{name}-{}", std::process::id())));
         let _ = fs::remove_dir_all(paths.root());
         paths
     }

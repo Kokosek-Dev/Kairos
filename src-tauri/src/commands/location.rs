@@ -7,7 +7,7 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_dialog::DialogExt;
 
-const FOLDER_NAME: &str = "Zenith";
+const FOLDER_NAME: &str = "Kairos";
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]

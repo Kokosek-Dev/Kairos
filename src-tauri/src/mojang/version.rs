@@ -292,7 +292,7 @@ pub struct Rule {
 
 impl Rule {
     /// Rules constrained by an OS version or by launcher features never match:
-    /// Zenith does not enable any optional launcher feature (demo mode, quick play,
+    /// Kairos does not enable any optional launcher feature (demo mode, quick play,
     /// custom resolution) and the OS-version rules only patch old Java 8 builds.
     fn matches(&self) -> bool {
         let os_matches = self.os.as_ref().is_none_or(|os| {

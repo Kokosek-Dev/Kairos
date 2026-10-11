@@ -17,10 +17,10 @@ import { errorMessage } from "@/lib/tauri/errors";
 import { createInstance } from "@/lib/tauri/instances";
 import { cn } from "@/lib/utils";
 
-const STORAGE_KEY = "zenith.welcome";
+const STORAGE_KEY = "kairos.welcome";
 const STEPS = ["language", "storage", "account", "instance"] as const;
 
-/** Players who set up Zenith before this guide existed are not asked again. */
+/** Players who set up Kairos before this guide existed are not asked again. */
 function firstStep(): number {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);

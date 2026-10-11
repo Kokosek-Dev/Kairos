@@ -14,7 +14,7 @@ impl GameSession {
     /// online services and is never compiled into release builds.
     pub fn development() -> Self {
         Self {
-            username: "ZenithDev".into(),
+            username: "KairosDev".into(),
             uuid: "00000000-0000-0000-0000-000000000000".into(),
             access_token: "0".into(),
             user_type: "legacy".into(),
@@ -24,10 +24,10 @@ impl GameSession {
     }
 }
 
-/// Debug builds can skip Microsoft sign-in when `ZENITH_DEV_SESSION=1` is set explicitly.
+/// Debug builds can skip Microsoft sign-in when `KAIROS_DEV_SESSION=1` is set explicitly.
 pub fn development_override() -> Option<GameSession> {
     #[cfg(debug_assertions)]
-    return (std::env::var("ZENITH_DEV_SESSION").as_deref() == Ok("1")).then(GameSession::development);
+    return (std::env::var("KAIROS_DEV_SESSION").as_deref() == Ok("1")).then(GameSession::development);
     #[cfg(not(debug_assertions))]
     return None;
 }

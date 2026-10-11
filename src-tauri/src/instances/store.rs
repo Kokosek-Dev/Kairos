@@ -299,7 +299,7 @@ mod tests {
     use std::path::PathBuf;
 
     fn scratch(name: &str) -> DataPaths {
-        let root: PathBuf = std::env::temp_dir().join(format!("zenith-instances-{name}-{}", std::process::id()));
+        let root: PathBuf = std::env::temp_dir().join(format!("kairos-instances-{name}-{}", std::process::id()));
         let _ = fs::remove_dir_all(&root);
         DataPaths::new(root)
     }

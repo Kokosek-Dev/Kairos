@@ -2159,6 +2159,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "kairos"
+version = "0.1.0"
+dependencies = [
+ "base64 0.22.1",
+ "chrono",
+ "flate2",
+ "futures-util",
+ "getrandom 0.3.4",
+ "hex",
+ "keyring",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha1",
+ "sha2 0.11.0",
+ "sysinfo",
+ "tar",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-opener",
+ "tauri-plugin-updater",
+ "thiserror 2.0.21",
+ "tokio",
+ "tokio-util",
+ "zip 9.0.1",
+]
+
+[[package]]
 name = "keyboard-types"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5828,35 +5857,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d1afec51604565183aeb5c54c20aeab286120d4e4460f7f76e3e8bb8c0d99473"
 dependencies = [
  "serde",
-]
-
-[[package]]
-name = "zenith"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "chrono",
- "flate2",
- "futures-util",
- "getrandom 0.3.4",
- "hex",
- "keyring",
- "reqwest",
- "serde",
- "serde_json",
- "sha1",
- "sha2 0.11.0",
- "sysinfo",
- "tar",
- "tauri",
- "tauri-build",
- "tauri-plugin-dialog",
- "tauri-plugin-opener",
- "tauri-plugin-updater",
- "thiserror 2.0.21",
- "tokio",
- "tokio-util",
- "zip 9.0.1",
 ]
 
 [[package]]

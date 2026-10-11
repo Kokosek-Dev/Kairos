@@ -243,7 +243,7 @@ mod tests {
 
     #[test]
     fn extracts_zip_and_strips_the_top_level_directory() {
-        let dir = std::env::temp_dir().join(format!("zenith-java-test-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("kairos-java-test-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         let archive = dir.join("runtime.zip");

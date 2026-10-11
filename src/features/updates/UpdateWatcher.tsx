@@ -3,7 +3,7 @@ import { findUpdate, offerUpdate } from "./updater";
 
 const FIRST_CHECK_DELAY_MS = 8000;
 
-/** Quietly looks for a newer Zenith shortly after the start and offers it. */
+/** Quietly looks for a newer Kairos shortly after the start and offers it. */
 export function UpdateWatcher() {
   useEffect(() => {
     const timer = setTimeout(() => {

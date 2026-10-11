@@ -10,7 +10,7 @@ const API_BASE: &str = "https://api.modrinth.com/v2";
 const MAX_PAGE_SIZE: u32 = 50;
 
 /// The content service asks for a uniquely identifying `User-Agent`: `<owner>/<project>/<version>`.
-const USER_AGENT_VALUE: &str = concat!("zenith-launcher/zenith/", env!("CARGO_PKG_VERSION"));
+const USER_AGENT_VALUE: &str = concat!("kairos-launcher/kairos/", env!("CARGO_PKG_VERSION"));
 
 #[derive(Debug, Clone, Default, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]

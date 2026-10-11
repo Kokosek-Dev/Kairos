@@ -179,7 +179,7 @@ mod tests {
 
     #[test]
     fn picks_the_report_of_this_run_and_ignores_older_ones() {
-        let paths = DataPaths::new(std::env::temp_dir().join(format!("zenith-crash-{}", std::process::id())));
+        let paths = DataPaths::new(std::env::temp_dir().join(format!("kairos-crash-{}", std::process::id())));
         let _ = fs::remove_dir_all(paths.root());
         let reports = paths.instance_game_dir("one").join("crash-reports");
         fs::create_dir_all(&reports).unwrap();

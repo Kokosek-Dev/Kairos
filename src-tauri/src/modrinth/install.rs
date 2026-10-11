@@ -313,7 +313,7 @@ mod tests {
     async fn fixture(name: &str, routes: Vec<(&'static str, Vec<(u16, String)>)>) -> Fixture {
         let mock = start(routes).await;
         let api = ModrinthApi::with_base(reqwest::Client::new(), &mock.base);
-        let paths = DataPaths::new(std::env::temp_dir().join(format!("zenith-modinstall-{name}-{}", std::process::id())));
+        let paths = DataPaths::new(std::env::temp_dir().join(format!("kairos-modinstall-{name}-{}", std::process::id())));
         let _ = fs::remove_dir_all(paths.root());
         let new = NewInstance {
             name: "Modded".into(),
@@ -496,7 +496,7 @@ mod tests {
     #[ignore = "talks to the real Modrinth API and downloads mods"]
     async fn installs_real_mods_with_dependencies_and_finds_no_updates() {
         let api = ModrinthApi::new(reqwest::Client::new());
-        let paths = DataPaths::new(std::env::temp_dir().join(format!("zenith-live-mods-{}", std::process::id())));
+        let paths = DataPaths::new(std::env::temp_dir().join(format!("kairos-live-mods-{}", std::process::id())));
         let _ = fs::remove_dir_all(paths.root());
         let new = NewInstance {
             name: "Live".into(),

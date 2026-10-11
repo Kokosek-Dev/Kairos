@@ -163,7 +163,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "downloads the game and a Java runtime, then starts the game"]
     async fn launches_the_game_and_streams_its_log() {
-        let root = std::env::temp_dir().join(format!("zenith-e2e-launch-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("kairos-e2e-launch-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         let paths = DataPaths::new(root.clone());
         let client = build_client().unwrap();
@@ -191,7 +191,7 @@ mod tests {
         for _ in 0..240 {
             tokio::time::sleep(Duration::from_millis(500)).await;
             seen_user = events.lock().unwrap().iter().any(|event| {
-                matches!(event, LaunchEvent::Log { line, .. } if line.contains("Setting user: ZenithDev"))
+                matches!(event, LaunchEvent::Log { line, .. } if line.contains("Setting user: KairosDev"))
             });
             if seen_user {
                 break;
@@ -218,7 +218,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "downloads Java 8 and an old game version, then starts the game"]
     async fn launches_a_legacy_version_with_extracted_natives_and_mapped_resources() {
-        let root = std::env::temp_dir().join(format!("zenith-e2e-legacy-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("kairos-e2e-legacy-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         let paths = DataPaths::new(root.clone());
         let client = build_client().unwrap();
@@ -264,7 +264,7 @@ mod tests {
         let _ = std::fs::remove_dir_all(root);
     }
     fn shared_paths() -> DataPaths {
-        DataPaths::new(std::env::temp_dir().join("zenith-e2e-shared"))
+        DataPaths::new(std::env::temp_dir().join("kairos-e2e-shared"))
     }
 
     async fn launch_and_collect_log(loader: LoaderKind, game_version: &str, loader_version: &str, mods: &[&str]) -> Vec<String> {
@@ -325,7 +325,7 @@ mod tests {
         for _ in 0..360 {
             tokio::time::sleep(Duration::from_millis(500)).await;
             let exited = events.lock().unwrap().iter().any(|event| matches!(event, LaunchEvent::Exited { .. }));
-            if exited || lines(&events).iter().any(|line| line.contains("Setting user: ZenithDev")) {
+            if exited || lines(&events).iter().any(|line| line.contains("Setting user: KairosDev")) {
                 break;
             }
         }
@@ -339,7 +339,7 @@ mod tests {
     fn assert_reached_the_game(log: &[String], loader_word: &str) {
         let joined = log.join("\n").to_lowercase();
         assert!(joined.contains(loader_word), "the log never mentions {loader_word}");
-        assert!(joined.contains("setting user: zenithdev"), "the game never reached Minecraft's main");
+        assert!(joined.contains("setting user: kairosdev"), "the game never reached Minecraft's main");
     }
 
     #[tokio::test]

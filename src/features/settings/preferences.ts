@@ -10,7 +10,7 @@ interface Preferences {
   backgroundDim: number;
 }
 
-const STORAGE_KEY = "zenith.preferences";
+const STORAGE_KEY = "kairos.preferences";
 const DEFAULTS: Preferences = {
   autoUpdateMods: true,
   mascot: true,

@@ -12,7 +12,7 @@ export const ACCENT_COLORS: AccentColor[] = [
   { key: "teal", hue: 195 },
 ];
 
-const STORAGE_KEY = "zenith.accent";
+const STORAGE_KEY = "kairos.accent";
 
 function stored(): number | null {
   try {

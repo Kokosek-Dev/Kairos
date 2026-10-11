@@ -10,8 +10,8 @@ const SIGN_IN_TIMEOUT: Duration = Duration::from_secs(5 * 60);
 const REQUEST_READ_TIMEOUT: Duration = Duration::from_secs(5);
 const MAX_REQUEST_BYTES: usize = 16 * 1024;
 
-const SUCCESS_PAGE: &str = "<h2>Zenith</h2><p>Signed in. You can close this tab and return to the launcher.</p><p>Zalogowano. Możesz zamknąć tę kartę i wrócić do launchera.</p>";
-const FAILURE_PAGE: &str = "<h2>Zenith</h2><p>Sign-in failed. Return to the launcher for details.</p><p>Logowanie nie powiodło się. Wróć do launchera, aby zobaczyć szczegóły.</p>";
+const SUCCESS_PAGE: &str = "<h2>Kairos</h2><p>Signed in. You can close this tab and return to the launcher.</p><p>Zalogowano. Możesz zamknąć tę kartę i wrócić do launchera.</p>";
+const FAILURE_PAGE: &str = "<h2>Kairos</h2><p>Sign-in failed. Return to the launcher for details.</p><p>Logowanie nie powiodło się. Wróć do launchera, aby zobaczyć szczegóły.</p>";
 
 pub struct Loopback {
     listener: TcpListener,
@@ -71,7 +71,7 @@ async fn read_request_line(stream: &mut TcpStream) -> Option<String> {
 
 async fn respond(stream: &mut TcpStream, status: &str, body: &str) {
     let page = format!(
-        "<!doctype html><meta charset=\"utf-8\"><title>Zenith</title><body style=\"font-family:system-ui;background:#0b1020;color:#e8eefc;display:grid;place-items:center;height:100vh;margin:0;text-align:center\"><div>{body}</div></body>"
+        "<!doctype html><meta charset=\"utf-8\"><title>Kairos</title><body style=\"font-family:system-ui;background:#0b1020;color:#e8eefc;display:grid;place-items:center;height:100vh;margin:0;text-align:center\"><div>{body}</div></body>"
     );
     let response = format!(
         "HTTP/1.1 {status}\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{page}",

@@ -75,7 +75,7 @@ function Footer() {
   return (
     <div className="flex items-center gap-2 px-3 pt-2 text-xs text-muted/70">
       <Logo className="size-4 opacity-70" />
-      <span>Zenith {version.data ? `v${version.data}` : ""}</span>
+      <span>Kairos {version.data ? `v${version.data}` : ""}</span>
     </div>
   );
 }

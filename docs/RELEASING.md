@@ -1,4 +1,4 @@
-# Wydawanie Zenith
+# Wydawanie Kairos
 
 Wydania buduje GitHub Actions z kodu, więc każdy może sprawdzić, że instalator pochodzi z tego repozytorium.
 Poniżej jest wszystko, co trzeba zrobić raz, i to, co robisz przy każdym wydaniu.
@@ -8,13 +8,13 @@ Poniżej jest wszystko, co trzeba zrobić raz, i to, co robisz przy każdym wyda
 1. **Repozytorium na GitHubie.** Załóż publiczne repozytorium (najlepiej z dorosłym, jeśli konto wymaga pełnoletności)
    i wyślij tam kod.
 2. **Adres aktualizacji.** W `src-tauri/tauri.conf.json`, w `plugins.updater.endpoints`, zamień `OWNER/REPO` na
-   nazwę swojego konta i repozytorium, np. `https://github.com/twojenick/zenith/releases/latest/download/latest.json`.
-3. **Klucz podpisu aktualizacji.** Para kluczy już jest: prywatny `D:\Dev\secrets\zenith-updater.key` (hasło w `zenith-updater.password.txt` w tym samym folderze),
+   nazwę swojego konta i repozytorium, np. `https://github.com/twojenick/kairos/releases/latest/download/latest.json`.
+3. **Klucz podpisu aktualizacji.** Para kluczy już jest: prywatny `D:\Dev\secrets\kairos-updater.key` (hasło w `kairos-updater.password.txt` w tym samym folderze),
    publiczny jest wpisany w `tauri.conf.json`. W GitHubie, w Settings, Secrets and variables, Actions, dodaj sekrety:
-   - `TAURI_SIGNING_PRIVATE_KEY`: cała zawartość pliku `zenith-updater.key`
-   - `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: zawartość pliku `D:\Dev\secrets\zenith-updater.password.txt`
-   - `ZENITH_MS_CLIENT_ID`: Application (client) ID z Azure (patrz `AZURE_SETUP.md`)
-4. **Kopia klucza.** Zrób kopię `zenith-updater.key` **i pliku z hasłem** w bezpiecznym miejscu, poza repozytorium. Jeśli go stracisz, nie
+   - `TAURI_SIGNING_PRIVATE_KEY`: cała zawartość pliku `kairos-updater.key`
+   - `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: zawartość pliku `D:\Dev\secrets\kairos-updater.password.txt`
+   - `KAIROS_MS_CLIENT_ID`: Application (client) ID z Azure (patrz `AZURE_SETUP.md`)
+4. **Kopia klucza.** Zrób kopię `kairos-updater.key` **i pliku z hasłem** w bezpiecznym miejscu, poza repozytorium. Jeśli go stracisz, nie
    wydasz aktualizacji, które zainstalują się w już zainstalowanych launcherach. Nigdy nie wrzucaj go do repozytorium.
 5. **Strona z przyciskiem „Pobierz".** W repozytorium: Settings, Pages, źródło: gałąź `main`, folder `/docs`.
    Strona sama znajdzie najnowsze wydanie.
@@ -33,8 +33,8 @@ Poniżej jest wszystko, co trzeba zrobić raz, i to, co robisz przy każdym wyda
 `npm run tauri build` podpisuje paczkę aktualizacji, więc wymaga klucza w zmiennej środowiskowej:
 
 ```
-$env:TAURI_SIGNING_PRIVATE_KEY = "D:\Dev\secrets\zenith-updater.key"
-$env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = (Get-Content "D:\Dev\secrets\zenith-updater.password.txt" -Raw).Trim()
+$env:TAURI_SIGNING_PRIVATE_KEY = "D:\Dev\secrets\kairos-updater.key"
+$env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = (Get-Content "D:\Dev\secrets\kairos-updater.password.txt" -Raw).Trim()
 npm run tauri build
 ```
 

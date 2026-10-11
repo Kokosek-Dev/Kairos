@@ -3,7 +3,7 @@ use reqwest::Client;
 use serde::de::DeserializeOwned;
 use std::time::Duration;
 
-const USER_AGENT: &str = concat!("zenith/", env!("CARGO_PKG_VERSION"));
+const USER_AGENT: &str = concat!("kairos/", env!("CARGO_PKG_VERSION"));
 
 pub fn build_client() -> AppResult<Client> {
     Ok(Client::builder()

@@ -26,10 +26,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          ZENITH_MS_CLIENT_ID: ${{ secrets.ZENITH_MS_CLIENT_ID }}
+          KAIROS_MS_CLIENT_ID: ${{ secrets.KAIROS_MS_CLIENT_ID }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: Zenith ${{ github.ref_name }}
+          releaseName: Kairos ${{ github.ref_name }}
           releaseBody: Download the installer below and compare it with SHA256SUMS.txt.
           args: --bundles nsis
       - name: Publish checksums

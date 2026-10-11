@@ -37,7 +37,7 @@ async fn fixture(routes: Vec<(&'static str, Vec<(u16, &'static str)>)>) -> Fixtu
     let mock = start(routes).await;
     let secrets = Arc::new(MemoryStore::default());
     let file = std::env::temp_dir().join(format!(
-        "zenith-auth-{}-{}.json",
+        "kairos-auth-{}-{}.json",
         std::process::id(),
         mock.base.rsplit(':').next().unwrap()
     ));

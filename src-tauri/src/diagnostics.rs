@@ -82,7 +82,7 @@ fn mod_names(game_dir: &Path) -> Vec<String> {
 
 fn summary(paths: &DataPaths, instances: &[Instance], selected: Option<&Instance>, version: &str, total_mb: u64) -> String {
     let mut text = format!(
-        "Zenith {version}\nSystem: {} {} ({}), {total_mb} MB memory\nData folder: {}\n\nInstances:\n",
+        "Kairos {version}\nSystem: {} {} ({}), {total_mb} MB memory\nData folder: {}\n\nInstances:\n",
         std::env::consts::OS,
         std::env::consts::ARCH,
         sysinfo::System::long_os_version().unwrap_or_default(),
@@ -161,7 +161,7 @@ mod tests {
 
     #[test]
     fn bundles_the_overview_logs_and_crash_reports_without_secrets() {
-        let paths = DataPaths::new(std::env::temp_dir().join(format!("zenith-diag-{}", std::process::id())));
+        let paths = DataPaths::new(std::env::temp_dir().join(format!("kairos-diag-{}", std::process::id())));
         let _ = fs::remove_dir_all(paths.root());
         let new = NewInstance {
             name: "Report me".into(),
@@ -189,7 +189,7 @@ mod tests {
             text
         };
         let overview = read("report.txt");
-        assert!(overview.contains("Zenith 9.9.9") && overview.contains("Report me") && overview.contains("example.jar"));
+        assert!(overview.contains("Kairos 9.9.9") && overview.contains("Report me") && overview.contains("example.jar"));
         let log = read("latest.log");
         assert!(log.contains("--accessToken ***") && !log.contains("SECRETTOKEN"));
         assert_eq!(read("crash-report.txt"), "Description: boom");

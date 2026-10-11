@@ -39,7 +39,7 @@ export function TitleBar() {
     <header className="relative flex h-11 shrink-0 items-center border-b bg-background/50 backdrop-blur-xl after:absolute after:inset-x-0 after:-bottom-px after:h-px after:bg-gradient-to-r after:from-transparent after:via-accent/60 after:to-transparent">
       <div data-tauri-drag-region className="flex h-full flex-1 items-center gap-2 px-4">
         <Logo className="pointer-events-none size-5 transition-transform duration-700 [div:hover>&]:rotate-[360deg]" />
-        <span className="pointer-events-none text-xs font-semibold tracking-[0.25em] text-foreground/80">ZENITH</span>
+        <span className="pointer-events-none text-xs font-semibold tracking-[0.25em] text-foreground/80">KAIROS</span>
       </div>
       <button
         type="button"

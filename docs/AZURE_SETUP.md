@@ -1,6 +1,6 @@
 # Rejestracja aplikacji w Azure (logowanie Microsoft)
 
-Zenith loguje przez konto Microsoft. Do tego potrzebuje własnej aplikacji zarejestrowanej w Azure (Microsoft Entra ID). Nie potrzebujesz sekretu klienta. Dokumentacja Microsoftu wymienia jako warunek wstępny konto Azure (można je założyć za darmo: <https://azure.microsoft.com/pricing/purchase-options/azure-account>) i dostęp do katalogu (np. *Default Directory*). Launcher nigdy nie używa identyfikatora oficjalnego launchera Mojang.
+Kairos loguje przez konto Microsoft. Do tego potrzebuje własnej aplikacji zarejestrowanej w Azure (Microsoft Entra ID). Nie potrzebujesz sekretu klienta. Dokumentacja Microsoftu wymienia jako warunek wstępny konto Azure (można je założyć za darmo: <https://azure.microsoft.com/pricing/purchase-options/azure-account>) i dostęp do katalogu (np. *Default Directory*). Launcher nigdy nie używa identyfikatora oficjalnego launchera Mojang.
 
 Flow w launcherze: **logowanie w przeglądarce (kod autoryzacji + PKCE, automatyczny powrót na lokalny adres)** → Xbox Live → XSTS → Minecraft Services → sprawdzenie profilu (konto bez gry nie ma profilu).
 
@@ -11,10 +11,10 @@ Dla użytkownika wygląda to tak: klik „Dodaj konto", otwiera się przeglądar
 1. Wejdź na <https://entra.microsoft.com> i zaloguj się swoim kontem Microsoft. Jeśli masz dostęp do kilku katalogów (tenantów), przełącz się ikoną ustawień u góry na właściwy.
 2. Przejdź do **Entra ID** → **App registrations** i kliknij **New registration**.
 3. Ustaw:
-   - **Name:** np. `Zenith` (ta nazwa pokaże się użytkownikom przy logowaniu; nie używaj w niej słów „Minecraft" ani „Mojang").
+   - **Name:** np. `Kairos` (ta nazwa pokaże się użytkownikom przy logowaniu; nie używaj w niej słów „Minecraft" ani „Mojang").
    - **Supported account types:** **Personal accounts only**. Launcher używa endpointu `consumers`, a konta służbowe/szkolne nie mogą się tak zalogować.
    - **Redirect URI:** możesz zostawić puste i dodać w kroku 2.
-4. Kliknij **Register**. Na stronie *Overview* skopiuj **Application (client) ID**. To jest ten identyfikator, którego potrzebuje Zenith.
+4. Kliknij **Register**. Na stronie *Overview* skopiuj **Application (client) ID**. To jest ten identyfikator, którego potrzebuje Kairos.
 
 ## 2. Dodaj adres przekierowania i włącz klienta publicznego
 
@@ -46,10 +46,10 @@ Wklej Application (client) ID do pliku `src-tauri/.cargo/config.toml`:
 
 ```toml
 [env]
-ZENITH_MS_CLIENT_ID = { value = "00000000-0000-0000-0000-000000000000", force = false }
+KAIROS_MS_CLIENT_ID = { value = "00000000-0000-0000-0000-000000000000", force = false }
 ```
 
-i zbuduj launcher (`npm run tauri dev` albo `npm run tauri build`). Identyfikator klienta nie jest sekretem, więc plik można commitować. Do szybkich testów można też ustawić zmienną środowiskową `ZENITH_MS_CLIENT_ID` przy uruchamianiu, ma ona pierwszeństwo.
+i zbuduj launcher (`npm run tauri dev` albo `npm run tauri build`). Identyfikator klienta nie jest sekretem, więc plik można commitować. Do szybkich testów można też ustawić zmienną środowiskową `KAIROS_MS_CLIENT_ID` przy uruchamianiu, ma ona pierwszeństwo.
 
 Każdy, kto wydaje własny launcher, potrzebuje własnej, zatwierdzonej aplikacji.
 ## Przechowywanie danych
@@ -60,7 +60,7 @@ Każdy, kto wydaje własny launcher, potrzebuje własnej, zatwierdzonej aplikacj
 
 ## Tryb deweloperski
 
-W buildach debug można uruchomić grę bez logowania, ustawiając `ZENITH_DEV_SESSION=1`. Gra dostaje tymczasową tożsamość, która nie połączy się z serwerami online. Ten kod nie istnieje w buildach release.
+W buildach debug można uruchomić grę bez logowania, ustawiając `KAIROS_DEV_SESSION=1`. Gra dostaje tymczasową tożsamość, która nie połączy się z serwerami online. Ten kod nie istnieje w buildach release.
 
 ## Najczęstsze błędy
 

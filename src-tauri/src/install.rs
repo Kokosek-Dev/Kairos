@@ -127,7 +127,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "downloads about 850 MB from Mojang servers"]
     async fn installs_a_modern_version_with_separate_native_libraries() {
-        let root = std::env::temp_dir().join(format!("zenith-e2e-modern-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("kairos-e2e-modern-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         let paths = DataPaths::new(root.clone());
         let client = build_client().unwrap();
@@ -165,7 +165,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "downloads from Mojang servers"]
     async fn installs_a_real_version_and_reuses_files_on_the_second_run() {
-        let root = std::env::temp_dir().join(format!("zenith-e2e-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("kairos-e2e-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         let paths = DataPaths::new(root.clone());
         let client = build_client().unwrap();

@@ -51,7 +51,7 @@ mod tests {
 
     #[test]
     fn extracts_natives_skipping_excluded_prefixes_and_unsafe_paths() {
-        let dir = std::env::temp_dir().join(format!("zenith-natives-test-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("kairos-natives-test-{}", std::process::id()));
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
         let jar = dir.join("natives.jar");

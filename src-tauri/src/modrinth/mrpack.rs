@@ -424,7 +424,7 @@ mod tests {
     }
 
     fn scratch(name: &str) -> DataPaths {
-        let paths = DataPaths::new(std::env::temp_dir().join(format!("zenith-mrpack-{name}-{}", std::process::id())));
+        let paths = DataPaths::new(std::env::temp_dir().join(format!("kairos-mrpack-{name}-{}", std::process::id())));
         let _ = fs::remove_dir_all(paths.root());
         fs::create_dir_all(paths.root()).unwrap();
         paths

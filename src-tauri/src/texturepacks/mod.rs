@@ -25,7 +25,7 @@ pub struct PackInfo {
     pub pack_format: u32,
     /// Newer versions describe the supported range with `min_format` and `max_format`.
     pub ranged_format: bool,
-    /// Instances that use this pack; Zenith keeps their copy up to date and switched on.
+    /// Instances that use this pack; Kairos keeps their copy up to date and switched on.
     #[serde(default)]
     pub instances: Vec<String>,
     pub created_at: DateTime<Utc>,
@@ -397,7 +397,7 @@ mod tests {
     }
 
     fn scratch(name: &str, version_json: &str) -> DataPaths {
-        let paths = DataPaths::new(std::env::temp_dir().join(format!("zenith-packs-{name}-{}", std::process::id())));
+        let paths = DataPaths::new(std::env::temp_dir().join(format!("kairos-packs-{name}-{}", std::process::id())));
         let _ = fs::remove_dir_all(paths.root());
         fs::create_dir_all(paths.version_dir("1.21")).unwrap();
         fs::write(paths.version_json("1.21"), "{}").unwrap();

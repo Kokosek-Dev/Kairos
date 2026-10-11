@@ -22,7 +22,7 @@ const NEOFORGE_VERSIONS: &str = "https://maven.neoforged.net/api/maven/versions/
 const LAUNCHER_PROFILES: &str = r#"{"profiles":{},"version":3}"#;
 
 /// Forge and NeoForge ship an installer that patches the game; it is run in its own
-/// headless "install client" mode against Zenith's data directory, which has the same
+/// headless "install client" mode against Kairos's data directory, which has the same
 /// layout as a `.minecraft` folder.
 pub struct Installer {
     pub url: String,

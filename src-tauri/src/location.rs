@@ -4,7 +4,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 const CONFIG_FILE: &str = "location.json";
-const PROBE_FILE: &str = ".zenith-write-test";
+const PROBE_FILE: &str = ".kairos-write-test";
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -103,7 +103,7 @@ fn check_target(from: &Path, to: &Path) -> AppResult<()> {
     }
     fs::create_dir_all(to)?;
     let probe = to.join(PROBE_FILE);
-    fs::write(&probe, b"ok").map_err(|_| invalid("Zenith cannot write to that folder"))?;
+    fs::write(&probe, b"ok").map_err(|_| invalid("Kairos cannot write to that folder"))?;
     let _ = fs::remove_file(probe);
     Ok(())
 }
@@ -142,7 +142,7 @@ mod tests {
     use super::*;
 
     fn scratch(name: &str) -> PathBuf {
-        let root = std::env::temp_dir().join(format!("zenith-location-{name}-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("kairos-location-{name}-{}", std::process::id()));
         let _ = fs::remove_dir_all(&root);
         fs::create_dir_all(&root).unwrap();
         root
@@ -172,7 +172,7 @@ mod tests {
     #[test]
     fn moves_everything_keeps_the_choice_file_and_frees_the_old_folder() {
         let root = scratch("move");
-        let (current, target) = (root.join("current"), root.join("elsewhere/Zenith"));
+        let (current, target) = (root.join("current"), root.join("elsewhere/Kairos"));
         fill(&current);
         save(&current, &current).unwrap();
 

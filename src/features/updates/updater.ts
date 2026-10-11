@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import i18n from "@/i18n";
 import { restartApp } from "@/lib/tauri/location";
 
-/** The newer version of Zenith, or null when this one is current or the check could not be made. */
+/** The newer version of Kairos, or null when this one is current or the check could not be made. */
 export async function findUpdate(): Promise<Update | null> {
   try {
     return await check();

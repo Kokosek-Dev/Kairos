@@ -123,5 +123,5 @@ pub fn run() {
             commands::open_external_link,
         ])
         .run(tauri::generate_context!())
-        .expect("failed to run Zenith");
+        .expect("failed to run Kairos");
 }

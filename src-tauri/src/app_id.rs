@@ -1,7 +1,7 @@
 ﻿use crate::error::{AppResult, AuthFailure};
 
-const CLIENT_ID_ENV: &str = "ZENITH_MS_CLIENT_ID";
-const BUILT_IN_CLIENT_ID: Option<&str> = option_env!("ZENITH_MS_CLIENT_ID");
+const CLIENT_ID_ENV: &str = "KAIROS_MS_CLIENT_ID";
+const BUILT_IN_CLIENT_ID: Option<&str> = option_env!("KAIROS_MS_CLIENT_ID");
 
 fn is_application_id(value: &str) -> bool {
     value.len() == 36
