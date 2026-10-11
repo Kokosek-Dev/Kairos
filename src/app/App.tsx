@@ -16,6 +16,7 @@ import { LibraryPage } from "@/features/library/LibraryPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
 import { OfflinePlayDialog } from "@/features/launch/OfflinePlayDialog";
 import { SignInDialog } from "@/features/accounts/SignInDialog";
+import { CrashDialog } from "@/features/launch/CrashDialog";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
 import { VersionsPage } from "@/features/versions/VersionsPage";
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
@@ -57,6 +58,7 @@ export function App() {
         </main>
       </div>
       <ConsoleDrawer />
+      <CrashDialog />
       </div>
       <SignInDialog />
       <OfflinePlayDialog />

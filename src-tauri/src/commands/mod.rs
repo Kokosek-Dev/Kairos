@@ -1,4 +1,5 @@
 mod auth;
+mod crash;
 mod instances;
 mod launch;
 mod loaders;
@@ -9,6 +10,7 @@ mod texturepacks;
 mod versions;
 
 pub use auth::*;
+pub use crash::*;
 pub use instances::*;
 pub use launch::*;
 pub use loaders::*;

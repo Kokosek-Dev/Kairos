@@ -26,6 +26,13 @@ export interface LogLine {
   text: string;
 }
 
+export interface CrashInfo {
+  instanceId: string;
+  title: string;
+  startedAt: number;
+  code: number | null;
+}
+
 interface GameState {
   instanceId: string | null;
   title: string | null;
@@ -33,13 +40,17 @@ interface GameState {
   phase: GamePhase;
   lines: LogLine[];
   consoleOpen: boolean;
+  startedAt: number | null;
+  crash: CrashInfo | null;
   play: (instanceId: string, title: string, offline?: boolean) => Promise<void>;
   stop: () => Promise<void>;
   clear: () => void;
   setConsoleOpen: (open: boolean) => void;
+  dismissCrash: () => void;
 }
 
 let nextLineId = 0;
+let stopRequested = false;
 
 export const isBusy = (phase: GamePhase): boolean => phase.kind === "preparing" || phase.kind === "running";
 
@@ -63,7 +74,14 @@ export const useGameStore = create<GameState>((set, get) => {
         }));
         break;
       case "exited":
-        set({ phase: { kind: "exited", code: event.code }, runId: null });
+        set((state) => ({
+          phase: { kind: "exited", code: event.code },
+          runId: null,
+          crash:
+            event.code !== 0 && !stopRequested && state.instanceId && state.startedAt !== null
+              ? { instanceId: state.instanceId, title: state.title ?? "", startedAt: state.startedAt, code: event.code }
+              : null,
+        }));
         break;
     }
   };
@@ -75,10 +93,15 @@ export const useGameStore = create<GameState>((set, get) => {
     phase: { kind: "idle" },
     lines: [],
     consoleOpen: false,
+    startedAt: null,
+    crash: null,
 
     play: async (instanceId, title, offline = false) => {
       if (isBusy(get().phase)) return;
+      stopRequested = false;
       set({
+        startedAt: Date.now(),
+        crash: null,
         instanceId,
         title,
         runId: null,
@@ -103,10 +126,14 @@ export const useGameStore = create<GameState>((set, get) => {
 
     stop: async () => {
       const { runId } = get();
-      if (runId !== null) await stopGame(runId);
+      if (runId !== null) {
+        stopRequested = true;
+        await stopGame(runId);
+      }
     },
 
     clear: () => set({ lines: [] }),
     setConsoleOpen: (open) => set({ consoleOpen: open }),
+    dismissCrash: () => set({ crash: null }),
   };
 });

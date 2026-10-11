@@ -122,6 +122,45 @@ export const en: Translations = {
     move: "Move and restart",
     moving: "Moving…",
   },
+  crash: {
+    subtitle: "{{name}} stopped unexpectedly.",
+    showReport: "Show the report",
+    openSettings: "Open instance settings",
+    kind: {
+      heap_too_large: {
+        title: "Too much memory was requested",
+        advice: "The game asked for more memory than your computer can give. Lower the memory in the instance settings.",
+      },
+      out_of_memory: {
+        title: "The game ran out of memory",
+        advice: "Give it more memory in the instance settings, but not more than your computer can spare.",
+      },
+      wrong_java: {
+        title: "Wrong Java version",
+        advice: "A mod or loader needs a different Java. Let Zenith choose Java automatically in the instance settings, or pick a newer one.",
+      },
+      missing_dependency: {
+        title: "A mod is missing something it needs",
+        advice: "Install the missing mods named below, or remove the mod that needs them.",
+      },
+      mod_conflict: {
+        title: "Two mods do not work together",
+        advice: "Remove one of the mods named below.",
+      },
+      graphics_driver: {
+        title: "Graphics driver problem",
+        advice: "Update your graphics driver and make sure the game uses your main graphics card.",
+      },
+      mod_problem: {
+        title: "A mod caused the crash",
+        advice: "Update your mods, or remove the one named below. Mods built for another game version often cause this.",
+      },
+      unknown: {
+        title: "The game crashed",
+        advice: "Open the report below. If you ask for help, send it along.",
+      },
+    },
+  },
   editor: {
     title: "Skin editor",
     subtitle: "Draw on the flat texture or straight on the 3D model.",
@@ -222,7 +261,7 @@ export const en: Translations = {
     clear: "Clear",
     close: "Hide console",
   },
-  common: { cancel: "Cancel" },
+  common: { cancel: "Cancel", close: "Close" },
   signIn: {
     title: "Sign in with Microsoft",
     subtitle: "Use the Microsoft account that owns Minecraft: Java Edition.",
@@ -523,6 +562,45 @@ export const pl: Translations = {
     move: "Przenieś i uruchom ponownie",
     moving: "Przenoszenie…",
   },
+  crash: {
+    subtitle: "{{name}} nieoczekiwanie się zatrzymała.",
+    showReport: "Pokaż raport",
+    openSettings: "Otwórz ustawienia instancji",
+    kind: {
+      heap_too_large: {
+        title: "Zażądano za dużo pamięci",
+        advice: "Gra poprosiła o więcej pamięci, niż komputer może dać. Zmniejsz pamięć w ustawieniach instancji.",
+      },
+      out_of_memory: {
+        title: "Grze zabrakło pamięci",
+        advice: "Przydziel jej więcej pamięci w ustawieniach instancji, ale nie więcej, niż komputer może oddać.",
+      },
+      wrong_java: {
+        title: "Zła wersja Javy",
+        advice: "Mod albo loader wymaga innej Javy. Pozwól Zenith wybrać Javę automatycznie w ustawieniach instancji albo wskaż nowszą.",
+      },
+      missing_dependency: {
+        title: "Modowi brakuje czegoś, czego potrzebuje",
+        advice: "Zainstaluj brakujące mody wymienione poniżej albo usuń mod, który ich wymaga.",
+      },
+      mod_conflict: {
+        title: "Dwa mody nie działają razem",
+        advice: "Usuń jeden z modów wymienionych poniżej.",
+      },
+      graphics_driver: {
+        title: "Problem ze sterownikiem grafiki",
+        advice: "Zaktualizuj sterownik karty graficznej i upewnij się, że gra używa głównej karty.",
+      },
+      mod_problem: {
+        title: "Awarię spowodował mod",
+        advice: "Zaktualizuj mody albo usuń ten wymieniony poniżej. Mody zbudowane pod inną wersję gry często to powodują.",
+      },
+      unknown: {
+        title: "Gra się wywaliła",
+        advice: "Otwórz raport poniżej. Jeśli prosisz o pomoc, wyślij go razem z prośbą.",
+      },
+    },
+  },
   editor: {
     title: "Edytor skinów",
     subtitle: "Rysuj na płaskiej teksturze albo prosto na modelu 3D.",
@@ -623,7 +701,7 @@ export const pl: Translations = {
     clear: "Wyczyść",
     close: "Ukryj konsolę",
   },
-  common: { cancel: "Anuluj" },
+  common: { cancel: "Anuluj", close: "Zamknij" },
   signIn: {
     title: "Zaloguj się kontem Microsoft",
     subtitle: "Użyj konta Microsoft, które posiada Minecraft: Java Edition.",

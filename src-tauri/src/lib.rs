@@ -2,6 +2,7 @@ mod app_id;
 mod auth;
 mod commands;
 mod download;
+mod crash;
 mod error;
 mod http;
 mod install;
@@ -98,6 +99,8 @@ pub fn run() {
             commands::use_texture_pack_in_instances,
             commands::get_data_location,
             commands::get_memory_advice,
+            commands::analyze_crash,
+            commands::reveal_file,
             commands::pick_data_folder,
             commands::move_data_location,
             commands::restart_app,
