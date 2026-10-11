@@ -33,6 +33,10 @@ impl RunRegistry {
         self.lock().values().any(|run| run.instance_id == instance_id)
     }
 
+    pub fn any_running(&self) -> bool {
+        !self.lock().is_empty()
+    }
+
     pub fn finish(&self, run_id: u64) {
         self.lock().remove(&run_id);
     }
@@ -75,6 +79,11 @@ impl AppState {
 
     fn installs(&self) -> MutexGuard<'_, HashMap<String, CancellationToken>> {
         self.installs.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+
+    /// A game, download or sign-in that would be disturbed by moving the data folder.
+    pub fn is_busy(&self) -> bool {
+        self.runs.any_running() || !self.installs().is_empty()
     }
 
     pub fn register_install(&self, version_id: &str, token: CancellationToken) -> AppResult<()> {

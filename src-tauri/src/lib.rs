@@ -8,6 +8,7 @@ mod install;
 mod instances;
 mod java;
 mod launch;
+mod location;
 mod loaders;
 mod modrinth;
 mod mojang;
@@ -34,7 +35,10 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
-            let paths = DataPaths::new(app.path().app_data_dir()?);
+            let default_dir = app.path().app_data_dir()?;
+            let config_dir = app.path().app_config_dir()?;
+            let paths = DataPaths::new(location::resolve(&config_dir, &default_dir));
+
             let client = http::build_client()?;
             let accounts = AccountStore::new(paths.accounts_file(), Arc::new(KeyringStore));
             let auth = AuthService::new(client.clone(), Endpoints::default(), accounts);
@@ -91,6 +95,10 @@ pub fn run() {
             commands::reset_pack_texture,
             commands::export_texture_pack,
             commands::use_texture_pack_in_instances,
+            commands::get_data_location,
+            commands::pick_data_folder,
+            commands::move_data_location,
+            commands::restart_app,
             commands::add_skin_from_player,
             commands::save_current_skin,
             commands::remove_skin,

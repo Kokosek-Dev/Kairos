@@ -112,6 +112,16 @@ export const en: Translations = {
     mascotRun: "Run",
     mascotWave: "Wave",
   },
+  storage: {
+    title: "Storage",
+    hint: "Where Zenith keeps games, mods, skins, worlds and everything else it downloads.",
+    used: "{{size}} used",
+    change: "Change folder",
+    confirmTitle: "Move everything here?",
+    confirmBody: "All games, mods, skins and worlds are copied to a new Zenith folder inside the folder you picked and removed from the old place. Zenith restarts afterwards. This can take a few minutes.",
+    move: "Move and restart",
+    moving: "Moving…",
+  },
   editor: {
     title: "Skin editor",
     subtitle: "Draw on the flat texture or straight on the 3D model.",
@@ -499,6 +509,16 @@ export const pl: Translations = {
     mascotTry: "Zobacz teraz:",
     mascotRun: "Bieg",
     mascotWave: "Machanie",
+  },
+  storage: {
+    title: "Miejsce zapisu",
+    hint: "Gdzie Zenith trzyma gry, mody, skiny, światy i wszystko, co pobiera.",
+    used: "Zajęte: {{size}}",
+    change: "Zmień folder",
+    confirmTitle: "Przenieść wszystko tutaj?",
+    confirmBody: "Wszystkie gry, mody, skiny i światy zostaną skopiowane do nowego folderu Zenith wewnątrz wybranego folderu i usunięte ze starego miejsca. Potem Zenith uruchomi się ponownie. To może potrwać kilka minut.",
+    move: "Przenieś i uruchom ponownie",
+    moving: "Przenoszenie…",
   },
   editor: {
     title: "Edytor skinów",
