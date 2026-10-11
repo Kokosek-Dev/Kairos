@@ -1,11 +1,16 @@
 export const LANGUAGES = [
   { code: "en", label: "English" },
   { code: "pl", label: "Polski" },
+  { code: "de", label: "Deutsch" },
+  { code: "es", label: "Español" },
+  { code: "fr", label: "Français" },
+  { code: "pt", label: "Português (BR)" },
+  { code: "ru", label: "Русский" },
 ] as const;
 
 export type LanguageCode = (typeof LANGUAGES)[number]["code"];
 
-interface Translations {
+export interface Translations {
   [key: string]: string | Translations;
 }
 

@@ -169,7 +169,7 @@ export function DiscoverPage() {
               type="button"
               onClick={() => toggleCategory(category.name)}
               className={cn(
-                "rounded-full border px-3 py-1 text-xs font-medium capitalize transition-colors",
+                "rounded-full border px-3 py-1 text-xs font-medium first-letter:uppercase transition-colors",
                 categories.includes(category.name)
                   ? "border-accent bg-accent/15 text-foreground"
                   : "text-muted hover:text-foreground",

@@ -47,7 +47,7 @@ biblioteka), `texturepacks/` (paczki tekstur, łączenie z instancjami, `options
 
 Frontend (`src`): `app/App.tsx` (trasy), `features/` (home, library, instances, discover, skins/editor, textures,
 settings, launch, accounts, welcome, updates, pixel = wspólny edytor pikseli), `components/` (powłoka, tło, bohater
-Mascot, ui), `lib/tauri/` (typowane wywołania backendu), `i18n/locales.ts` (EN i PL, każdy tekst w obu językach).
+Mascot, ui), `lib/tauri/` (typowane wywołania backendu), `i18n/locales.ts` (EN i PL) oraz `i18n/translations/` (DE, ES, FR, PT-BR, RU). Każdy nowy tekst trzeba dodać we wszystkich 7 językach; sprawdzenie kompletności to skrypt porównujący klucze z angielskim (brakujący klucz pokazuje się po angielsku).
 
 Dokumenty: `README.md`, `docs/PRIVACY.md`, `docs/RELEASING.md` (wydawanie, po polsku), `docs/AZURE_SETUP.md`
 (rejestracja aplikacji Microsoft, po polsku), `docs/index.html` (strona pobierania na GitHub Pages).

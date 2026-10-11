@@ -48,7 +48,12 @@
       "nsis": {
         "languages": [
           "English",
-          "Polish"
+          "Polish",
+          "German",
+          "Spanish",
+          "French",
+          "PortugueseBR",
+          "Russian"
         ],
         "displayLanguageSelector": true,
         "installMode": "currentUser"

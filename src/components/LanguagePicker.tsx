@@ -7,7 +7,7 @@ export function LanguagePicker() {
   const { i18n } = useTranslation();
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
       {LANGUAGES.map(({ code, label }) => (
         <button
           key={code}

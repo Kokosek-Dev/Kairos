@@ -33,7 +33,7 @@ verify it yourself. See [docs/PRIVACY.md](docs/PRIVACY.md) for what Kairos does 
   before a game starts, `.mrpack` import and export
 - Play time statistics, crash analysis that explains what went wrong, problem reports without personal data
 - Choose where everything is stored, automatic Java download, live game log
-- English and Polish, accent colors and backgrounds
+- English, Polish, German, Spanish, French, Brazilian Portuguese and Russian, accent colors and backgrounds
 
 You need a Microsoft account that owns Minecraft: Java Edition to play. Kairos does not bypass the game's licence.
 
