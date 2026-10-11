@@ -231,3 +231,33 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Incognito: black, green, monospace, with faint scan lines. */
+:root[data-theme="incognito"] {
+  --background: oklch(0.09 0 0);
+  --surface: oklch(0.13 0.015 150);
+  --surface-raised: oklch(0.18 0.025 150);
+  --border: oklch(0.34 0.09 150 / 0.55);
+  --foreground: oklch(0.93 0.1 150);
+  --muted: oklch(0.68 0.11 150);
+  --accent-hue: 150 !important;
+  --hue-2: 170 !important;
+  --accent-foreground: oklch(0.12 0.02 150);
+}
+
+:root[data-theme="incognito"] body {
+  font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+}
+
+:root[data-theme="incognito"] #root {
+  background: #000;
+}
+
+:root[data-theme="incognito"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, oklch(0.8 0.2 150 / 0.035) 0 1px, transparent 1px 3px);
+}

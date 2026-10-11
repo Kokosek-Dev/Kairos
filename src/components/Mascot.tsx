@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { create } from "zustand";
 import { useEffect, useRef, useState } from "react";
 import { FlyingAnimation, RunningAnimation, SkinViewer, WaveAnimation } from "skinview3d";
+import { useIncognito } from "@/features/incognito/useIncognito";
 import { usePreferences } from "@/features/settings/preferences";
 import { SkinDocument } from "@/features/skins/editor/SkinDocument";
 import { useProfile } from "@/features/skins/useProfile";
@@ -51,7 +52,9 @@ function Figure({ act }: { act: Act }) {
 
 /** Now and then a little player runs across the window or pops up in the corner to wave. */
 export function Mascot() {
-  const enabled = usePreferences((state) => state.mascot);
+  const mascot = usePreferences((state) => state.mascot);
+  const incognito = useIncognito();
+  const enabled = mascot && !incognito;
   const [act, setAct] = useState<Act | null>(null);
   const appeared = useRef(false);
   const pending = useMascotRequests((state) => state.pending);

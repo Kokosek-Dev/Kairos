@@ -222,6 +222,15 @@ export const fr: Translations = {
     delete: "Supprimer l'instant",
     gameRunning: "Fermez d'abord le jeu.",
   },
+  incognito: {
+    title: "Mode incognito",
+    hint: "Joue hors ligne sous le nom de votre compte. Kairos cesse de contacter Microsoft, ignore la recherche de mises à jour et passe en mode sombre.",
+    needsAccount: "Connectez-vous avec un compte qui possède le jeu pour l'utiliser.",
+    badge: "INCOGNITO",
+    heroTitle: "Vous êtes sous le radar",
+    heroBody: "Kairos ne contacte pas Microsoft. Les jeux démarrent hors ligne sous le nom de votre compte. Les serveurs en ligne, votre skin et les mises à jour sont désactivés.",
+    leave: "Quitter l'incognito",
+  },
   editor: {
     title: "Éditeur de skins",
     subtitle: "Dessinez sur la texture à plat ou directement sur le modèle 3D.",

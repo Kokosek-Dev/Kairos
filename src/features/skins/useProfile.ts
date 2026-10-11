@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccounts } from "@/features/accounts/AccountsSection";
+import { usePreferences } from "@/features/settings/preferences";
 import { getProfile, type Profile } from "@/lib/tauri/skins";
 
 export const SKINS_KEY = ["saved-skins"];
@@ -14,10 +15,11 @@ export const profileKey = (accountId: string | null) => ["profile", accountId];
 
 export function useProfile() {
   const { active } = useActiveAccount();
+  const incognito = usePreferences((state) => state.incognito);
   return useQuery({
     queryKey: profileKey(active?.id ?? null),
     queryFn: getProfile,
-    enabled: active !== null,
+    enabled: active !== null && !incognito,
     staleTime: 5 * 60_000,
     retry: false,
   });

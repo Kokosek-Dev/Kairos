@@ -110,7 +110,7 @@ export const useGameStore = create<GameState>((set, get) => {
         phase: { kind: "preparing", step: "version", doneBytes: 0, totalBytes: 0 },
       });
       try {
-        await updateBeforeLaunch(instanceId);
+        if (!offline) await updateBeforeLaunch(instanceId);
         await launchInstance(instanceId, offline, handle);
       } catch (error) {
         if (isLauncherError(error) && error.code === "cancelled") {

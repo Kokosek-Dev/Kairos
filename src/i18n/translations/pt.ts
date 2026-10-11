@@ -222,6 +222,15 @@ export const pt: Translations = {
     delete: "Excluir momento",
     gameRunning: "Feche o jogo primeiro.",
   },
+  incognito: {
+    title: "Modo anônimo",
+    hint: "Joga offline com o nome da sua conta. O Kairos deixa de falar com a Microsoft, pula a busca por atualizações e fica escuro.",
+    needsAccount: "Entre com uma conta que possua o jogo para usar isto.",
+    badge: "ANÔNIMO",
+    heroTitle: "Você está fora do radar",
+    heroBody: "O Kairos não está falando com a Microsoft. Os jogos iniciam offline com o nome da sua conta. Servidores online, sua skin e atualizações estão desligados.",
+    leave: "Sair do modo anônimo",
+  },
   editor: {
     title: "Editor de skins",
     subtitle: "Desenhe na textura plana ou direto no modelo 3D.",

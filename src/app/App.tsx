@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Toaster } from "sonner";
 import { Backdrop } from "@/components/Backdrop";
 import { Mascot } from "@/components/Mascot";
+import { IncognitoTheme } from "@/features/incognito/IncognitoTheme";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TitleBar } from "@/components/shell/TitleBar";
@@ -30,6 +31,7 @@ export function App() {
     <div className="relative h-full">
       <Backdrop />
       <Mascot />
+      <IncognitoTheme />
       <div className="relative z-10 flex h-full flex-col">
       <TitleBar />
       <div className="flex min-h-0 flex-1">

@@ -7,23 +7,25 @@ import { useMascotRequests } from "@/components/Mascot";
 import { EVERYWHERE_KEY, useEverywhere } from "@/features/textures/useEverywhere";
 import { PACKS_KEY } from "@/features/textures/usePacks";
 import { setTexturePacksEverywhere } from "@/lib/tauri/texturepacks";
+import { useCanUseIncognito } from "@/features/incognito/useIncognito";
 import { usePreferences } from "./preferences";
 
-function Row({ title, hint, checked, onChange }: { title: string; hint: string; checked: boolean; onChange: (checked: boolean) => void }) {
+function Row({ title, hint, checked, onChange, disabled }: { title: string; hint: string; checked: boolean; onChange: (checked: boolean) => void; disabled?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-6 py-3">
       <div>
         <p className="font-medium">{title}</p>
         <p className="text-muted">{hint}</p>
       </div>
-      <Switch checked={checked} onChange={onChange} label={title} />
+      <Switch checked={checked} onChange={onChange} label={title} disabled={disabled} />
     </div>
   );
 }
 
 export function BehaviorSection() {
   const { t } = useTranslation();
-  const { autoUpdateMods, mascot, update } = usePreferences();
+  const { autoUpdateMods, mascot, incognito, update } = usePreferences();
+  const canUseIncognito = useCanUseIncognito();
   const showMascot = useMascotRequests((state) => state.show);
   const queryClient = useQueryClient();
   const packsEverywhere = useEverywhere();
@@ -44,6 +46,13 @@ export function BehaviorSection() {
           hint={t("behavior.autoUpdateHint")}
           checked={autoUpdateMods}
           onChange={(checked) => update({ autoUpdateMods: checked })}
+        />
+        <Row
+          title={t("incognito.title")}
+          hint={canUseIncognito ? t("incognito.hint") : t("incognito.needsAccount")}
+          checked={incognito && canUseIncognito}
+          disabled={!canUseIncognito}
+          onChange={(checked) => update({ incognito: checked })}
         />
         <Row
           title={t("behavior.packsEverywhere")}

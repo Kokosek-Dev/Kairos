@@ -1,3 +1,5 @@
+import { MatrixRain } from "@/components/MatrixRain";
+import { useIncognito } from "@/features/incognito/useIncognito";
 import { usePreferences } from "@/features/settings/preferences";
 
 function Glow({ className, hue, strength }: { className: string; hue: string; strength: number }) {
@@ -12,6 +14,15 @@ function Glow({ className, hue, strength }: { className: string; hue: string; st
 /** What sits behind the whole app: drifting light, a still glow, nothing, or the player's own picture. */
 export function Backdrop() {
   const { background, backgroundImage, backgroundDim } = usePreferences();
+  const incognito = useIncognito();
+
+  if (incognito) {
+    return (
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden bg-black">
+        <MatrixRain />
+      </div>
+    );
+  }
 
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">

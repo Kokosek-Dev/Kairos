@@ -222,6 +222,15 @@ export const es: Translations = {
     delete: "Eliminar momento",
     gameRunning: "Cierra primero el juego.",
   },
+  incognito: {
+    title: "Modo incógnito",
+    hint: "Juega sin conexión con el nombre de tu cuenta. Kairos deja de comunicarse con Microsoft, omite la búsqueda de actualizaciones y se oscurece.",
+    needsAccount: "Inicia sesión con una cuenta que posea el juego para usar esto.",
+    badge: "INCÓGNITO",
+    heroTitle: "Estás fuera del radar",
+    heroBody: "Kairos no se comunica con Microsoft. Los juegos se inician sin conexión con el nombre de tu cuenta. Los servidores en línea, tu skin y las actualizaciones están desactivados.",
+    leave: "Salir de incógnito",
+  },
   editor: {
     title: "Editor de skins",
     subtitle: "Dibuja en la textura plana o directamente en el modelo 3D.",

@@ -1,7 +1,8 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Minus, Search, Square, X } from "lucide-react";
+import { Minus, Search, Square, VenetianMask, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Logo } from "@/components/Logo";
+import { useIncognito } from "@/features/incognito/useIncognito";
 import { usePaletteStore } from "@/features/palette/paletteStore";
 import { AccountMenu } from "@/features/accounts/AccountMenu";
 import { cn } from "@/lib/utils";
@@ -34,12 +35,19 @@ function Control({ label, onClick, danger, children }: ControlProps) {
 
 export function TitleBar() {
   const { t } = useTranslation();
+  const incognito = useIncognito();
 
   return (
     <header className="relative flex h-11 shrink-0 items-center border-b bg-background/50 backdrop-blur-xl after:absolute after:inset-x-0 after:-bottom-px after:h-px after:bg-gradient-to-r after:from-transparent after:via-accent/60 after:to-transparent">
       <div data-tauri-drag-region className="flex h-full flex-1 items-center gap-2 px-4">
         <Logo className="pointer-events-none size-5 transition-transform duration-700 [div:hover>&]:rotate-[360deg]" />
         <span className="pointer-events-none text-xs font-semibold tracking-[0.25em] text-foreground/80">KAIROS</span>
+        {incognito && (
+          <span className="pointer-events-none flex items-center gap-1.5 rounded-full border border-accent/50 bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold tracking-[0.2em] text-accent">
+            <VenetianMask size={12} />
+            {t("incognito.badge")}
+          </span>
+        )}
       </div>
       <button
         type="button"

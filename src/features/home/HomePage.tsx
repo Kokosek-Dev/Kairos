@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Boxes, LogIn, Paintbrush, Plus, Puzzle, RotateCcw, Save, Shirt, Trash2, Upload } from "lucide-react";
+import { Boxes, LogIn, Paintbrush, Plus, Puzzle, RotateCcw, Save, Shirt, Trash2, Upload, VenetianMask } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -9,6 +9,8 @@ import { HeroCube } from "@/components/HeroCube";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { useSignInStore } from "@/features/accounts/signInStore";
+import { useIncognito } from "@/features/incognito/useIncognito";
+import { usePreferences } from "@/features/settings/preferences";
 import { PlayStats } from "@/features/home/PlayStats";
 import { DeleteInstanceDialog } from "@/features/instances/DeleteInstanceDialog";
 import { InstanceCard } from "@/features/instances/InstanceCard";
@@ -51,6 +53,22 @@ function SignedOutHero() {
           </li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+function IncognitoHero() {
+  const { t } = useTranslation();
+  const update = usePreferences((state) => state.update);
+  return (
+    <section className="relative overflow-hidden rounded-3xl border bg-surface/80 p-10 text-center">
+      <div className="grid-pattern pointer-events-none absolute inset-0" />
+      <VenetianMask size={72} className="relative mx-auto text-accent drop-shadow-[0_0_18px_var(--accent)]" />
+      <h1 className="text-gradient relative mt-4 text-3xl font-extrabold tracking-tight">{t("incognito.heroTitle")}</h1>
+      <p className="relative mx-auto mt-2 max-w-lg text-muted">{t("incognito.heroBody")}</p>
+      <Button variant="secondary" className="relative mt-6" onClick={() => update({ incognito: false })}>
+        {t("incognito.leave")}
+      </Button>
     </section>
   );
 }
@@ -270,13 +288,14 @@ export function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { active, isPending } = useActiveAccount();
+  const incognito = useIncognito();
   const instances = useInstances();
   const [deleting, setDeleting] = useState<Instance | null>(null);
   const recent = instances.data?.slice(0, RECENT_COUNT) ?? [];
 
   return (
     <div className="space-y-8 pb-6">
-      {isPending ? <div className="skeleton h-[390px] rounded-2xl" /> : active ? <SkinHero /> : <SignedOutHero />}
+      {incognito ? <IncognitoHero /> : isPending ? <div className="skeleton h-[390px] rounded-2xl" /> : active ? <SkinHero /> : <SignedOutHero />}
 
       <PlayStats instances={instances.data ?? []} />
 
@@ -304,7 +323,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <SkinLibrary signedIn={active !== null} />
+      <SkinLibrary signedIn={active !== null && !incognito} />
       <DeleteInstanceDialog instance={deleting} onClose={() => setDeleting(null)} />
     </div>
   );

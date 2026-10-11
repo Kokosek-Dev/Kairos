@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { useOfflineStore } from "@/features/launch/offlineStore";
+import { useIncognito } from "@/features/incognito/useIncognito";
 import { useActiveAccount } from "@/features/skins/useProfile";
 import type { Instance } from "@/lib/tauri/instances";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ export function PlayButton({ instance, className }: { instance: Instance; classN
   const { instanceId, phase, play, stop } = useGameStore();
   const askOffline = useOfflineStore((state) => state.ask);
   const { active } = useActiveAccount();
+  const incognito = useIncognito();
 
   const thisRunning = instanceId === instance.id && isBusy(phase);
   const otherRunning = !thisRunning && isBusy(phase);
@@ -36,14 +38,14 @@ export function PlayButton({ instance, className }: { instance: Instance; classN
     <div className={cn("flex", className)}>
       <Button
         size="lg"
-        className={cn("flex-1", active && "rounded-r-none")}
+        className={cn("flex-1", active && !incognito && "rounded-r-none")}
         disabled={otherRunning}
-        onClick={() => void play(instance.id, instance.name)}
+        onClick={() => void play(instance.id, instance.name, incognito)}
       >
         <Play size={18} />
         {t("instances.play")}
       </Button>
-      {active && (
+      {active && !incognito && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

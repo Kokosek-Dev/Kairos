@@ -7,7 +7,8 @@ import { checkContentUpdates, updateContent } from "@/lib/tauri/modrinth";
 
 /** Brings the instance's content up to date before it starts. A failure never stops the game from launching. */
 export async function updateBeforeLaunch(instanceId: string): Promise<void> {
-  if (!usePreferences.getState().autoUpdateMods) return;
+  const { autoUpdateMods, incognito } = usePreferences.getState();
+  if (!autoUpdateMods || incognito) return;
   const t = i18n.t.bind(i18n);
   try {
     const updates = await checkContentUpdates(instanceId);

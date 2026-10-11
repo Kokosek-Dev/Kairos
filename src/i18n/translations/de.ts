@@ -220,6 +220,15 @@ export const de: Translations = {
     delete: "Moment löschen",
     gameRunning: "Schließe zuerst das Spiel.",
   },
+  incognito: {
+    title: "Inkognito-Modus",
+    hint: "Spielt offline unter deinem Kontonamen. Kairos hört auf, mit Microsoft zu sprechen, überspringt Update-Prüfungen und wird dunkel.",
+    needsAccount: "Melde dich mit einem Konto an, das das Spiel besitzt, um das zu nutzen.",
+    badge: "INKOGNITO",
+    heroTitle: "Du bist unter dem Radar",
+    heroBody: "Kairos spricht nicht mit Microsoft. Spiele starten offline unter deinem Kontonamen. Online-Server, dein Skin und Updates sind abgeschaltet.",
+    leave: "Inkognito verlassen",
+  },
   editor: {
     title: "Skin-Editor",
     subtitle: "Zeichne auf der flachen Textur oder direkt auf dem 3D-Modell.",

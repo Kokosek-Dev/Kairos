@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { usePreferences } from "@/features/settings/preferences";
 import { findUpdate, offerUpdate } from "./updater";
 
 const FIRST_CHECK_DELAY_MS = 8000;
@@ -7,6 +8,7 @@ const FIRST_CHECK_DELAY_MS = 8000;
 export function UpdateWatcher() {
   useEffect(() => {
     const timer = setTimeout(() => {
+      if (usePreferences.getState().incognito) return;
       void findUpdate().then((update) => update && offerUpdate(update));
     }, FIRST_CHECK_DELAY_MS);
     return () => clearTimeout(timer);

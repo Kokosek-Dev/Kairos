@@ -234,6 +234,15 @@ export const en: Translations = {
     delete: "Delete moment",
     gameRunning: "Close the game first.",
   },
+  incognito: {
+    title: "Incognito mode",
+    hint: "Plays offline under your account name. Kairos stops talking to Microsoft, skips update checks and goes dark.",
+    needsAccount: "Sign in with an account that owns the game to use this.",
+    badge: "INCOGNITO",
+    heroTitle: "You are off the grid",
+    heroBody: "Kairos is not talking to Microsoft. Games start offline under your account name. Online servers, your skin and updates are switched off.",
+    leave: "Leave incognito",
+  },
   editor: {
     title: "Skin editor",
     subtitle: "Draw on the flat texture or straight on the 3D model.",
@@ -782,6 +791,15 @@ export const pl: Translations = {
     restored: "Wrócono do tamtej chwili",
     delete: "Usuń chwilę",
     gameRunning: "Najpierw zamknij grę.",
+  },
+  incognito: {
+    title: "Tryb incognito",
+    hint: "Gra offline pod nazwą Twojego konta. Kairos przestaje łączyć się z Microsoft, pomija sprawdzanie aktualizacji i przyciemnia się.",
+    needsAccount: "Zaloguj się kontem, które posiada grę, aby tego użyć.",
+    badge: "INCOGNITO",
+    heroTitle: "Jesteś poza zasięgiem",
+    heroBody: "Kairos nie łączy się z Microsoft. Gry startują offline pod nazwą Twojego konta. Serwery online, skin i aktualizacje są wyłączone.",
+    leave: "Wyjdź z incognito",
   },
   editor: {
     title: "Edytor skinów",
