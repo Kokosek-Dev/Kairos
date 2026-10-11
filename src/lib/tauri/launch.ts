@@ -13,11 +13,12 @@ export type LaunchEvent =
 export function launchInstance(
   instanceId: string,
   offline: boolean,
+  showOnDiscord: boolean,
   onEvent: (event: LaunchEvent) => void,
 ): Promise<void> {
   const channel = new Channel<LaunchEvent>();
   channel.onmessage = onEvent;
-  return invoke<void>("launch_instance", { instanceId, offline, onEvent: channel });
+  return invoke<void>("launch_instance", { instanceId, offline, showOnDiscord, onEvent: channel });
 }
 
 export const stopGame = (runId: number) => invoke<void>("stop_game", { runId });

@@ -1,5 +1,6 @@
 mod app_id;
 mod auth;
+mod boost;
 mod commands;
 mod diagnostics;
 mod download;
@@ -17,7 +18,9 @@ mod modrinth;
 mod moments;
 mod mojang;
 mod paths;
+mod presence;
 mod skins;
+mod share;
 mod state;
 mod tasks;
 mod texturepacks;
@@ -106,6 +109,12 @@ pub fn run() {
             commands::set_texture_packs_everywhere,
             commands::get_data_location,
             commands::get_memory_advice,
+            commands::boost_instance,
+            commands::boost_mods,
+            commands::discord_available,
+            commands::export_instance_code,
+            commands::preview_instance_code,
+            commands::import_instance_code,
             commands::list_moments,
             commands::create_moment,
             commands::create_safety_moment,

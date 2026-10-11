@@ -6,6 +6,7 @@ interface Preferences {
   autoUpdateMods: boolean;
   mascot: boolean;
   incognito: boolean;
+  discordPresence: boolean;
   background: BackgroundStyle;
   backgroundImage: string | null;
   backgroundDim: number;
@@ -16,6 +17,7 @@ const DEFAULTS: Preferences = {
   autoUpdateMods: true,
   mascot: true,
   incognito: false,
+  discordPresence: true,
   background: "aurora",
   backgroundImage: null,
   backgroundDim: 0.6,
@@ -37,9 +39,9 @@ export const usePreferences = create<PreferencesState>((set, get) => ({
   ...load(),
   update: (changes) => {
     set(changes);
-    const { autoUpdateMods, mascot, incognito, background, backgroundImage, backgroundDim } = get();
+    const { autoUpdateMods, mascot, incognito, discordPresence, background, backgroundImage, backgroundDim } = get();
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ autoUpdateMods, mascot, incognito, background, backgroundImage, backgroundDim }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ autoUpdateMods, mascot, incognito, discordPresence, background, backgroundImage, backgroundDim }));
     } catch {
       // The choice still applies for this session when storage is full or unavailable.
     }

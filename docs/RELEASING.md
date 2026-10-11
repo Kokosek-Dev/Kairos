@@ -14,6 +14,7 @@ Poniżej jest wszystko, co trzeba zrobić raz, i to, co robisz przy każdym wyda
    - `TAURI_SIGNING_PRIVATE_KEY`: cała zawartość pliku `kairos-updater.key`
    - `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: zawartość pliku `D:\Dev\secrets\kairos-updater.password.txt`
    - `KAIROS_MS_CLIENT_ID`: Application (client) ID z Azure (patrz `AZURE_SETUP.md`)
+   - `KAIROS_DISCORD_APP_ID` (opcjonalnie): numer aplikacji Discord do statusu „Playing Kairos" (patrz `DISCORD_SETUP.md`)
 4. **Kopia klucza.** Zrób kopię `kairos-updater.key` **i pliku z hasłem** w bezpiecznym miejscu, poza repozytorium. Jeśli go stracisz, nie
    wydasz aktualizacji, które zainstalują się w już zainstalowanych launcherach. Nigdy nie wrzucaj go do repozytorium.
 5. **Strona z przyciskiem „Pobierz".** W repozytorium: Settings, Pages, źródło: gałąź `main`, folder `/docs`.

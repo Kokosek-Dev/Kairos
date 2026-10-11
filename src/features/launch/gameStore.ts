@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { useSignInStore } from "@/features/accounts/signInStore";
 import { updateBeforeLaunch } from "@/features/instances/autoUpdate";
+import { usePreferences } from "@/features/settings/preferences";
 import { isLauncherError } from "@/lib/tauri/errors";
 import {
   launchInstance,
@@ -111,7 +112,8 @@ export const useGameStore = create<GameState>((set, get) => {
       });
       try {
         if (!offline) await updateBeforeLaunch(instanceId);
-        await launchInstance(instanceId, offline, handle);
+        const { discordPresence, incognito } = usePreferences.getState();
+        await launchInstance(instanceId, offline, discordPresence && !incognito, handle);
       } catch (error) {
         if (isLauncherError(error) && error.code === "cancelled") {
           set({ phase: { kind: "idle" }, runId: null });

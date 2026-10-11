@@ -1,11 +1,12 @@
 import { SlidersHorizontal } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useMascotRequests } from "@/components/Mascot";
 import { EVERYWHERE_KEY, useEverywhere } from "@/features/textures/useEverywhere";
 import { PACKS_KEY } from "@/features/textures/usePacks";
+import { discordAvailable } from "@/lib/tauri/boost";
 import { setTexturePacksEverywhere } from "@/lib/tauri/texturepacks";
 import { usePreferences } from "./preferences";
 
@@ -23,7 +24,8 @@ function Row({ title, hint, checked, onChange, disabled }: { title: string; hint
 
 export function BehaviorSection() {
   const { t } = useTranslation();
-  const { autoUpdateMods, mascot, update } = usePreferences();
+  const { autoUpdateMods, mascot, discordPresence, update } = usePreferences();
+  const discord = useQuery({ queryKey: ["discord-available"], queryFn: discordAvailable, staleTime: Infinity });
   const showMascot = useMascotRequests((state) => state.show);
   const queryClient = useQueryClient();
   const packsEverywhere = useEverywhere();
@@ -45,6 +47,14 @@ export function BehaviorSection() {
           checked={autoUpdateMods}
           onChange={(checked) => update({ autoUpdateMods: checked })}
         />
+        {discord.data && (
+          <Row
+            title={t("behavior.discord")}
+            hint={t("behavior.discordHint")}
+            checked={discordPresence}
+            onChange={(checked) => update({ discordPresence: checked })}
+          />
+        )}
         <Row
           title={t("behavior.packsEverywhere")}
           hint={t("behavior.packsEverywhereHint")}

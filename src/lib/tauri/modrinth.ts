@@ -153,7 +153,7 @@ export const removeContent = (instanceId: string, kind: ContentKind, fileName: s
   invoke<void>("remove_content", { instanceId, kind, fileName });
 export const checkContentUpdates = (instanceId: string) => invoke<UpdateInfo[]>("check_content_updates", { instanceId });
 
-function withProgress<T>(command: string, args: Record<string, unknown>, onProgress: (p: InstallProgress) => void) {
+export function withProgress<T>(command: string, args: Record<string, unknown>, onProgress: (p: InstallProgress) => void) {
   const channel = new Channel<InstallProgress>();
   channel.onmessage = onProgress;
   return invoke<T>(command, { ...args, onProgress: channel });

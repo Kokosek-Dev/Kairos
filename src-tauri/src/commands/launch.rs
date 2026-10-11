@@ -2,6 +2,8 @@ use crate::error::{AppError, AppResult};
 use crate::instances::store;
 use crate::launch::{self, LaunchEvent, LaunchRequest};
 use crate::app_id;
+use crate::modrinth::content::{self, ContentKind};
+use crate::presence;
 use crate::state::AppState;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
@@ -12,6 +14,7 @@ pub async fn launch_instance(
     state: State<'_, AppState>,
     instance_id: String,
     offline: bool,
+    show_on_discord: bool,
     on_event: Channel<LaunchEvent>,
 ) -> AppResult<()> {
     let instance = store::get(&state.paths, &instance_id)?;
@@ -30,10 +33,22 @@ pub async fn launch_instance(
     let started = Arc::new(Mutex::new(None::<Instant>));
     let paths = state.paths.clone();
     let played_id = instance.id.clone();
+    let presence = state.presence.clone();
+    let activity = show_on_discord.then(|| {
+        let mods = content::load_entries(&state.paths, &instance.id)
+            .map_or(0, |entries| entries.iter().filter(|entry| entry.kind == ContentKind::Mod).count());
+        presence::describe(&instance, mods)
+    });
     let emit = move |event: LaunchEvent| {
         match &event {
-            LaunchEvent::Running { .. } => *started.lock().unwrap() = Some(Instant::now()),
+            LaunchEvent::Running { .. } => {
+                *started.lock().unwrap() = Some(Instant::now());
+                if let Some((details, line)) = &activity {
+                    presence.show(details, line, chrono::Utc::now().timestamp());
+                }
+            }
             LaunchEvent::Exited { .. } => {
+                presence.clear();
                 if let Some(start) = started.lock().unwrap().take() {
                     let _ = store::add_play_time(&paths, &played_id, start.elapsed().as_secs());
                 }

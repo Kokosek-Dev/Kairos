@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Boxes, Copy, FileDown, FolderOpen, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Boxes, Copy, FileDown, FolderOpen, Save, Share2, Trash2, Zap } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/input";
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { joinArgs, splitArgs } from "@/lib/args";
+import { BoostDialog } from "@/features/boost/BoostDialog";
 import { MomentsSection } from "@/features/moments/MomentsSection";
+import { ShareCodeDialog } from "@/features/share/ShareCodeDialog";
 import { formatMemory } from "@/lib/format";
 import { createSafetyMoment } from "@/lib/tauri/moments";
 import { exportMrpack, pickMrpackDestination } from "@/lib/tauri/modrinth";
@@ -77,6 +79,8 @@ function SettingsForm({ instance }: { instance: Instance }) {
   const [jvmText, setJvmText] = useState(joinArgs(instance.jvmArgs));
   const [javaPath, setJavaPath] = useState(instance.javaPath);
   const [deleting, setDeleting] = useState(false);
+  const [boosting, setBoosting] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   const advice = useQuery({
     queryKey: ["memory-advice", loader !== "vanilla"],
@@ -178,6 +182,10 @@ function SettingsForm({ instance }: { instance: Instance }) {
             {instance.loaderVersion ? ` ${instance.loaderVersion}` : ""}
           </p>
         </div>
+        <Button variant="secondary" size="lg" disabled={thisRunning} onClick={() => setBoosting(true)}>
+          <Zap size={18} />
+          {t("boost.button")}
+        </Button>
         <Button variant="secondary" size="lg" asChild>
           <Link to={`/instances/${instance.id}/content`}>
             <Boxes size={18} />
@@ -279,6 +287,10 @@ function SettingsForm({ instance }: { instance: Instance }) {
             <FolderOpen size={16} />
             {t("instances.openFolder")}
           </Button>
+          <Button variant="secondary" onClick={() => setSharing(true)}>
+            <Share2 size={16} />
+            {t("share.button")}
+          </Button>
           <Button variant="secondary" disabled={exportPack.isPending} onClick={() => exportPack.mutate()}>
             <FileDown size={16} />
             {t("content.exportPack")}
@@ -301,6 +313,9 @@ function SettingsForm({ instance }: { instance: Instance }) {
       </div>
 
       <MomentsSection instanceId={instance.id} />
+
+      <BoostDialog instance={instance} open={boosting} onOpenChange={setBoosting} />
+      <ShareCodeDialog instanceId={instance.id} open={sharing} onOpenChange={setSharing} />
 
       {error && <p className="text-sm text-danger">{errorMessage(t, error)}</p>}
 

@@ -31,6 +31,9 @@ verify it yourself. See [docs/PRIVACY.md](docs/PRIVACY.md) for what Kairos does 
 - Fabric, Quilt, Forge and NeoForge
 - Mod, modpack, resource pack and shader browser with dependency-aware installs and updates, automatic mod updates
   before a game starts, `.mrpack` import and export
+- Boost: one click installs performance mods for the loader and tunes memory and Java settings
+- Kairos codes: share an instance as a short text code that a friend pastes to build the same game
+- Discord Rich Presence (optional, see [docs/DISCORD_SETUP.md](docs/DISCORD_SETUP.md))
 - Moments: snapshots of an instance (mods, settings, optionally worlds) saved before risky changes, with a one-click way back and a view of what changed
 - Play time statistics, crash analysis that explains what went wrong, problem reports without personal data
 - Choose where everything is stored, automatic Java download, live game log

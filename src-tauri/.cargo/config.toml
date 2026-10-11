@@ -5,3 +5,7 @@
 # players never have to enter it. Client IDs are public identifiers, not secrets.
 [env]
 KAIROS_MS_CLIENT_ID = { value = "", force = false }
+
+# KAIROS_DISCORD_APP_ID is the Application ID of the Discord application behind Rich Presence.
+# Leave it empty to build without it (see docs/DISCORD_SETUP.md).
+KAIROS_DISCORD_APP_ID = { value = "", force = false }

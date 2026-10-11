@@ -1,8 +1,9 @@
-import { Boxes, FileUp, Plus, Search } from "lucide-react";
+import { Boxes, FileUp, KeyRound, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { Button } from "@/components/ui/button";
+import { ImportCodeDialog } from "@/features/share/ImportCodeDialog";
 import { TexturePacksSection } from "@/features/textures/TexturePacksSection";
 import { useJobsStore } from "@/features/discover/jobsStore";
 import { pickMrpackFile } from "@/lib/tauri/modrinth";
@@ -33,6 +34,7 @@ export function LibraryPage() {
   const { t } = useTranslation();
   const instances = useInstances();
   const [creating, setCreating] = useState(false);
+  const [importingCode, setImportingCode] = useState(false);
   const [deleting, setDeleting] = useState<Instance | null>(null);
   const { jobs, importPack: runImport } = useJobsStore();
   const importing = jobs["mrpack-import"] !== undefined;
@@ -63,6 +65,10 @@ export function LibraryPage() {
           <Button variant="secondary" disabled={importing} onClick={() => void importPack()}>
             <FileUp size={16} />
             {t("content.importPack")}
+          </Button>
+          <Button variant="secondary" onClick={() => setImportingCode(true)}>
+            <KeyRound size={16} />
+            {t("share.importButton")}
           </Button>
           <Button onClick={() => setCreating(true)}>
             <Plus size={16} />
@@ -159,6 +165,7 @@ export function LibraryPage() {
 
       <TexturePacksSection />
 
+      <ImportCodeDialog open={importingCode} onOpenChange={setImportingCode} />
       <NewInstanceDialog open={creating} onOpenChange={setCreating} />
       <DeleteInstanceDialog instance={deleting} onClose={() => setDeleting(null)} />
     </>
