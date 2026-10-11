@@ -15,11 +15,27 @@ import { useBrush } from "@/features/pixel/useBrush";
 import { errorMessage } from "@/lib/tauri/errors";
 import { applySkin, listSkins, saveSkinPng, type SavedSkin, type SkinVariant } from "@/lib/tauri/skins";
 import { SKINS_KEY, useActiveAccount, useSetProfile } from "../useProfile";
-import { drawSkinImage, faceRects, loadImage } from "./layout";
-import { ModelPane, type Layer } from "./ModelPane";
+import { drawSkinImage, faceRects, loadImage, partLabels } from "./layout";
+import { ModelPane } from "./ModelPane";
 import { SkinDocument } from "./SkinDocument";
 
 const BLANK = "blank";
+const VIEW_SIZE = 768;
+
+function drawLabel(ctx: CanvasRenderingContext2D, text: string, centerX: number, centerY: number, fontSize: number) {
+  const [first, ...rest] = text.split(" ");
+  const lines = rest.length > 0 ? [first, rest.join(" ")] : [first];
+  ctx.font = `600 ${fontSize}px Inter, sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  lines.forEach((line, index) => {
+    const y = centerY + (index - (lines.length - 1) / 2) * fontSize * 1.15;
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillText(line, centerX + 1, y + 1);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+    ctx.fillText(line, centerX, y);
+  });
+}
 
 export function SkinEditorPage() {
   const { t } = useTranslation();
@@ -31,8 +47,8 @@ export function SkinEditorPage() {
   const brush = useBrush(doc);
   const skins = useQuery({ queryKey: SKINS_KEY, queryFn: listSkins });
 
-  const [layer, setLayer] = useState<Layer>("base");
   const [showOverlay, setShowOverlay] = useState(true);
+  const [showLabels, setShowLabels] = useState(true);
   const [variant, setVariant] = useState<SkinVariant>(doc.variant);
   const [name, setName] = useState("");
   const [source, setSource] = useState(BLANK);
@@ -40,15 +56,20 @@ export function SkinEditorPage() {
   const guides = useCallback(
     (ctx: CanvasRenderingContext2D, scale: number) => {
       const size = doc.width * scale;
-      ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
       ctx.fillRect(0, 0, size, size);
       const rects = faceRects(doc.variant);
       for (const { x, y, w, h } of rects) ctx.clearRect(x * scale, y * scale, w * scale, h * scale);
       ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
       ctx.lineWidth = 1;
       for (const { x, y, w, h } of rects) ctx.strokeRect(x * scale + 0.5, y * scale + 0.5, w * scale - 1, h * scale - 1);
+      if (!showLabels) return;
+      for (const { part, overlay, rect } of partLabels(doc.variant)) {
+        const label = overlay ? `${t(`editor.parts.${part}`)} 2` : t(`editor.parts.${part}`);
+        drawLabel(ctx, label, (rect.x + rect.w / 2) * scale, (rect.y + rect.h / 2) * scale, Math.min(scale * 1.1, 14));
+      }
     },
-    [doc],
+    [doc, showLabels, t],
   );
 
   const startFrom = useCallback(
@@ -102,38 +123,29 @@ export function SkinEditorPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[15rem_minmax(0,1fr)_minmax(0,22rem)]">
-        <aside className="panel space-y-5 p-4">
+      <div className="grid gap-4 lg:grid-cols-[14rem_minmax(0,1fr)_minmax(0,19rem)]">
+        <aside className="panel p-4">
           <BrushPanel doc={doc} brush={brush} />
-          <Field label={t("editor.layer")} hint={t("editor.layerHint")}>
-            <div className="space-y-2">
-              <Segmented
-                value={layer}
-                onChange={setLayer}
-                options={[
-                  { value: "base", label: t("editor.layerBase") },
-                  { value: "overlay", label: t("editor.layerOverlay") },
-                ]}
-              />
-              <label className="flex items-center gap-2 text-sm text-muted">
-                <input
-                  type="checkbox"
-                  checked={showOverlay || layer === "overlay"}
-                  disabled={layer === "overlay"}
-                  onChange={(event) => setShowOverlay(event.target.checked)}
-                />
-                {t("editor.showOverlay")}
-              </label>
-            </div>
-          </Field>
         </aside>
 
-        <section className="panel relative min-h-[34rem] overflow-hidden">
-          <ModelPane doc={doc} brush={brush.brush} layer={layer} showOverlay={showOverlay} onPick={brush.pickColor} />
+        <section className="space-y-3">
+          <PixelCanvas doc={doc} brush={brush.brush} onPick={brush.pickColor} guides={guides} viewSize={VIEW_SIZE} />
+          <p className="text-center text-xs text-muted">{t("editor.overlayHint")}</p>
+          <label className="flex items-center justify-center gap-2 text-sm text-muted">
+            <input type="checkbox" checked={showLabels} onChange={(event) => setShowLabels(event.target.checked)} />
+            {t("editor.showLabels")}
+          </label>
         </section>
 
         <aside className="space-y-4">
-          <PixelCanvas doc={doc} brush={brush.brush} onPick={brush.pickColor} guides={guides} />
+          <div className="panel relative h-80 overflow-hidden">
+            <ModelPane doc={doc} showOverlay={showOverlay} />
+            <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs text-muted">{t("editor.previewHint")}</p>
+          </div>
+          <label className="flex items-center gap-2 px-1 text-sm text-muted">
+            <input type="checkbox" checked={showOverlay} onChange={(event) => setShowOverlay(event.target.checked)} />
+            {t("editor.showOverlay")}
+          </label>
           <div className="panel space-y-4 p-4">
             <Field label={t("editor.model")} hint={t("skins.modelHint")}>
               <Segmented

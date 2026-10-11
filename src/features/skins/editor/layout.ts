@@ -5,7 +5,10 @@ export const SKIN_SIZE = 64;
 
 type Size = [width: number, height: number, depth: number];
 
+export type Part = "head" | "body" | "rightLeg" | "leftLeg" | "rightArm" | "leftArm";
+
 interface Box {
+  part: Part;
   origin: [number, number];
   size: Size;
   overlay: boolean;
@@ -39,23 +42,34 @@ function facesOf([u, v]: [number, number], [w, h, d]: Size): Faces {
 function boxes(variant: SkinVariant): Box[] {
   const arm: Size = [variant === "slim" ? 3 : 4, 12, 4];
   return [
-    { origin: [0, 0], size: [8, 8, 8], overlay: false },
-    { origin: [16, 16], size: [8, 12, 4], overlay: false },
-    { origin: [0, 16], size: [4, 12, 4], overlay: false },
-    { origin: [16, 48], size: [4, 12, 4], overlay: false },
-    { origin: [40, 16], size: arm, overlay: false },
-    { origin: [32, 48], size: arm, overlay: false },
-    { origin: [32, 0], size: [8, 8, 8], overlay: true },
-    { origin: [16, 32], size: [8, 12, 4], overlay: true },
-    { origin: [0, 32], size: [4, 12, 4], overlay: true },
-    { origin: [0, 48], size: [4, 12, 4], overlay: true },
-    { origin: [40, 32], size: arm, overlay: true },
-    { origin: [48, 48], size: arm, overlay: true },
+    { part: "head", origin: [0, 0], size: [8, 8, 8], overlay: false },
+    { part: "body", origin: [16, 16], size: [8, 12, 4], overlay: false },
+    { part: "rightLeg", origin: [0, 16], size: [4, 12, 4], overlay: false },
+    { part: "leftLeg", origin: [16, 48], size: [4, 12, 4], overlay: false },
+    { part: "rightArm", origin: [40, 16], size: arm, overlay: false },
+    { part: "leftArm", origin: [32, 48], size: arm, overlay: false },
+    { part: "head", origin: [32, 0], size: [8, 8, 8], overlay: true },
+    { part: "body", origin: [16, 32], size: [8, 12, 4], overlay: true },
+    { part: "rightLeg", origin: [0, 32], size: [4, 12, 4], overlay: true },
+    { part: "leftLeg", origin: [0, 48], size: [4, 12, 4], overlay: true },
+    { part: "rightArm", origin: [40, 32], size: arm, overlay: true },
+    { part: "leftArm", origin: [48, 48], size: arm, overlay: true },
   ];
 }
 
 export function faceRects(variant: SkinVariant): Rect[] {
   return boxes(variant).flatMap(({ origin, size }) => Object.values(facesOf(origin, size)));
+}
+
+export interface PartLabel {
+  part: Part;
+  overlay: boolean;
+  rect: Rect;
+}
+
+/** The front face of every body part, where its name is shown on the flat texture. */
+export function partLabels(variant: SkinVariant): PartLabel[] {
+  return boxes(variant).map(({ part, origin, size, overlay }) => ({ part, overlay, rect: facesOf(origin, size).front }));
 }
 
 export function paintableMask(variant: SkinVariant): Uint8Array {

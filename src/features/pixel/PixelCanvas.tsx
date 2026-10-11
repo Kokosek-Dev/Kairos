@@ -2,8 +2,9 @@ import { useEffect, useRef } from "react";
 import type { PixelDocument } from "./PixelDocument";
 import { applyTool, forEachOnLine, type BrushSettings } from "./tools";
 
-const VIEW_SIZE = 512;
+const DEFAULT_VIEW_SIZE = 512;
 const GRID_MIN_SCALE = 8;
+const MAX_HEIGHT = 576;
 
 interface PixelCanvasProps {
   doc: PixelDocument;
@@ -11,6 +12,8 @@ interface PixelCanvasProps {
   onPick: (color: string) => void;
   /** Extra guides drawn above the picture, e.g. the outline of every body part of a skin. */
   guides?: (ctx: CanvasRenderingContext2D, scale: number) => void;
+  /** Pixel size of the longest side of the drawing area. */
+  viewSize?: number;
 }
 
 function drawGrid(ctx: CanvasRenderingContext2D, doc: PixelDocument, scale: number) {
@@ -29,11 +32,11 @@ function drawGrid(ctx: CanvasRenderingContext2D, doc: PixelDocument, scale: numb
 }
 
 /** The flat picture, magnified, for precise pixel work. */
-export function PixelCanvas({ doc, brush, onPick, guides }: PixelCanvasProps) {
+export function PixelCanvas({ doc, brush, onPick, guides, viewSize = DEFAULT_VIEW_SIZE }: PixelCanvasProps) {
   const view = useRef<HTMLCanvasElement>(null);
   const overlay = useRef<HTMLCanvasElement>(null);
   const live = useRef({ brush, onPick });
-  const scale = Math.max(1, Math.floor(VIEW_SIZE / Math.max(doc.width, doc.height)));
+  const scale = Math.max(1, Math.floor(viewSize / Math.max(doc.width, doc.height)));
   const viewWidth = doc.width * scale;
   const viewHeight = doc.height * scale;
 
@@ -121,8 +124,8 @@ export function PixelCanvas({ doc, brush, onPick, guides }: PixelCanvasProps) {
 
   return (
     <div
-      className="checker relative mx-auto w-full max-w-[32rem] overflow-hidden rounded-lg border"
-      style={{ aspectRatio: `${doc.width} / ${doc.height}` }}
+      className="checker relative mx-auto w-full overflow-hidden rounded-lg border"
+      style={{ aspectRatio: `${doc.width} / ${doc.height}`, maxWidth: `${Math.min(viewSize, (MAX_HEIGHT * doc.width) / doc.height)}px` }}
     >
       <canvas ref={view} width={viewWidth} height={viewHeight} className="absolute inset-0 size-full" />
       <canvas ref={overlay} width={viewWidth} height={viewHeight} className="absolute inset-0 size-full cursor-crosshair touch-none" />
