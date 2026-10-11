@@ -444,9 +444,25 @@ export const en: Translations = {
     languageHint: "Choose the language of the launcher interface.",
   },
   welcome: {
-    title: "Welcome to Zenith",
-    body: "Choose your language. You can change it later in Settings.",
     continue: "Continue",
+    skip: "Skip",
+    finish: "Start using Zenith",
+    signIn: "Sign in with Microsoft",
+    instanceCreate: "Create it for me",
+    instanceDone: "Created {{name}}",
+    language: { title: "Welcome to Zenith", body: "Choose your language. You can change it later in Settings." },
+    storage: {
+      title: "Where should Zenith keep its files?",
+      body: "Games and mods take several gigabytes. If your system drive is small, pick a folder on another drive.",
+    },
+    account: {
+      title: "Sign in",
+      body: "Use the Microsoft account that owns Minecraft: Java Edition to play and to change your skin. You can also do this later.",
+    },
+    instance: {
+      title: "Your first instance",
+      body: "Create an instance with the newest Minecraft, ready to play. You can change everything about it later.",
+    },
   },
   window: { minimize: "Minimize", maximize: "Maximize", close: "Close" },
 };
@@ -898,9 +914,25 @@ export const pl: Translations = {
     languageHint: "Wybierz język interfejsu launchera.",
   },
   welcome: {
-    title: "Witaj w Zenith",
-    body: "Wybierz język. Możesz go później zmienić w Ustawieniach.",
     continue: "Dalej",
+    skip: "Pomiń",
+    finish: "Zacznij korzystać z Zenith",
+    signIn: "Zaloguj się kontem Microsoft",
+    instanceCreate: "Utwórz ją za mnie",
+    instanceDone: "Utworzono {{name}}",
+    language: { title: "Witaj w Zenith", body: "Wybierz język. Możesz go później zmienić w Ustawieniach." },
+    storage: {
+      title: "Gdzie Zenith ma trzymać pliki?",
+      body: "Gry i mody zajmują kilka gigabajtów. Jeśli dysk systemowy jest mały, wskaż folder na innym dysku.",
+    },
+    account: {
+      title: "Zaloguj się",
+      body: "Użyj konta Microsoft, które posiada Minecraft: Java Edition, aby grać i zmieniać skin. Możesz to też zrobić później.",
+    },
+    instance: {
+      title: "Twoja pierwsza instancja",
+      body: "Utwórz instancję z najnowszym Minecraftem, gotową do gry. Wszystko możesz potem zmienić.",
+    },
   },
   window: { minimize: "Minimalizuj", maximize: "Maksymalizuj", close: "Zamknij" },
 };

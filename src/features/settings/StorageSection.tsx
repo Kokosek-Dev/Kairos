@@ -8,7 +8,8 @@ import { formatBytes } from "@/lib/format";
 import { errorMessage } from "@/lib/tauri/errors";
 import { getDataLocation, moveDataLocation, pickDataFolder, restartApp } from "@/lib/tauri/location";
 
-export function StorageSection() {
+/** Shows where the files live and lets the player move them to another folder or drive. */
+export function StorageChooser() {
   const { t } = useTranslation();
   const location = useQuery({ queryKey: ["data-location"], queryFn: getDataLocation });
   const [target, setTarget] = useState<string | null>(null);
@@ -22,12 +23,7 @@ export function StorageSection() {
   });
 
   return (
-    <section className="panel p-5">
-      <h2 className="flex items-center gap-2 font-semibold">
-        <HardDrive size={16} className="text-accent" />
-        {t("storage.title")}
-      </h2>
-      <p className="mb-4 mt-1 text-muted">{t("storage.hint")}</p>
+    <>
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-background/40 px-4 py-3">
         <div className="min-w-0">
           <p className="truncate font-mono text-sm" title={location.data?.path}>
@@ -58,6 +54,21 @@ export function StorageSection() {
           </div>
         </DialogContent>
       </Dialog>
+    </>
+  );
+}
+
+export function StorageSection() {
+  const { t } = useTranslation();
+
+  return (
+    <section className="panel p-5">
+      <h2 className="flex items-center gap-2 font-semibold">
+        <HardDrive size={16} className="text-accent" />
+        {t("storage.title")}
+      </h2>
+      <p className="mb-4 mt-1 text-muted">{t("storage.hint")}</p>
+      <StorageChooser />
     </section>
   );
 }
