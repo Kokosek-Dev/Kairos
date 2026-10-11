@@ -1,7 +1,8 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Minus, Square, X } from "lucide-react";
+import { Minus, Search, Square, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Logo } from "@/components/Logo";
+import { usePaletteStore } from "@/features/palette/paletteStore";
 import { AccountMenu } from "@/features/accounts/AccountMenu";
 import { cn } from "@/lib/utils";
 
@@ -40,6 +41,15 @@ export function TitleBar() {
         <Logo className="pointer-events-none size-5 transition-transform duration-700 [div:hover>&]:rotate-[360deg]" />
         <span className="pointer-events-none text-xs font-semibold tracking-[0.25em] text-foreground/80">ZENITH</span>
       </div>
+      <button
+        type="button"
+        onClick={() => usePaletteStore.getState().setOpen(true)}
+        className="mr-2 hidden h-7 items-center gap-2 rounded-md border bg-surface/60 px-2.5 text-xs text-muted transition-colors hover:border-accent/50 hover:text-foreground sm:flex"
+      >
+        <Search size={12} />
+        {t("palette.short")}
+        <kbd className="rounded bg-surface-raised px-1.5 py-0.5 font-sans text-[10px]">Ctrl K</kbd>
+      </button>
       <AccountMenu />
       <Control label={t("window.minimize")} onClick={() => void appWindow.minimize()}>
         <Minus size={16} />
