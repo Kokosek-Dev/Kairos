@@ -78,9 +78,9 @@ Stan na koniec sesji: Azure czeka na odpowiedź szkoły (właściciel liczy na o
 
 ## 7. Sekrety i ważne ścieżki
 
-- Klucz podpisu aktualizacji: `D:\Dev\secrets\zenith-updater.key` (prywatny, **zrób kopię, nigdy do repozytorium**).
+- Klucz podpisu aktualizacji: `D:\Dev\secrets\zenith-updater.key` z hasłem w `zenith-updater.password.txt` (prywatne, **zrób kopię obu, nigdy do repozytorium**).
   Klucz publiczny jest w `tauri.conf.json`. Bez klucza nie da się wydać aktualizacji dla zainstalowanych launcherów.
-- `npm run tauri build` wymaga zmiennej `TAURI_SIGNING_PRIVATE_KEY` wskazującej na ten plik.
+- `npm run tauri build` wymaga `TAURI_SIGNING_PRIVATE_KEY` (ścieżka do klucza) i `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (hasło). Puste hasło w PowerShell nie działa (zmienna znika i build czeka na hasło), dlatego klucz ma prawdziwe hasło.
 - Instalator po zbudowaniu: `src-tauri/target/release/bundle/nsis/`.
 
 ## 8. Pułapki, na które już się trafiło

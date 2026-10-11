@@ -49,7 +49,7 @@ npm run tauri dev       # development
 npm run tauri build     # installer (NSIS) in src-tauri/target/release/bundle
 ```
 
-`tauri build` signs the update package, so it needs the update signing key in `TAURI_SIGNING_PRIVATE_KEY`.
+`tauri build` signs the update package, so it needs the update signing key and its password in `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`.
 Releases are built by GitHub Actions, see [docs/RELEASING.md](docs/RELEASING.md).
 
 ### Microsoft sign-in

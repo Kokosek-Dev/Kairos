@@ -9,12 +9,12 @@ Poniżej jest wszystko, co trzeba zrobić raz, i to, co robisz przy każdym wyda
    i wyślij tam kod.
 2. **Adres aktualizacji.** W `src-tauri/tauri.conf.json`, w `plugins.updater.endpoints`, zamień `OWNER/REPO` na
    nazwę swojego konta i repozytorium, np. `https://github.com/twojenick/zenith/releases/latest/download/latest.json`.
-3. **Klucz podpisu aktualizacji.** Para kluczy już jest: prywatny `D:\Dev\secrets\zenith-updater.key`,
+3. **Klucz podpisu aktualizacji.** Para kluczy już jest: prywatny `D:\Dev\secrets\zenith-updater.key` (hasło w `zenith-updater.password.txt` w tym samym folderze),
    publiczny jest wpisany w `tauri.conf.json`. W GitHubie, w Settings, Secrets and variables, Actions, dodaj sekrety:
    - `TAURI_SIGNING_PRIVATE_KEY`: cała zawartość pliku `zenith-updater.key`
-   - `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: zostaw pusty, bo klucz nie ma hasła
+   - `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: zawartość pliku `D:\Dev\secrets\zenith-updater.password.txt`
    - `ZENITH_MS_CLIENT_ID`: Application (client) ID z Azure (patrz `AZURE_SETUP.md`)
-4. **Kopia klucza.** Zrób kopię `zenith-updater.key` w bezpiecznym miejscu, poza repozytorium. Jeśli go stracisz, nie
+4. **Kopia klucza.** Zrób kopię `zenith-updater.key` **i pliku z hasłem** w bezpiecznym miejscu, poza repozytorium. Jeśli go stracisz, nie
    wydasz aktualizacji, które zainstalują się w już zainstalowanych launcherach. Nigdy nie wrzucaj go do repozytorium.
 5. **Strona z przyciskiem „Pobierz".** W repozytorium: Settings, Pages, źródło: gałąź `main`, folder `/docs`.
    Strona sama znajdzie najnowsze wydanie.
@@ -34,6 +34,7 @@ Poniżej jest wszystko, co trzeba zrobić raz, i to, co robisz przy każdym wyda
 
 ```
 $env:TAURI_SIGNING_PRIVATE_KEY = "D:\Dev\secrets\zenith-updater.key"
+$env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = (Get-Content "D:\Dev\secrets\zenith-updater.password.txt" -Raw).Trim()
 npm run tauri build
 ```
 
