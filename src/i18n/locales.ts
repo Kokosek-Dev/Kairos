@@ -108,6 +108,9 @@ export const en: Translations = {
     autoUpdateHint: "Before a game starts, Zenith updates the mods in that instance to the newest compatible versions.",
     mascot: "Little player on screen",
     mascotHint: "Now and then a tiny player wearing your skin runs across the window or pops up to wave.",
+    mascotTry: "Try it now:",
+    mascotRun: "Run",
+    mascotWave: "Wave",
   },
   editor: {
     title: "Skin editor",
@@ -493,6 +496,9 @@ export const pl: Translations = {
     autoUpdateHint: "Przed startem gry Zenith aktualizuje mody w tej instancji do najnowszych zgodnych wersji.",
     mascot: "Mały gracz na ekranie",
     mascotHint: "Co jakiś czas maleńki gracz z Twoim skinem przebiega przez okno albo wyskakuje w rogu i macha.",
+    mascotTry: "Zobacz teraz:",
+    mascotRun: "Bieg",
+    mascotWave: "Machanie",
   },
   editor: {
     title: "Edytor skinów",

@@ -1,11 +1,20 @@
 import { motion } from "framer-motion";
+import { create } from "zustand";
 import { useEffect, useRef, useState } from "react";
 import { RunningAnimation, SkinViewer, WaveAnimation } from "skinview3d";
 import { usePreferences } from "@/features/settings/preferences";
 import { SkinDocument } from "@/features/skins/editor/SkinDocument";
 import { useProfile } from "@/features/skins/useProfile";
 
-type Act = "run" | "peek";
+export type Act = "run" | "peek";
+
+interface MascotRequests {
+  pending: Act | null;
+  show: (act: Act) => void;
+}
+
+/** Lets the settings page ask for the mascot right away instead of waiting for its next visit. */
+export const useMascotRequests = create<MascotRequests>((set) => ({ pending: null, show: (act) => set({ pending: act }) }));
 
 const WIDTH = 130;
 const HEIGHT = 170;
@@ -44,6 +53,13 @@ export function Mascot() {
   const enabled = usePreferences((state) => state.mascot);
   const [act, setAct] = useState<Act | null>(null);
   const appeared = useRef(false);
+  const pending = useMascotRequests((state) => state.pending);
+
+  useEffect(() => {
+    if (pending === null || act !== null) return;
+    useMascotRequests.setState({ pending: null });
+    setAct(pending);
+  }, [pending, act]);
 
   useEffect(() => {
     if (!enabled || act !== null || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;

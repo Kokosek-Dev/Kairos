@@ -1,6 +1,8 @@
 import { SlidersHorizontal } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { useMascotRequests } from "@/components/Mascot";
 import { usePreferences } from "./preferences";
 
 function Row({ title, hint, checked, onChange }: { title: string; hint: string; checked: boolean; onChange: (checked: boolean) => void }) {
@@ -18,6 +20,7 @@ function Row({ title, hint, checked, onChange }: { title: string; hint: string; 
 export function BehaviorSection() {
   const { t } = useTranslation();
   const { autoUpdateMods, mascot, update } = usePreferences();
+  const showMascot = useMascotRequests((state) => state.show);
 
   return (
     <section className="panel p-5">
@@ -38,6 +41,15 @@ export function BehaviorSection() {
           checked={mascot}
           onChange={(checked) => update({ mascot: checked })}
         />
+        <div className="flex items-center gap-2 py-3">
+          <span className="mr-2 text-muted">{t("behavior.mascotTry")}</span>
+          <Button variant="secondary" size="sm" onClick={() => showMascot("run")}>
+            {t("behavior.mascotRun")}
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => showMascot("peek")}>
+            {t("behavior.mascotWave")}
+          </Button>
+        </div>
       </div>
     </section>
   );
