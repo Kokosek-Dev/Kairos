@@ -65,6 +65,24 @@ pub async fn add_skin_from_file(
     .await
 }
 
+#[tauri::command]
+pub async fn save_skin_png(
+    state: State<'_, AppState>,
+    name: String,
+    variant: SkinVariant,
+    png_base64: String,
+) -> AppResult<SavedSkinView> {
+    let png = base64::engine::general_purpose::STANDARD
+        .decode(png_base64)
+        .map_err(|_| AppError::InvalidInput("the skin image is not valid".to_owned()))?;
+    let paths = state.paths.clone();
+    blocking(move || {
+        let skin = library::add(&paths, &name, variant, &png)?;
+        Ok(to_view(skin, &png))
+    })
+    .await
+}
+
 fn file_stem(path: &Path) -> String {
     path.file_stem().map_or_else(|| "Skin".to_owned(), |stem| stem.to_string_lossy().into_owned())
 }

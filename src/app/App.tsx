@@ -9,6 +9,7 @@ import { ProjectPage } from "@/features/discover/ProjectPage";
 import { ContentPage } from "@/features/instances/ContentPage";
 import { InstanceSettingsPage } from "@/features/instances/InstanceSettingsPage";
 import { HomePage } from "@/features/home/HomePage";
+import { SkinEditorPage } from "@/features/skins/editor/SkinEditorPage";
 import { LibraryPage } from "@/features/library/LibraryPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
 import { OfflinePlayDialog } from "@/features/launch/OfflinePlayDialog";
@@ -39,6 +40,7 @@ export function App() {
               <Routes location={location}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/library" element={<LibraryPage />} />
+                <Route path="/skins/editor" element={<SkinEditorPage />} />
                 <Route path="/instances/:id" element={<InstanceSettingsPage />} />
                 <Route path="/instances/:id/content" element={<ContentPage />} />
                 <Route path="/versions" element={<VersionsPage />} />

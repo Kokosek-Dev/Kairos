@@ -79,6 +79,7 @@ pub fn run() {
             commands::get_profile,
             commands::list_skins,
             commands::add_skin_from_file,
+            commands::save_skin_png,
             commands::add_skin_from_player,
             commands::save_current_skin,
             commands::remove_skin,

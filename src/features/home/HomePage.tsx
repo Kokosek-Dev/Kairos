@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Boxes, LogIn, Plus, Puzzle, RotateCcw, Save, Shirt, Trash2, Upload } from "lucide-react";
+import { Boxes, LogIn, Paintbrush, Plus, Puzzle, RotateCcw, Save, Shirt, Trash2, Upload } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { HeroCube } from "@/components/HeroCube";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
@@ -195,10 +195,18 @@ function SkinLibrary({ signedIn }: { signedIn: boolean }) {
           <Shirt size={18} className="text-accent" />
           {t("skins.library")}
         </h2>
-        <Button variant="secondary" size="sm" onClick={() => setAdding(true)}>
-          <Plus size={14} />
-          {t("skins.addButton")}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" size="sm" asChild>
+            <Link to="/skins/editor">
+              <Paintbrush size={14} />
+              {t("skins.create")}
+            </Link>
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => setAdding(true)}>
+            <Plus size={14} />
+            {t("skins.addButton")}
+          </Button>
+        </div>
       </div>
 
       {skins.isPending && (
@@ -234,6 +242,12 @@ function SkinLibrary({ signedIn }: { signedIn: boolean }) {
               <p className="truncate font-medium">{skin.name}</p>
               <p className="text-xs text-muted">{t(`skins.variant.${skin.variant}`)}</p>
             </div>
+            <Button variant="ghost" size="sm" className="w-full" asChild>
+              <Link to={`/skins/editor?skin=${skin.id}`}>
+                <Paintbrush size={14} />
+                {t("skins.edit")}
+              </Link>
+            </Button>
             <Button
               size="sm"
               className="w-full"

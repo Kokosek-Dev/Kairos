@@ -144,6 +144,12 @@
   color: transparent;
 }
 
+@utility checker {
+  background:
+    conic-gradient(oklch(1 0 0 / 0.06) 25%, transparent 0 50%, oklch(1 0 0 / 0.06) 0 75%, transparent 0) 0 0 / 16px 16px,
+    var(--surface);
+}
+
 @utility bg-brand {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
 }
