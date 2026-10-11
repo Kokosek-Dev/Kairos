@@ -24,7 +24,26 @@ pub async fn get_instance(state: State<'_, AppState>, instance_id: String) -> Ap
 #[tauri::command]
 pub async fn create_instance(state: State<'_, AppState>, new: NewInstance) -> AppResult<Instance> {
     let paths = state.paths.clone();
-    blocking(move || store::create(&paths, new)).await
+    blocking(move || {
+        let modded = new.loader != LoaderKind::Vanilla;
+        let created = store::create(&paths, new)?;
+        let advised = memory::advise(memory::total_mb(), modded).recommended_mb;
+        let memory_mb = u32::try_from(advised).unwrap_or(created.memory_mb);
+        store::update(
+            &paths,
+            &created.id,
+            InstanceSettings {
+                name: created.name.clone(),
+                game_version: created.game_version.clone(),
+                loader: created.loader,
+                loader_version: created.loader_version.clone(),
+                memory_mb,
+                jvm_args: created.jvm_args.clone(),
+                java_path: created.java_path.clone(),
+            },
+        )
+    })
+    .await
 }
 
 #[tauri::command]
