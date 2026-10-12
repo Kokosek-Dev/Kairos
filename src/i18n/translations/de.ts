@@ -651,7 +651,6 @@ export const de: Translations = {
       title: "Deine erste Instanz",
       body: "Erstelle eine Instanz mit dem neuesten Minecraft, spielbereit. Alles daran kannst du später ändern.",
     },
-    theme: { title: "Wähle dein Aussehen", body: "Dunkel, hell oder wie dein System. Du kannst es jederzeit in den Einstellungen ändern." },
   },
   window: { minimize: "Minimieren", maximize: "Maximieren", close: "Schließen" },
 };

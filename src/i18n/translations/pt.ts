@@ -657,7 +657,6 @@ export const pt: Translations = {
       title: "Sua primeira instância",
       body: "Crie uma instância com o Minecraft mais recente, pronta para jogar. Você poderá mudar tudo nela depois.",
     },
-    theme: { title: "Escolha sua aparência", body: "Escuro, claro ou igual ao seu sistema. Você pode mudar a qualquer momento em Configurações." },
   },
   window: { minimize: "Minimizar", maximize: "Maximizar", close: "Fechar" },
 };

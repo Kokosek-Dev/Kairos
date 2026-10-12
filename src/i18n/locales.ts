@@ -664,7 +664,6 @@ export const en: Translations = {
       title: "Your first instance",
       body: "Create an instance with the newest Minecraft, ready to play. You can change everything about it later.",
     },
-    theme: { title: "Pick your look", body: "Dark, light, or the same as your system. You can change it any time in Settings." },
   },
   window: { minimize: "Minimize", maximize: "Maximize", close: "Close" },
 };
@@ -1331,7 +1330,6 @@ export const pl: Translations = {
       title: "Twoja pierwsza instancja",
       body: "Utwórz instancję z najnowszym Minecraftem, gotową do gry. Wszystko możesz potem zmienić.",
     },
-    theme: { title: "Wybierz wygląd", body: "Ciemny, jasny albo taki jak w systemie. Możesz to zmienić w każdej chwili w Ustawieniach." },
   },
   window: { minimize: "Minimalizuj", maximize: "Maksymalizuj", close: "Zamknij" },
 };

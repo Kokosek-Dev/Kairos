@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, Check, HardDrive, Languages, Palette, Play, UserRound, type LucideIcon } from "lucide-react";
+import { ArrowLeft, Check, HardDrive, Languages, Play, UserRound, type LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { useActiveAccount } from "@/features/skins/useProfile";
 import { useSignInStore } from "@/features/accounts/signInStore";
 import { StorageChooser } from "@/features/settings/StorageSection";
-import { ThemePicker } from "@/features/settings/ThemePicker";
 import { useVersionManifest } from "@/features/instances/VersionPicker";
 import i18n, { getStoredLanguage, setLanguage } from "@/i18n";
 import type { LanguageCode } from "@/i18n/locales";
@@ -21,16 +20,15 @@ import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "kairos.welcome.steps";
 const EARLIER_KEY = "kairos.welcome";
-const STEPS = ["language", "theme", "storage", "account", "instance"] as const;
+const STEPS = ["language", "storage", "account", "instance"] as const;
 const ICONS: Record<(typeof STEPS)[number], LucideIcon> = {
   language: Languages,
-  theme: Palette,
   storage: HardDrive,
   account: UserRound,
   instance: Play,
 };
 
-/** Players who set up Kairos before this guide existed, or before it had a look step, are not asked again. */
+/** Players who set up Kairos before this guide existed, are not asked again. */
 function firstStep(): number {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -184,10 +182,9 @@ export function WelcomeDialog() {
                       <LanguagePicker />
                     </div>
                   )}
-                  {step === 1 && <ThemePicker />}
-                  {step === 2 && <StorageChooser />}
-                  {step === 3 && <AccountStep />}
-                  {step === 4 && <InstanceStep />}
+                  {step === 1 && <StorageChooser />}
+                  {step === 2 && <AccountStep />}
+                  {step === 3 && <InstanceStep />}
                 </div>
               </motion.div>
             </AnimatePresence>

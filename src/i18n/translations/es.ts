@@ -657,7 +657,6 @@ export const es: Translations = {
       title: "Tu primera instancia",
       body: "Crea una instancia con el Minecraft más reciente, lista para jugar. Podrás cambiar todo de ella más tarde.",
     },
-    theme: { title: "Elige tu aspecto", body: "Oscuro, claro o el mismo que tu sistema. Puedes cambiarlo cuando quieras en Ajustes." },
   },
   window: { minimize: "Minimizar", maximize: "Maximizar", close: "Cerrar" },
 };

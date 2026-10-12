@@ -657,7 +657,6 @@ export const fr: Translations = {
       title: "Votre première instance",
       body: "Créez une instance avec le Minecraft le plus récent, prête à jouer. Vous pourrez tout modifier ensuite.",
     },
-    theme: { title: "Choisis ton apparence", body: "Sombre, clair ou comme ton système. Tu peux le changer à tout moment dans les Paramètres." },
   },
   window: { minimize: "Réduire", maximize: "Agrandir", close: "Fermer" },
 };
