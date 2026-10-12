@@ -23,6 +23,8 @@ import { CommandPalette } from "@/features/palette/CommandPalette";
 import { CrashDialog } from "@/features/launch/CrashDialog";
 import { DetectiveDialog } from "@/features/detective/DetectiveDialog";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
+import { JournalPage } from "@/features/journal/JournalPage";
+import { LaunchSplash } from "@/features/launch/LaunchSplash";
 import { UpdateWatcher } from "@/features/updates/UpdateWatcher";
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
 
@@ -56,6 +58,7 @@ export function App() {
                 <Route path="/textures/:packId" element={<TexturePackPage />} />
                 <Route path="/instances/:id" element={<InstanceSettingsPage />} />
                 <Route path="/instances/:id/content" element={<ContentPage />} />
+                <Route path="/journal" element={<JournalPage />} />
                 <Route path="/discover" element={<DiscoverPage />} />
                 <Route path="/discover/:projectId" element={<ProjectPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
@@ -64,6 +67,7 @@ export function App() {
           </AnimatePresence>
         </main>
       </div>
+      <LaunchSplash />
       <ConsoleDrawer />
       <CrashDialog />
       <CommandPalette />

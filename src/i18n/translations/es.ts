@@ -1,7 +1,23 @@
 import type { Translations } from "../locales";
 
 export const es: Translations = {
-  nav: { home: "Inicio", library: "Biblioteca", textures: "Texturas", discover: "Descubrir", settings: "Ajustes", recent: "Recientes" },
+  nav: { home: "Inicio", library: "Biblioteca", textures: "Texturas", journal: "Diario", discover: "Descubrir", settings: "Ajustes", recent: "Recientes" },
+  journal: {
+    subtitle: "Cada día que juegas ilumina un cuadrado.",
+    thisWeek: "Esta semana",
+    streak: "Días seguidos",
+    longest: "Sesión más larga",
+    favorite: "Instancia favorita",
+    less: "Menos",
+    more: "Más",
+    empty: "Aún no hay nada. Inicia el juego y el cuadrado de hoy se iluminará.",
+    note: "Las últimas {{weeks}} semanas. Las sesiones se registran desde la primera partida con esta versión.",
+    perInstance: "Tiempo por instancia",
+  },
+  launch: {
+    started: "El juego está en marcha",
+    hide: "Ocultar",
+  },
   detective: {
     title: "Detective de mods",
     button: "Encontrar el mod culpable",

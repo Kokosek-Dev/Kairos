@@ -15,7 +15,23 @@ export interface Translations {
 }
 
 export const en: Translations = {
-  nav: { home: "Home", library: "Library", textures: "Textures", discover: "Discover", settings: "Settings", recent: "Recent" },
+  nav: { home: "Home", library: "Library", textures: "Textures", journal: "Journal", discover: "Discover", settings: "Settings", recent: "Recent" },
+  journal: {
+    subtitle: "Every day you play lights up a square.",
+    thisWeek: "This week",
+    streak: "Days in a row",
+    longest: "Longest session",
+    favorite: "Favourite instance",
+    less: "Less",
+    more: "More",
+    empty: "Nothing here yet. Start the game and today's square lights up.",
+    note: "The last {{weeks}} weeks. Sessions are recorded from the first game with this version on.",
+    perInstance: "Time per instance",
+  },
+  launch: {
+    started: "Game is running",
+    hide: "Hide",
+  },
   detective: {
     title: "Mod detective",
     button: "Find the culprit mod",
@@ -620,7 +636,23 @@ export const en: Translations = {
 };
 
 export const pl: Translations = {
-  nav: { home: "Strona główna", library: "Biblioteka", textures: "Tekstury", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
+  nav: { home: "Strona główna", library: "Biblioteka", textures: "Tekstury", journal: "Dziennik", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
+  journal: {
+    subtitle: "Każdy dzień grania zapala jeden kwadracik.",
+    thisWeek: "W tym tygodniu",
+    streak: "Dni z rzędu",
+    longest: "Najdłuższa sesja",
+    favorite: "Ulubiona instancja",
+    less: "Mniej",
+    more: "Więcej",
+    empty: "Na razie pusto. Uruchom grę, a dzisiejszy kwadracik się zapali.",
+    note: "Ostatnie {{weeks}} tygodni. Sesje zapisują się od pierwszej gry w tej wersji.",
+    perInstance: "Czas w każdej instancji",
+  },
+  launch: {
+    started: "Gra działa",
+    hide: "Ukryj",
+  },
   detective: {
     title: "Detektyw modów",
     button: "Znajdź winny mod",

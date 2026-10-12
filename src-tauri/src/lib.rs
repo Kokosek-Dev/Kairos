@@ -10,6 +10,7 @@ mod http;
 mod install;
 mod instances;
 mod java;
+mod journal;
 mod launch;
 mod location;
 mod loaders;
@@ -115,6 +116,7 @@ pub fn run() {
             commands::export_instance_code,
             commands::preview_instance_code,
             commands::import_instance_code,
+            commands::list_sessions,
             commands::list_moments,
             commands::create_moment,
             commands::create_safety_moment,

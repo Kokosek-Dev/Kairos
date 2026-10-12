@@ -1,7 +1,23 @@
 import type { Translations } from "../locales";
 
 export const ru: Translations = {
-  nav: { home: "Главная", library: "Библиотека", textures: "Текстуры", discover: "Обзор", settings: "Настройки", recent: "Недавние" },
+  nav: { home: "Главная", library: "Библиотека", textures: "Текстуры", journal: "Дневник", discover: "Обзор", settings: "Настройки", recent: "Недавние" },
+  journal: {
+    subtitle: "Каждый день игры зажигает один квадрат.",
+    thisWeek: "На этой неделе",
+    streak: "Дней подряд",
+    longest: "Самая долгая сессия",
+    favorite: "Любимый экземпляр",
+    less: "Меньше",
+    more: "Больше",
+    empty: "Пока пусто. Запустите игру, и квадрат за сегодня загорится.",
+    note: "Последние {{weeks}} недель. Сессии записываются с первой игры в этой версии.",
+    perInstance: "Время по экземплярам",
+  },
+  launch: {
+    started: "Игра запущена",
+    hide: "Скрыть",
+  },
   detective: {
     title: "Детектив модов",
     button: "Найти виновный мод",

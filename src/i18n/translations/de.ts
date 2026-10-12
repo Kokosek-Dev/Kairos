@@ -1,7 +1,23 @@
 import type { Translations } from "../locales";
 
 export const de: Translations = {
-  nav: { home: "Start", library: "Bibliothek", textures: "Texturen", discover: "Entdecken", settings: "Einstellungen", recent: "Zuletzt" },
+  nav: { home: "Start", library: "Bibliothek", textures: "Texturen", journal: "Tagebuch", discover: "Entdecken", settings: "Einstellungen", recent: "Zuletzt" },
+  journal: {
+    subtitle: "Jeder Spieltag lässt ein Kästchen aufleuchten.",
+    thisWeek: "Diese Woche",
+    streak: "Tage in Folge",
+    longest: "Längste Sitzung",
+    favorite: "Lieblingsinstanz",
+    less: "Weniger",
+    more: "Mehr",
+    empty: "Noch nichts da. Starte das Spiel, dann leuchtet das Kästchen für heute auf.",
+    note: "Die letzten {{weeks}} Wochen. Sitzungen werden ab dem ersten Spiel mit dieser Version aufgezeichnet.",
+    perInstance: "Zeit pro Instanz",
+  },
+  launch: {
+    started: "Das Spiel läuft",
+    hide: "Ausblenden",
+  },
   detective: {
     title: "Mod-Detektiv",
     button: "Schuldigen Mod finden",

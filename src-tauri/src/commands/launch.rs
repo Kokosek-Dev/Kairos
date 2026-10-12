@@ -1,5 +1,6 @@
 use crate::error::{AppError, AppResult};
 use crate::instances::store;
+use crate::journal::{self, Session};
 use crate::launch::{self, LaunchEvent, LaunchRequest};
 use crate::app_id;
 use crate::modrinth::content::{self, ContentKind};
@@ -50,7 +51,12 @@ pub async fn launch_instance(
             LaunchEvent::Exited { .. } => {
                 presence.clear();
                 if let Some(start) = started.lock().unwrap().take() {
-                    let _ = store::add_play_time(&paths, &played_id, start.elapsed().as_secs());
+                    let seconds = start.elapsed().as_secs();
+                    let _ = store::add_play_time(&paths, &played_id, seconds);
+                    let _ = journal::record(
+                        &paths,
+                        Session { instance_id: played_id.clone(), started_at: chrono::Utc::now().timestamp() - seconds as i64, duration_secs: seconds },
+                    );
                 }
             }
             _ => {}

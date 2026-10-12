@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getVersion } from "@tauri-apps/api/app";
 import { motion } from "framer-motion";
-import { Compass, Home, Library, Settings, Shirt, Terminal, type LucideIcon } from "lucide-react";
+import { BookOpen, Compass, Home, Library, Settings, Shirt, Terminal, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { Logo } from "@/components/Logo";
@@ -23,7 +23,8 @@ const ITEMS: NavItem[] = [
   { to: "/library", labelKey: "nav.library", icon: Library, shift: 50 },
   { to: "/discover", labelKey: "nav.discover", icon: Compass, shift: 110 },
   { to: "/textures", labelKey: "nav.textures", icon: Shirt, shift: 170 },
-  { to: "/settings", labelKey: "nav.settings", icon: Settings, shift: 230 },
+  { to: "/journal", labelKey: "nav.journal", icon: BookOpen, shift: 200 },
+  { to: "/settings", labelKey: "nav.settings", icon: Settings, shift: 260 },
 ];
 
 function ConsoleButton() {

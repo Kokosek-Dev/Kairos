@@ -1,4 +1,5 @@
 import {
+  BookOpen,
   Brush,
   Compass,
   Home,
@@ -55,9 +56,11 @@ export function CommandPalette() {
       { id: "home", label: t("nav.home"), hint: t("palette.page"), icon: Home, run: go("/") },
       { id: "library", label: t("nav.library"), hint: t("palette.page"), icon: Library, run: go("/library") },
       { id: "discover", label: t("nav.discover"), hint: t("palette.page"), icon: Compass, run: go("/discover") },
+      { id: "journal", label: t("nav.journal"), hint: t("palette.page"), icon: BookOpen, run: go("/journal") },
       { id: "textures", label: t("nav.textures"), hint: t("palette.page"), icon: Shirt, run: go("/textures") },
       { id: "settings", label: t("nav.settings"), hint: t("palette.page"), icon: Settings, run: go("/settings") },
       { id: "editor", label: t("editor.title"), hint: t("palette.tool"), icon: Shirt, run: go("/skins/editor") },
+      { id: "journal", label: t("nav.journal"), hint: t("palette.page"), icon: BookOpen, run: go("/journal") },
       { id: "textures", label: t("textures.packs"), hint: t("palette.tool"), icon: Brush, run: go("/library") },
       { id: "storage", label: t("storage.title"), hint: t("palette.page"), icon: SlidersHorizontal, run: go("/settings") },
     ];
