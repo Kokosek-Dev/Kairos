@@ -26,6 +26,7 @@ import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
 import { JournalPage } from "@/features/journal/JournalPage";
 import { LaunchSplash } from "@/features/launch/LaunchSplash";
 import { NewsPanel } from "@/features/news/NewsPanel";
+import { StartupSplash } from "@/features/startup/StartupSplash";
 import { UpdateWatcher } from "@/features/updates/UpdateWatcher";
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
 
@@ -79,6 +80,7 @@ export function App() {
       <OfflinePlayDialog />
       <Toaster position="bottom-right" theme="dark" toastOptions={{ style: { background: "var(--surface-raised)", color: "var(--foreground)", border: "1px solid var(--border)" } }} />
       <WelcomeDialog />
+      <StartupSplash />
       <UpdateWatcher />
     </div>
   );
