@@ -20,15 +20,17 @@ Poniżej jest wszystko, co trzeba zrobić raz, i to, co robisz przy każdym wyda
 5. **Strona z przyciskiem „Pobierz".** W repozytorium: Settings, Pages, źródło: gałąź `main`, folder `/docs`.
    Strona sama znajdzie najnowsze wydanie.
 
-## Przy każdym wydaniu
+## Przy każdej zmianie w kodzie
 
-1. Zmień numer wersji w trzech miejscach, na ten sam: `package.json`, `src-tauri/Cargo.toml`,
-   `src-tauri/tauri.conf.json`.
-2. Zatwierdź zmiany i wyślij je na GitHub.
-3. Utwórz znacznik i wyślij go: `git tag v0.1.1` i `git push --tags`.
-4. GitHub Actions zbuduje instalator, podpisze paczkę aktualizacji, utworzy wydanie i doda `latest.json` oraz
-   `SHA256SUMS.txt`. Trwa to kilkanaście minut. Postęp widać w zakładce Actions.
+Nic nie robisz ręcznie. Każde wysłanie zmian na gałąź `main` uruchamia GitHub Actions, które:
 
+1. nadaje wersję `0.1.<numer uruchomienia>` (w `package.json`, `Cargo.toml` i `tauri.conf.json` tylko na czas budowania, w repozytorium numer się nie zmienia),
+2. buduje instalator, podpisuje paczkę aktualizacji i tworzy wydanie `v0.1.<numer>` z `latest.json` i `SHA256SUMS.txt`,
+3. a zainstalowane launchery po kilku minutach (przy następnym sprawdzeniu aktualizacji) same pokazują i instalują nową wersję.
+
+Zmiany tylko w plikach `.md` i w `docs/` nie wypuszczają wydania. Budowa trwa kilkanaście minut, postęp widać w zakładce Actions.
+Gdy chcesz zmienić pierwsze dwie liczby wersji (np. `0.2`), zmień `0.1.` w `.github/workflows/release.yml`.
+Uwaga: każde wysłanie na `main` trafia do wszystkich użytkowników, więc wysyłaj tam tylko to, co jest sprawdzone.
 ## Budowanie lokalnie
 
 `npm run tauri build` podpisuje paczkę aktualizacji, więc wymaga klucza w zmiennej środowiskowej:
