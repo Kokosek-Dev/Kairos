@@ -1,7 +1,24 @@
 import type { Translations } from "../locales";
 
 export const es: Translations = {
-  nav: { home: "Inicio", library: "Biblioteca", textures: "Texturas", journal: "Diario", discover: "Descubrir", settings: "Ajustes", recent: "Recientes" },
+  nav: { home: "Inicio", library: "Biblioteca", textures: "Texturas", journal: "Diario", servers: "Servidores", discover: "Descubrir", settings: "Ajustes", recent: "Recientes" },
+  servers: {
+    subtitle: "Tus servidores favoritos con su estado en directo.",
+    name: "Nombre",
+    address: "Dirección",
+    add: "Añadir servidor",
+    online: "En línea",
+    offline: "Sin conexión",
+    noDescription: "Sin descripción",
+    ping: "{{ms}} ms",
+    unreachable: "El servidor no respondió. Revisa la dirección y tu conexión.",
+    copy: "Copiar dirección",
+    copied: "Dirección copiada",
+    refresh: "Actualizar",
+    remove: "Quitar",
+    empty: "Aún no hay servidores",
+    emptyHint: "Añade un servidor arriba para ver cuántos jugadores hay en línea y qué tan rápido responde.",
+  },
   news: {
     title: "Novedades",
     label: "Novedad",
@@ -65,13 +82,16 @@ export const es: Translations = {
   },
   appearance: {
     title: "Apariencia",
-    hint: "Elige el color de acento del launcher.",
+    hint: "Elige el aspecto del launcher.",
     background: "Fondo",
     backgrounds: { aurora: "Aurora", calm: "Tranquilo", plain: "Liso", image: "Tu imagen" },
     chooseImage: "Elegir una imagen",
     dim: "Oscurecimiento",
     imageFailed: "No se pudo leer esa imagen.",
     colors: { blue: "Azul", violet: "Violeta", pink: "Rosa", orange: "Naranja", green: "Verde", teal: "Turquesa" },
+    theme: "Tema",
+    accent: "Color de acento",
+    themes: { dark: "Oscuro", light: "Claro", system: "Igual que el sistema" },
   },
   home: {
     welcome: "Te damos la bienvenida a Kairos",
@@ -619,7 +639,7 @@ export const es: Translations = {
   },
   welcome: {
     continue: "Continuar",
-    skip: "Omitir",
+    back: "Atrás",
     finish: "Empezar a usar Kairos",
     signIn: "Iniciar sesión con Microsoft",
     instanceCreate: "Créala por mí",
@@ -637,6 +657,7 @@ export const es: Translations = {
       title: "Tu primera instancia",
       body: "Crea una instancia con el Minecraft más reciente, lista para jugar. Podrás cambiar todo de ella más tarde.",
     },
+    theme: { title: "Elige tu aspecto", body: "Oscuro, claro o el mismo que tu sistema. Puedes cambiarlo cuando quieras en Ajustes." },
   },
   window: { minimize: "Minimizar", maximize: "Maximizar", close: "Cerrar" },
 };

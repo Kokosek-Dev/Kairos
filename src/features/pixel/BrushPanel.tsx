@@ -33,7 +33,7 @@ function Swatches({ colors, active, onChoose }: { colors: string[]; active?: str
           aria-label={swatch}
           onClick={() => onChoose(swatch)}
           style={{ background: swatch }}
-          className={cn("aspect-square rounded-md ring-1 ring-white/15 transition-transform hover:scale-110", active === swatch && "ring-2 ring-accent")}
+          className={cn("aspect-square rounded-md ring-1 ring-foreground/20 transition-transform hover:scale-110", active === swatch && "ring-2 ring-accent")}
         />
       ))}
     </div>

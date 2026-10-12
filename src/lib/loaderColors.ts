@@ -1,4 +1,4 @@
-﻿import type { LoaderKind } from "@/lib/tauri/instances";
+import type { LoaderKind } from "@/lib/tauri/instances";
 
 /** Each mod loader gets its own color so instances are recognisable at a glance. */
 export const LOADER_HUE: Record<LoaderKind, number | null> = {
@@ -13,8 +13,8 @@ export function loaderChipStyle(loader: LoaderKind): React.CSSProperties | undef
   const hue = LOADER_HUE[loader];
   if (hue === null) return undefined;
   return {
-    color: `oklch(0.82 0.13 ${hue})`,
-    background: `oklch(0.5 0.12 ${hue} / 0.22)`,
+    color: `oklch(var(--chip-text) 0.13 ${hue})`,
+    background: `oklch(var(--chip-fill) 0.12 ${hue} / 0.22)`,
     boxShadow: `inset 0 0 0 1px oklch(0.7 0.14 ${hue} / 0.3)`,
   };
 }

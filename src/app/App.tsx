@@ -3,7 +3,7 @@ import { Toaster } from "sonner";
 import { Backdrop } from "@/components/Backdrop";
 import { GlowFollow } from "@/components/GlowFollow";
 import { Mascot } from "@/components/Mascot";
-import { IncognitoTheme } from "@/features/incognito/IncognitoTheme";
+import { AppTheme } from "@/components/AppTheme";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TitleBar } from "@/components/shell/TitleBar";
@@ -23,22 +23,25 @@ import { CommandPalette } from "@/features/palette/CommandPalette";
 import { CrashDialog } from "@/features/launch/CrashDialog";
 import { DetectiveDialog } from "@/features/detective/DetectiveDialog";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
+import { ServersPage } from "@/features/servers/ServersPage";
 import { JournalPage } from "@/features/journal/JournalPage";
 import { LaunchSplash } from "@/features/launch/LaunchSplash";
 import { NewsPanel } from "@/features/news/NewsPanel";
+import { useResolvedTheme } from "@/features/settings/useResolvedTheme";
 import { StartupSplash } from "@/features/startup/StartupSplash";
 import { UpdateWatcher } from "@/features/updates/UpdateWatcher";
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
 
 export function App() {
   const location = useLocation();
+  const resolvedTheme = useResolvedTheme();
 
   return (
     <div className="relative h-full">
       <Backdrop />
       <Mascot />
       <GlowFollow />
-      <IncognitoTheme />
+      <AppTheme />
       <div className="relative z-10 flex h-full flex-col">
       <TitleBar />
       <div className="flex min-h-0 flex-1">
@@ -61,6 +64,7 @@ export function App() {
                 <Route path="/instances/:id" element={<InstanceSettingsPage />} />
                 <Route path="/instances/:id/content" element={<ContentPage />} />
                 <Route path="/journal" element={<JournalPage />} />
+                <Route path="/servers" element={<ServersPage />} />
                 <Route path="/discover" element={<DiscoverPage />} />
                 <Route path="/discover/:projectId" element={<ProjectPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
@@ -78,7 +82,7 @@ export function App() {
       <DetectiveDialog />
       <SignInDialog />
       <OfflinePlayDialog />
-      <Toaster position="bottom-right" theme="dark" toastOptions={{ style: { background: "var(--surface-raised)", color: "var(--foreground)", border: "1px solid var(--border)" } }} />
+      <Toaster position="bottom-right" theme={resolvedTheme} toastOptions={{ style: { background: "var(--surface-raised)", color: "var(--foreground)", border: "1px solid var(--border)" } }} />
       <WelcomeDialog />
       <StartupSplash />
       <UpdateWatcher />

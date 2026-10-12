@@ -6,7 +6,7 @@ function Glow({ className, hue, strength }: { className: string; hue: string; st
   return (
     <div
       className={`absolute rounded-full opacity-60 ${className}`}
-      style={{ background: `radial-gradient(closest-side, oklch(0.5 0.17 ${hue} / ${strength}), transparent)` }}
+      style={{ background: `radial-gradient(closest-side, oklch(var(--glow-lightness) 0.17 ${hue} / ${strength}), transparent)` }}
     />
   );
 }

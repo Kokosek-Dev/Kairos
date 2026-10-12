@@ -1,7 +1,24 @@
 import type { Translations } from "../locales";
 
 export const pt: Translations = {
-  nav: { home: "Início", library: "Biblioteca", textures: "Texturas", journal: "Diário", discover: "Descobrir", settings: "Configurações", recent: "Recentes" },
+  nav: { home: "Início", library: "Biblioteca", textures: "Texturas", journal: "Diário", servers: "Servidores", discover: "Descobrir", settings: "Configurações", recent: "Recentes" },
+  servers: {
+    subtitle: "Seus servidores favoritos com o status ao vivo.",
+    name: "Nome",
+    address: "Endereço",
+    add: "Adicionar servidor",
+    online: "Online",
+    offline: "Offline",
+    noDescription: "Sem descrição",
+    ping: "{{ms}} ms",
+    unreachable: "O servidor não respondeu. Verifique o endereço e sua conexão.",
+    copy: "Copiar endereço",
+    copied: "Endereço copiado",
+    refresh: "Atualizar",
+    remove: "Remover",
+    empty: "Nenhum servidor ainda",
+    emptyHint: "Adicione um servidor acima para ver quantos jogadores estão online e a rapidez da resposta.",
+  },
   news: {
     title: "Novidades",
     label: "Novidade",
@@ -65,13 +82,16 @@ export const pt: Translations = {
   },
   appearance: {
     title: "Aparência",
-    hint: "Escolha a cor de destaque do launcher.",
+    hint: "Escolha a aparência do launcher.",
     background: "Fundo",
     backgrounds: { aurora: "Aurora", calm: "Calmo", plain: "Liso", image: "Sua imagem" },
     chooseImage: "Escolher uma imagem",
     dim: "Escurecimento",
     imageFailed: "Não foi possível ler essa imagem.",
     colors: { blue: "Azul", violet: "Violeta", pink: "Rosa", orange: "Laranja", green: "Verde", teal: "Turquesa" },
+    theme: "Tema",
+    accent: "Cor de destaque",
+    themes: { dark: "Escuro", light: "Claro", system: "Igual ao sistema" },
   },
   home: {
     welcome: "Bem-vindo ao Kairos",
@@ -619,7 +639,7 @@ export const pt: Translations = {
   },
   welcome: {
     continue: "Continuar",
-    skip: "Pular",
+    back: "Voltar",
     finish: "Começar a usar o Kairos",
     signIn: "Entrar com a Microsoft",
     instanceCreate: "Crie para mim",
@@ -637,6 +657,7 @@ export const pt: Translations = {
       title: "Sua primeira instância",
       body: "Crie uma instância com o Minecraft mais recente, pronta para jogar. Você poderá mudar tudo nela depois.",
     },
+    theme: { title: "Escolha sua aparência", body: "Escuro, claro ou igual ao seu sistema. Você pode mudar a qualquer momento em Configurações." },
   },
   window: { minimize: "Minimizar", maximize: "Maximizar", close: "Fechar" },
 };

@@ -1,14 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { ArrowLeft, Check, HardDrive, Languages, Palette, Play, UserRound, type LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { LanguagePicker } from "@/components/LanguagePicker";
+import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useActiveAccount } from "@/features/skins/useProfile";
 import { useSignInStore } from "@/features/accounts/signInStore";
 import { StorageChooser } from "@/features/settings/StorageSection";
+import { ThemePicker } from "@/features/settings/ThemePicker";
 import { useVersionManifest } from "@/features/instances/VersionPicker";
 import i18n, { getStoredLanguage, setLanguage } from "@/i18n";
 import type { LanguageCode } from "@/i18n/locales";
@@ -17,14 +19,24 @@ import { errorMessage } from "@/lib/tauri/errors";
 import { createInstance } from "@/lib/tauri/instances";
 import { cn } from "@/lib/utils";
 
-const STORAGE_KEY = "kairos.welcome";
-const STEPS = ["language", "storage", "account", "instance"] as const;
+const STORAGE_KEY = "kairos.welcome.steps";
+const EARLIER_KEY = "kairos.welcome";
+const STEPS = ["language", "theme", "storage", "account", "instance"] as const;
+const ICONS: Record<(typeof STEPS)[number], LucideIcon> = {
+  language: Languages,
+  theme: Palette,
+  storage: HardDrive,
+  account: UserRound,
+  instance: Play,
+};
 
-/** Players who set up Kairos before this guide existed are not asked again. */
+/** Players who set up Kairos before this guide existed, or before it had a look step, are not asked again. */
 function firstStep(): number {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored !== null) return Number(stored);
+    const earlier = localStorage.getItem(EARLIER_KEY);
+    if (earlier !== null) return Number(earlier) >= 4 ? STEPS.length : 0;
   } catch {
     return STEPS.length;
   }
@@ -94,6 +106,33 @@ function InstanceStep() {
   );
 }
 
+function Progress({ step }: { step: number }) {
+  return (
+    <div className="mb-6 flex items-center justify-center">
+      {STEPS.map((name, index) => {
+        const Icon = ICONS[name];
+        const done = index < step;
+        return (
+          <div key={name} className="flex items-center">
+            <motion.span
+              animate={{ scale: index === step ? 1.12 : 1 }}
+              className={cn(
+                "grid size-9 place-items-center rounded-full border transition-colors",
+                done && "border-transparent bg-brand text-accent-foreground",
+                index === step && "border-accent bg-accent/15 text-accent shadow-glow",
+                index > step && "bg-surface-raised/60 text-muted",
+              )}
+            >
+              {done ? <Check size={16} /> : <Icon size={16} />}
+            </motion.span>
+            {index < STEPS.length - 1 && <span className={cn("h-0.5 w-6 transition-colors", index < step ? "bg-brand" : "bg-surface-raised")} />}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function WelcomeDialog() {
   const { t } = useTranslation();
   const [step, setStep] = useState(firstStep);
@@ -113,36 +152,50 @@ export function WelcomeDialog() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 grid place-items-center bg-background/70 backdrop-blur-md"
+          exit={{ opacity: 0, scale: 1.04 }}
+          transition={{ duration: 0.35 }}
+          className="fixed inset-0 z-50 grid place-items-center overflow-hidden bg-background/80 backdrop-blur-xl"
         >
+          <div className="grid-pattern pointer-events-none absolute inset-0" />
+          <div className="animate-drift pointer-events-none absolute -left-24 -top-24 size-96 rounded-full bg-accent/25 blur-3xl" />
+          <div className="animate-drift pointer-events-none absolute -bottom-32 -right-20 size-96 rounded-full bg-accent-strong/20 blur-3xl [animation-delay:-7s]" />
+
           <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 12, scale: 0.97 }}
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="glass w-[min(30rem,calc(100vw-2rem))] rounded-xl p-8 text-center shadow-glow"
+            transition={{ type: "spring", stiffness: 260, damping: 26 }}
+            className="glass relative w-[min(36rem,calc(100vw-2rem))] rounded-2xl p-8 text-center shadow-glow"
           >
-            <div className="mb-5 flex justify-center gap-2">
-              {STEPS.map((name, index) => (
-                <span key={name} className={cn("h-1.5 w-8 rounded-full bg-surface-raised", index <= step && "bg-brand")} />
-              ))}
-            </div>
-            <h1 className="text-2xl font-bold">{t(`welcome.${STEPS[step]}.title`)}</h1>
-            <p className="mb-6 mt-2 text-muted">{t(`welcome.${STEPS[step]}.body`)}</p>
-            <div className="mb-6 text-left">
-              {step === 0 && (
-                <div className="flex justify-center">
-                  <LanguagePicker />
+            <Logo className="mx-auto mb-4 size-14 drop-shadow-[0_0_18px_var(--accent)]" />
+            <Progress step={step} />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, x: 28 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -28 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+              >
+                <h1 className="text-gradient text-2xl font-extrabold tracking-tight">{t(`welcome.${STEPS[step]}.title`)}</h1>
+                <p className="mb-6 mt-2 text-muted">{t(`welcome.${STEPS[step]}.body`)}</p>
+                <div className="mb-6 text-left">
+                  {step === 0 && (
+                    <div className="flex justify-center">
+                      <LanguagePicker />
+                    </div>
+                  )}
+                  {step === 1 && <ThemePicker />}
+                  {step === 2 && <StorageChooser />}
+                  {step === 3 && <AccountStep />}
+                  {step === 4 && <InstanceStep />}
                 </div>
-              )}
-              {step === 1 && <StorageChooser />}
-              {step === 2 && <AccountStep />}
-              {step === 3 && <InstanceStep />}
-            </div>
+              </motion.div>
+            </AnimatePresence>
             <div className="flex gap-2">
               {step > 0 && (
-                <Button variant="ghost" size="lg" className="flex-1" onClick={next}>
-                  {t("welcome.skip")}
+                <Button variant="ghost" size="lg" onClick={() => setStep(step - 1)}>
+                  <ArrowLeft size={16} />
+                  {t("welcome.back")}
                 </Button>
               )}
               <Button size="lg" className="flex-1" onClick={next}>

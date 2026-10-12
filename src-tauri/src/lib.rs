@@ -21,6 +21,7 @@ mod news;
 mod mojang;
 mod paths;
 mod presence;
+mod servers;
 mod skins;
 mod share;
 mod state;
@@ -118,6 +119,10 @@ pub fn run() {
             commands::preview_instance_code,
             commands::import_instance_code,
             commands::list_sessions,
+            commands::list_servers,
+            commands::add_server,
+            commands::remove_server,
+            commands::ping_server,
             commands::fetch_news,
             commands::list_moments,
             commands::create_moment,

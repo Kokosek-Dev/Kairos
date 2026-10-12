@@ -15,7 +15,24 @@ export interface Translations {
 }
 
 export const en: Translations = {
-  nav: { home: "Home", library: "Library", textures: "Textures", journal: "Journal", discover: "Discover", settings: "Settings", recent: "Recent" },
+  nav: { home: "Home", library: "Library", textures: "Textures", journal: "Journal", servers: "Servers", discover: "Discover", settings: "Settings", recent: "Recent" },
+  servers: {
+    subtitle: "Your favourite servers with their live status.",
+    name: "Name",
+    address: "Address",
+    add: "Add server",
+    online: "Online",
+    offline: "Offline",
+    noDescription: "No description",
+    ping: "{{ms}} ms",
+    unreachable: "The server did not answer. Check the address and your connection.",
+    copy: "Copy address",
+    copied: "Address copied",
+    refresh: "Refresh",
+    remove: "Remove",
+    empty: "No servers yet",
+    emptyHint: "Add a server above to see how many players are online and how fast it answers.",
+  },
   news: {
     title: "News",
     label: "News",
@@ -79,13 +96,16 @@ export const en: Translations = {
   },
   appearance: {
     title: "Appearance",
-    hint: "Pick the accent color of the launcher.",
+    hint: "Choose how the launcher looks.",
     background: "Background",
     backgrounds: { aurora: "Aurora", calm: "Calm", plain: "Plain", image: "Your picture" },
     chooseImage: "Choose a picture",
     dim: "Darkening",
     imageFailed: "That picture could not be read.",
     colors: { blue: "Blue", violet: "Violet", pink: "Pink", orange: "Orange", green: "Green", teal: "Teal" },
+    theme: "Theme",
+    accent: "Accent color",
+    themes: { dark: "Dark", light: "Light", system: "Follow system" },
   },
   home: {
     welcome: "Welcome to Kairos",
@@ -626,7 +646,7 @@ export const en: Translations = {
   },
   welcome: {
     continue: "Continue",
-    skip: "Skip",
+    back: "Back",
     finish: "Start using Kairos",
     signIn: "Sign in with Microsoft",
     instanceCreate: "Create it for me",
@@ -644,12 +664,30 @@ export const en: Translations = {
       title: "Your first instance",
       body: "Create an instance with the newest Minecraft, ready to play. You can change everything about it later.",
     },
+    theme: { title: "Pick your look", body: "Dark, light, or the same as your system. You can change it any time in Settings." },
   },
   window: { minimize: "Minimize", maximize: "Maximize", close: "Close" },
 };
 
 export const pl: Translations = {
-  nav: { home: "Strona główna", library: "Biblioteka", textures: "Tekstury", journal: "Dziennik", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
+  nav: { home: "Strona główna", library: "Biblioteka", textures: "Tekstury", journal: "Dziennik", servers: "Serwery", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
+  servers: {
+    subtitle: "Ulubione serwery z aktualnym statusem.",
+    name: "Nazwa",
+    address: "Adres",
+    add: "Dodaj serwer",
+    online: "Online",
+    offline: "Offline",
+    noDescription: "Brak opisu",
+    ping: "{{ms}} ms",
+    unreachable: "Serwer nie odpowiedział. Sprawdź adres i połączenie.",
+    copy: "Kopiuj adres",
+    copied: "Skopiowano adres",
+    refresh: "Odśwież",
+    remove: "Usuń",
+    empty: "Brak serwerów",
+    emptyHint: "Dodaj serwer powyżej, aby zobaczyć, ilu graczy jest online i jak szybko odpowiada.",
+  },
   news: {
     title: "Nowości",
     label: "Nowość",
@@ -713,13 +751,16 @@ export const pl: Translations = {
   },
   appearance: {
     title: "Wygląd",
-    hint: "Wybierz kolor akcentu launchera.",
+    hint: "Wybierz wygląd launchera.",
     background: "Tło",
     backgrounds: { aurora: "Zorza", calm: "Spokojne", plain: "Gładkie", image: "Twój obraz" },
     chooseImage: "Wybierz obraz",
     dim: "Przyciemnienie",
     imageFailed: "Nie udało się odczytać tego obrazu.",
     colors: { blue: "Niebieski", violet: "Fioletowy", pink: "Różowy", orange: "Pomarańczowy", green: "Zielony", teal: "Morski" },
+    theme: "Motyw",
+    accent: "Kolor akcentu",
+    themes: { dark: "Ciemny", light: "Jasny", system: "Jak w systemie" },
   },
   home: {
     welcome: "Witaj w Kairos",
@@ -1272,7 +1313,7 @@ export const pl: Translations = {
   },
   welcome: {
     continue: "Dalej",
-    skip: "Pomiń",
+    back: "Wstecz",
     finish: "Zacznij korzystać z Kairos",
     signIn: "Zaloguj się kontem Microsoft",
     instanceCreate: "Utwórz ją za mnie",
@@ -1290,6 +1331,7 @@ export const pl: Translations = {
       title: "Twoja pierwsza instancja",
       body: "Utwórz instancję z najnowszym Minecraftem, gotową do gry. Wszystko możesz potem zmienić.",
     },
+    theme: { title: "Wybierz wygląd", body: "Ciemny, jasny albo taki jak w systemie. Możesz to zmienić w każdej chwili w Ustawieniach." },
   },
   window: { minimize: "Minimalizuj", maximize: "Maksymalizuj", close: "Zamknij" },
 };

@@ -1,7 +1,24 @@
 import type { Translations } from "../locales";
 
 export const de: Translations = {
-  nav: { home: "Start", library: "Bibliothek", textures: "Texturen", journal: "Tagebuch", discover: "Entdecken", settings: "Einstellungen", recent: "Zuletzt" },
+  nav: { home: "Start", library: "Bibliothek", textures: "Texturen", journal: "Tagebuch", servers: "Server", discover: "Entdecken", settings: "Einstellungen", recent: "Zuletzt" },
+  servers: {
+    subtitle: "Deine Lieblingsserver mit aktuellem Status.",
+    name: "Name",
+    address: "Adresse",
+    add: "Server hinzufügen",
+    online: "Online",
+    offline: "Offline",
+    noDescription: "Keine Beschreibung",
+    ping: "{{ms}} ms",
+    unreachable: "Der Server hat nicht geantwortet. Prüfe die Adresse und deine Verbindung.",
+    copy: "Adresse kopieren",
+    copied: "Adresse kopiert",
+    refresh: "Aktualisieren",
+    remove: "Entfernen",
+    empty: "Noch keine Server",
+    emptyHint: "Füge oben einen Server hinzu, um zu sehen, wie viele Spieler online sind und wie schnell er antwortet.",
+  },
   news: {
     title: "Neuigkeiten",
     label: "Neuigkeit",
@@ -65,13 +82,16 @@ export const de: Translations = {
   },
   appearance: {
     title: "Darstellung",
-    hint: "Wähle die Akzentfarbe des Launchers.",
+    hint: "Wähle das Aussehen des Launchers.",
     background: "Hintergrund",
     backgrounds: { aurora: "Polarlicht", calm: "Ruhig", plain: "Einfarbig", image: "Dein Bild" },
     chooseImage: "Bild auswählen",
     dim: "Abdunkelung",
     imageFailed: "Dieses Bild konnte nicht gelesen werden.",
     colors: { blue: "Blau", violet: "Violett", pink: "Pink", orange: "Orange", green: "Grün", teal: "Türkis" },
+    theme: "Design",
+    accent: "Akzentfarbe",
+    themes: { dark: "Dunkel", light: "Hell", system: "Wie das System" },
   },
   home: {
     welcome: "Willkommen bei Kairos",
@@ -613,7 +633,7 @@ export const de: Translations = {
   },
   welcome: {
     continue: "Weiter",
-    skip: "Überspringen",
+    back: "Zurück",
     finish: "Kairos benutzen",
     signIn: "Mit Microsoft anmelden",
     instanceCreate: "Für mich erstellen",
@@ -631,6 +651,7 @@ export const de: Translations = {
       title: "Deine erste Instanz",
       body: "Erstelle eine Instanz mit dem neuesten Minecraft, spielbereit. Alles daran kannst du später ändern.",
     },
+    theme: { title: "Wähle dein Aussehen", body: "Dunkel, hell oder wie dein System. Du kannst es jederzeit in den Einstellungen ändern." },
   },
   window: { minimize: "Minimieren", maximize: "Maximieren", close: "Schließen" },
 };

@@ -5,6 +5,7 @@ import { ACCENT_COLORS, applyAccent, currentAccent } from "@/lib/accent";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { prepareBackground } from "./backgroundImage";
+import { ThemePicker } from "./ThemePicker";
 import { usePreferences, type BackgroundStyle } from "./preferences";
 
 const BACKGROUNDS: BackgroundStyle[] = ["aurora", "calm", "plain", "image"];
@@ -32,7 +33,10 @@ export function AppearanceSection() {
         <Palette size={16} className="text-accent" />
         {t("appearance.title")}
       </h2>
-      <p className="mb-4 mt-1 text-muted">{t("appearance.hint")}</p>
+      <p className="mt-1 text-muted">{t("appearance.hint")}</p>
+      <h3 className="mb-3 mt-4 font-medium">{t("appearance.theme")}</h3>
+      <ThemePicker />
+      <h3 className="mb-3 mt-6 font-medium">{t("appearance.accent")}</h3>
       <div className="flex flex-wrap gap-3">
         {ACCENT_COLORS.map((color) => (
           <button

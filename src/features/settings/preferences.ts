@@ -1,8 +1,10 @@
 import { create } from "zustand";
 
+export type ThemeChoice = "dark" | "light" | "system";
 export type BackgroundStyle = "aurora" | "calm" | "plain" | "image";
 
 interface Preferences {
+  theme: ThemeChoice;
   autoUpdateMods: boolean;
   mascot: boolean;
   incognito: boolean;
@@ -15,6 +17,7 @@ interface Preferences {
 
 const STORAGE_KEY = "kairos.preferences";
 const DEFAULTS: Preferences = {
+  theme: "dark",
   autoUpdateMods: true,
   mascot: true,
   incognito: false,
@@ -41,9 +44,9 @@ export const usePreferences = create<PreferencesState>((set, get) => ({
   ...load(),
   update: (changes) => {
     set(changes);
-    const { autoUpdateMods, mascot, incognito, discordPresence, newsOpen, background, backgroundImage, backgroundDim } = get();
+    const { theme, autoUpdateMods, mascot, incognito, discordPresence, newsOpen, background, backgroundImage, backgroundDim } = get();
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ autoUpdateMods, mascot, incognito, discordPresence, newsOpen, background, backgroundImage, backgroundDim }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme, autoUpdateMods, mascot, incognito, discordPresence, newsOpen, background, backgroundImage, backgroundDim }));
     } catch {
       // The choice still applies for this session when storage is full or unavailable.
     }

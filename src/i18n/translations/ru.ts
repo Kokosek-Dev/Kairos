@@ -1,7 +1,24 @@
 import type { Translations } from "../locales";
 
 export const ru: Translations = {
-  nav: { home: "Главная", library: "Библиотека", textures: "Текстуры", journal: "Дневник", discover: "Обзор", settings: "Настройки", recent: "Недавние" },
+  nav: { home: "Главная", library: "Библиотека", textures: "Текстуры", journal: "Дневник", servers: "Серверы", discover: "Обзор", settings: "Настройки", recent: "Недавние" },
+  servers: {
+    subtitle: "Ваши любимые серверы с актуальным статусом.",
+    name: "Название",
+    address: "Адрес",
+    add: "Добавить сервер",
+    online: "В сети",
+    offline: "Не в сети",
+    noDescription: "Нет описания",
+    ping: "{{ms}} мс",
+    unreachable: "Сервер не ответил. Проверьте адрес и подключение.",
+    copy: "Копировать адрес",
+    copied: "Адрес скопирован",
+    refresh: "Обновить",
+    remove: "Удалить",
+    empty: "Серверов пока нет",
+    emptyHint: "Добавьте сервер выше, чтобы увидеть, сколько игроков онлайн и как быстро он отвечает.",
+  },
   news: {
     title: "Новости",
     label: "Новость",
@@ -65,13 +82,16 @@ export const ru: Translations = {
   },
   appearance: {
     title: "Оформление",
-    hint: "Выберите акцентный цвет лаунчера.",
+    hint: "Выберите внешний вид лаунчера.",
     background: "Фон",
     backgrounds: { aurora: "Северное сияние", calm: "Спокойный", plain: "Однотонный", image: "Своё изображение" },
     chooseImage: "Выбрать изображение",
     dim: "Затемнение",
     imageFailed: "Не удалось прочитать это изображение.",
     colors: { blue: "Синий", violet: "Фиолетовый", pink: "Розовый", orange: "Оранжевый", green: "Зелёный", teal: "Бирюзовый" },
+    theme: "Тема",
+    accent: "Цвет акцента",
+    themes: { dark: "Тёмная", light: "Светлая", system: "Как в системе" },
   },
   home: {
     welcome: "Добро пожаловать в Kairos",
@@ -625,7 +645,7 @@ export const ru: Translations = {
   },
   welcome: {
     continue: "Далее",
-    skip: "Пропустить",
+    back: "Назад",
     finish: "Начать пользоваться Kairos",
     signIn: "Войти через Microsoft",
     instanceCreate: "Создать за меня",
@@ -643,6 +663,7 @@ export const ru: Translations = {
       title: "Ваша первая сборка",
       body: "Создайте сборку с новейшим Minecraft, готовую к игре. Всё в ней можно изменить позже.",
     },
+    theme: { title: "Выберите внешний вид", body: "Тёмная, светлая или как в системе. Это можно изменить в любой момент в Настройках." },
   },
   window: { minimize: "Свернуть", maximize: "Развернуть", close: "Закрыть" },
 };

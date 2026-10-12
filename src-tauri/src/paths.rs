@@ -58,6 +58,10 @@ impl DataPaths {
         self.root.join("accounts.json")
     }
 
+    pub fn servers_file(&self) -> PathBuf {
+        self.root.join("servers.json")
+    }
+
     pub fn sessions_file(&self) -> PathBuf {
         self.root.join("sessions.json")
     }
