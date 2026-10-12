@@ -4,7 +4,7 @@
 # uses for "Sign in with Microsoft" (see docs/AZURE_SETUP.md). It is baked into the launcher so
 # players never have to enter it. Client IDs are public identifiers, not secrets.
 [env]
-KAIROS_MS_CLIENT_ID = { value = "", force = false }
+KAIROS_MS_CLIENT_ID = { value = "134e5e21-8f89-4bef-a98c-67aed2bd0c54", force = false }
 
 # KAIROS_DISCORD_APP_ID is the Application ID of the Discord application behind Rich Presence.
 # Leave it empty to build without it (see docs/DISCORD_SETUP.md).
