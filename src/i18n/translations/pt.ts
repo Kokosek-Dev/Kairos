@@ -2,6 +2,19 @@ import type { Translations } from "../locales";
 
 export const pt: Translations = {
   nav: { home: "Início", library: "Biblioteca", textures: "Texturas", journal: "Diário", discover: "Descobrir", settings: "Configurações", recent: "Recentes" },
+  news: {
+    title: "Novidades",
+    label: "Novidade",
+    sponsored: "Patrocinado",
+    more: "Ler mais",
+    collapse: "Ocultar novidades",
+    expand: "Mostrar novidades",
+    bundled: {
+      journal: { title: "Seu calendário de jogo", body: "O novo Diário acende um quadrado para cada dia que você joga e conta sua sequência." },
+      detective: { title: "Detetive de mods", body: "Falha com muitos mods? O Kairos desativa mods pela metade e encontra o culpado para você." },
+      boost: { title: "Boost com um clique", body: "Instala mods de desempenho e ajusta Java e memória de uma instância, depois de salvar um ponto de restauração." },
+    },
+  },
   journal: {
     subtitle: "Cada dia que você joga acende um quadrado.",
     thisWeek: "Esta semana",

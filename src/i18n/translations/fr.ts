@@ -2,6 +2,19 @@ import type { Translations } from "../locales";
 
 export const fr: Translations = {
   nav: { home: "Accueil", library: "Bibliothèque", textures: "Textures", journal: "Journal", discover: "Découvrir", settings: "Paramètres", recent: "Récents" },
+  news: {
+    title: "Actualités",
+    label: "Actualité",
+    sponsored: "Sponsorisé",
+    more: "En savoir plus",
+    collapse: "Masquer les actualités",
+    expand: "Afficher les actualités",
+    bundled: {
+      journal: { title: "Ton calendrier de jeu", body: "Le nouveau Journal allume un carré pour chaque jour de jeu et compte ta série." },
+      detective: { title: "Détective de mods", body: "Un plantage avec beaucoup de mods ? Kairos désactive les mods par moitiés et trouve le coupable pour toi." },
+      boost: { title: "Boost en un clic", body: "Installe des mods de performance et règle Java et la mémoire d'une instance, après avoir enregistré un point de restauration." },
+    },
+  },
   journal: {
     subtitle: "Chaque jour de jeu allume un carré.",
     thisWeek: "Cette semaine",

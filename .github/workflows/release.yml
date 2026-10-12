@@ -28,6 +28,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
           KAIROS_MS_CLIENT_ID: ${{ secrets.KAIROS_MS_CLIENT_ID }}
           KAIROS_DISCORD_APP_ID: ${{ secrets.KAIROS_DISCORD_APP_ID }}
+          KAIROS_NEWS_URL: ${{ vars.KAIROS_NEWS_URL }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: Kairos ${{ github.ref_name }}

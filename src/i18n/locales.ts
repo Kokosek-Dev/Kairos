@@ -16,6 +16,19 @@ export interface Translations {
 
 export const en: Translations = {
   nav: { home: "Home", library: "Library", textures: "Textures", journal: "Journal", discover: "Discover", settings: "Settings", recent: "Recent" },
+  news: {
+    title: "News",
+    label: "News",
+    sponsored: "Sponsored",
+    more: "Read more",
+    collapse: "Hide news",
+    expand: "Show news",
+    bundled: {
+      journal: { title: "Your play calendar", body: "The new Journal lights up a square for every day you play and counts your streak." },
+      detective: { title: "Mod detective", body: "A crash with lots of mods? Kairos switches mods off in halves and finds the culprit for you." },
+      boost: { title: "Boost in one click", body: "Installs performance mods and tunes Java and memory for an instance, after saving a restore point." },
+    },
+  },
   journal: {
     subtitle: "Every day you play lights up a square.",
     thisWeek: "This week",
@@ -637,6 +650,19 @@ export const en: Translations = {
 
 export const pl: Translations = {
   nav: { home: "Strona główna", library: "Biblioteka", textures: "Tekstury", journal: "Dziennik", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
+  news: {
+    title: "Nowości",
+    label: "Nowość",
+    sponsored: "Sponsorowane",
+    more: "Czytaj dalej",
+    collapse: "Ukryj nowości",
+    expand: "Pokaż nowości",
+    bundled: {
+      journal: { title: "Twój kalendarz grania", body: "Nowy Dziennik zapala kwadracik za każdy dzień grania i liczy Twoją serię." },
+      detective: { title: "Detektyw modów", body: "Crash przy wielu modach? Kairos wyłącza mody połówkami i sam znajduje winowajcę." },
+      boost: { title: "Boost jednym kliknięciem", body: "Instaluje mody wydajnościowe i ustawia Javę oraz pamięć dla instancji, po zapisaniu punktu przywracania." },
+    },
+  },
   journal: {
     subtitle: "Każdy dzień grania zapala jeden kwadracik.",
     thisWeek: "W tym tygodniu",

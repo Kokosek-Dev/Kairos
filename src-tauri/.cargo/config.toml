@@ -1,4 +1,4 @@
-﻿# Build-time settings for Kairos.
+# Build-time settings for Kairos.
 #
 # KAIROS_MS_CLIENT_ID is the Application (client) ID of the Azure app registration that Kairos
 # uses for "Sign in with Microsoft" (see docs/AZURE_SETUP.md). It is baked into the launcher so
@@ -9,3 +9,7 @@ KAIROS_MS_CLIENT_ID = { value = "", force = false }
 # KAIROS_DISCORD_APP_ID is the Application ID of the Discord application behind Rich Presence.
 # Leave it empty to build without it (see docs/DISCORD_SETUP.md).
 KAIROS_DISCORD_APP_ID = { value = "", force = false }
+
+# KAIROS_NEWS_URL is the https address of the news list shown in the side panel (see docs/NEWS.md).
+# Leave it empty to show only the news that ships with the launcher.
+KAIROS_NEWS_URL = { value = "", force = false }

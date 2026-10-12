@@ -2,6 +2,19 @@ import type { Translations } from "../locales";
 
 export const de: Translations = {
   nav: { home: "Start", library: "Bibliothek", textures: "Texturen", journal: "Tagebuch", discover: "Entdecken", settings: "Einstellungen", recent: "Zuletzt" },
+  news: {
+    title: "Neuigkeiten",
+    label: "Neuigkeit",
+    sponsored: "Gesponsert",
+    more: "Mehr lesen",
+    collapse: "Neuigkeiten ausblenden",
+    expand: "Neuigkeiten anzeigen",
+    bundled: {
+      journal: { title: "Dein Spielkalender", body: "Das neue Tagebuch lässt für jeden Spieltag ein Kästchen aufleuchten und zählt deine Serie." },
+      detective: { title: "Mod-Detektiv", body: "Absturz mit vielen Mods? Kairos schaltet Mods hälftig aus und findet den Schuldigen für dich." },
+      boost: { title: "Boost mit einem Klick", body: "Installiert Leistungs-Mods und stellt Java und Speicher für eine Instanz ein, nachdem ein Wiederherstellungspunkt gespeichert wurde." },
+    },
+  },
   journal: {
     subtitle: "Jeder Spieltag lässt ein Kästchen aufleuchten.",
     thisWeek: "Diese Woche",

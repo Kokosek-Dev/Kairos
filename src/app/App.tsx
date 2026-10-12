@@ -25,6 +25,7 @@ import { DetectiveDialog } from "@/features/detective/DetectiveDialog";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
 import { JournalPage } from "@/features/journal/JournalPage";
 import { LaunchSplash } from "@/features/launch/LaunchSplash";
+import { NewsPanel } from "@/features/news/NewsPanel";
 import { UpdateWatcher } from "@/features/updates/UpdateWatcher";
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
 
@@ -66,6 +67,7 @@ export function App() {
             </motion.div>
           </AnimatePresence>
         </main>
+        <NewsPanel />
       </div>
       <LaunchSplash />
       <ConsoleDrawer />

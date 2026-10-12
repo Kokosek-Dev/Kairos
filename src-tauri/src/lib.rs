@@ -17,6 +17,7 @@ mod loaders;
 mod memory;
 mod modrinth;
 mod moments;
+mod news;
 mod mojang;
 mod paths;
 mod presence;
@@ -117,6 +118,7 @@ pub fn run() {
             commands::preview_instance_code,
             commands::import_instance_code,
             commands::list_sessions,
+            commands::fetch_news,
             commands::list_moments,
             commands::create_moment,
             commands::create_safety_moment,
