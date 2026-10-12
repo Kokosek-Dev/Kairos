@@ -65,7 +65,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDY4N0NFOUFEM0Q3MTlGMUEKUldRYW4zRTlyZWw4YUZleEtCYVRCMUVzeGtVTnpJSWZWalpsTFBaZEpwbzgrWXRpTW1wd3psS0YK",
       "endpoints": [
-        "https://github.com/OWNER/REPO/releases/latest/download/latest.json"
+        "https://github.com/Kokosek-Dev/Kairos/releases/latest/download/latest.json"
       ],
       "windows": {
         "installMode": "passive"
