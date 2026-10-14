@@ -39,6 +39,12 @@ export const ru: Translations = {
     remove: "Удалить",
     empty: "Серверов пока нет",
     emptyHint: "Добавьте сервер выше, чтобы увидеть, сколько игроков онлайн и как быстро он отвечает.",
+    edition: "Издание",
+    java: "Java",
+    bedrock: "Bedrock",
+    openBedrock: "Открыть Bedrock",
+    bedrockHint: "Bedrock запускается приложением Microsoft. Открой его и добавь этот адрес в разделе «Серверы».",
+    bedrockMissing: "Bedrock Edition не установлена на этом компьютере.",
   },
   news: {
     title: "Новости",

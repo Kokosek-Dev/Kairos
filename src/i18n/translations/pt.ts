@@ -39,6 +39,12 @@ export const pt: Translations = {
     remove: "Remover",
     empty: "Nenhum servidor ainda",
     emptyHint: "Adicione um servidor acima para ver quantos jogadores estão online e a rapidez da resposta.",
+    edition: "Edição",
+    java: "Java",
+    bedrock: "Bedrock",
+    openBedrock: "Abrir Bedrock",
+    bedrockHint: "O Bedrock é iniciado pelo aplicativo da própria Microsoft. Abra-o e adicione este endereço em Servidores.",
+    bedrockMissing: "O Bedrock Edition não está instalado neste computador.",
   },
   news: {
     title: "Novidades",

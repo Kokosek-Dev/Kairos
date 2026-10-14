@@ -5,10 +5,16 @@ use serde_json::Value;
 use std::fs;
 use std::time::{Duration, Instant};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tokio::net::TcpStream;
+use tokio::net::{TcpStream, UdpSocket};
 use tokio::time::timeout;
 
-const DEFAULT_PORT: u16 = 25565;
+const JAVA_PORT: u16 = 25565;
+const BEDROCK_PORT: u16 = 19132;
+/// The 16 bytes that mark every RakNet "offline" message, the same in every Bedrock server list query.
+const RAKNET_MAGIC: [u8; 16] = [0x00, 0xff, 0xff, 0x00, 0xfe, 0xfe, 0xfe, 0xfe, 0xfd, 0xfd, 0xfd, 0xfd, 0x12, 0x34, 0x56, 0x78];
+const UNCONNECTED_PING: u8 = 0x01;
+const UNCONNECTED_PONG: u8 = 0x1c;
+const MAX_BEDROCK_REPLY: usize = 2048;
 const TIMEOUT: Duration = Duration::from_secs(5);
 const MAX_SERVERS: usize = 100;
 const MAX_NAME: usize = 48;
@@ -19,12 +25,32 @@ const MAX_MOTD: usize = 200;
 /// The protocol number sent in the handshake. Servers answer a status request whatever it is.
 const HANDSHAKE_PROTOCOL: i32 = 765;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Edition {
+    #[default]
+    Java,
+    Bedrock,
+}
+
+impl Edition {
+    fn default_port(self) -> u16 {
+        match self {
+            Self::Java => JAVA_PORT,
+            Self::Bedrock => BEDROCK_PORT,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ServerEntry {
     pub id: String,
     pub name: String,
     pub address: String,
+    /// Lists saved before Bedrock was added have no edition and are Java servers.
+    #[serde(default)]
+    pub edition: Edition,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -54,8 +80,9 @@ fn save(paths: &DataPaths, servers: &[ServerEntry]) -> AppResult<()> {
     Ok(())
 }
 
-/// Splits `host` or `host:port`; anything that is not a plain host name or address is refused.
-pub fn parse_address(address: &str) -> AppResult<(String, u16)> {
+/// Splits `host` or `host:port`, using the edition's usual port when none is given.
+/// Anything that is not a plain host name or address is refused.
+pub fn parse_address(address: &str, edition: Edition) -> AppResult<(String, u16)> {
     let invalid = || AppError::InvalidInput("invalid server address".into());
     let address = address.trim();
     if address.is_empty() || address.len() > MAX_ADDRESS {
@@ -63,7 +90,7 @@ pub fn parse_address(address: &str) -> AppResult<(String, u16)> {
     }
     let (host, port) = match address.rsplit_once(':') {
         Some((host, port)) => (host, port.parse::<u16>().ok().filter(|port| *port > 0).ok_or_else(invalid)?),
-        None => (address, DEFAULT_PORT),
+        None => (address, edition.default_port()),
     };
     let valid_host = !host.is_empty()
         && !host.starts_with(['.', '-'])
@@ -76,8 +103,8 @@ pub fn parse_address(address: &str) -> AppResult<(String, u16)> {
     }
 }
 
-pub fn add(paths: &DataPaths, name: &str, address: &str) -> AppResult<ServerEntry> {
-    let (host, port) = parse_address(address)?;
+pub fn add(paths: &DataPaths, name: &str, address: &str, edition: Edition) -> AppResult<ServerEntry> {
+    let (host, port) = parse_address(address, edition)?;
     let name = name.trim();
     if name.is_empty() || name.chars().count() > MAX_NAME {
         return Err(AppError::InvalidInput("invalid server name".into()));
@@ -89,7 +116,8 @@ pub fn add(paths: &DataPaths, name: &str, address: &str) -> AppResult<ServerEntr
     let entry = ServerEntry {
         id: format!("{:x}", chrono::Utc::now().timestamp_millis()),
         name: name.to_owned(),
-        address: if port == DEFAULT_PORT { host } else { format!("{host}:{port}") },
+        address: if port == edition.default_port() { host } else { format!("{host}:{port}") },
+        edition,
     };
     servers.push(entry.clone());
     save(paths, &servers)?;
@@ -244,10 +272,69 @@ async fn ping_inner(host: &str, port: u16) -> AppResult<ServerStatus> {
     status_from(&json, latency_ms)
 }
 
+/// Bedrock Edition installs from the Microsoft Store into a per-user package folder.
+pub fn bedrock_installed() -> bool {
+    std::env::var_os("LOCALAPPDATA").is_some_and(|local| std::path::Path::new(&local).join("Packages").join("Microsoft.MinecraftUWP_8wekyb3d8bbwe").is_dir())
+}
+/// The request a Bedrock game sends to fill its server list (a RakNet unconnected ping).
+fn bedrock_query(sent_at_ms: u64) -> Vec<u8> {
+    let mut query = vec![UNCONNECTED_PING];
+    query.extend_from_slice(&sent_at_ms.to_be_bytes());
+    query.extend_from_slice(&RAKNET_MAGIC);
+    query.extend_from_slice(&0u64.to_be_bytes());
+    query
+}
+
+/// Reads the answer, whose text is `MCPE;name;protocol;version;online;max;...`.
+fn bedrock_status(reply: &[u8], latency_ms: Option<u64>) -> AppResult<ServerStatus> {
+    let unexpected = || AppError::InvalidInput("the server sent an unexpected answer".into());
+    // The answer is: type, time (8), server id (8), magic (16), text length (2), text.
+    if reply.len() < 35 || reply[0] != UNCONNECTED_PONG || reply[17..33] != RAKNET_MAGIC {
+        return Err(unexpected());
+    }
+    let length = usize::from(u16::from_be_bytes([reply[33], reply[34]]));
+    let text = String::from_utf8_lossy(reply.get(35..35 + length).ok_or_else(unexpected)?).into_owned();
+    let fields: Vec<&str> = text.split(';').collect();
+    if fields.len() < 6 {
+        return Err(unexpected());
+    }
+    let number = |index: usize| fields[index].trim().parse::<u32>().unwrap_or(0);
+    let mut motd = String::new();
+    flatten(&Value::String(fields[1].to_owned()), &mut motd);
+    Ok(ServerStatus {
+        motd: motd.trim().chars().take(MAX_MOTD).collect(),
+        version: fields[3].chars().take(40).collect(),
+        players_online: number(4),
+        players_max: number(5),
+        latency_ms,
+        favicon: None,
+    })
+}
+
+async fn ping_bedrock(host: &str, port: u16) -> AppResult<ServerStatus> {
+    let target = tokio::net::lookup_host((host, port))
+        .await?
+        .find(std::net::SocketAddr::is_ipv4)
+        .ok_or_else(|| AppError::InvalidInput("could not find that server".into()))?;
+    let socket = UdpSocket::bind("0.0.0.0:0").await?;
+    socket.connect(target).await?;
+    let started = Instant::now();
+    socket.send(&bedrock_query(chrono::Utc::now().timestamp_millis().unsigned_abs())).await?;
+    let mut buffer = vec![0u8; MAX_BEDROCK_REPLY];
+    let read = socket.recv(&mut buffer).await?;
+    bedrock_status(&buffer[..read], Some(started.elapsed().as_millis() as u64))
+}
+
 /// Asks a server for its status the way the game's server list does.
-pub async fn ping(address: &str) -> AppResult<ServerStatus> {
-    let (host, port) = parse_address(address)?;
-    timeout(TIMEOUT, ping_inner(&host, port))
+pub async fn ping(address: &str, edition: Edition) -> AppResult<ServerStatus> {
+    let (host, port) = parse_address(address, edition)?;
+    let asked = async {
+        match edition {
+            Edition::Java => ping_inner(&host, port).await,
+            Edition::Bedrock => ping_bedrock(&host, port).await,
+        }
+    };
+    timeout(TIMEOUT, asked)
         .await
         .map_err(|_| AppError::InvalidInput("the server did not answer in time".into()))?
 }
@@ -267,24 +354,24 @@ mod tests {
 
     #[test]
     fn reads_hosts_with_and_without_a_port() {
-        assert_eq!(parse_address("Play.Example.com").unwrap(), ("play.example.com".to_owned(), 25565));
-        assert_eq!(parse_address(" 10.0.0.5:25570 ").unwrap(), ("10.0.0.5".to_owned(), 25570));
+        assert_eq!(parse_address("Play.Example.com", Edition::Java).unwrap(), ("play.example.com".to_owned(), 25565));
+        assert_eq!(parse_address(" 10.0.0.5:25570 ", Edition::Java).unwrap(), ("10.0.0.5".to_owned(), 25570));
         for bad in ["", "host:0", "host:99999", "host:abc", "-bad.com", "bad host", "a/b", "http://x.com", "x.com:25565:1"] {
-            assert!(parse_address(bad).is_err(), "{bad} should be refused");
+            assert!(parse_address(bad, Edition::Java).is_err(), "{bad} should be refused");
         }
     }
 
     #[test]
     fn keeps_a_list_of_servers() {
         let paths = scratch("list");
-        let first = add(&paths, "  Survival ", "mc.example.com").unwrap();
-        add(&paths, "Creative", "mc.example.com:25570").unwrap();
+        let first = add(&paths, "  Survival ", "mc.example.com", Edition::Java).unwrap();
+        add(&paths, "Creative", "mc.example.com:25570", Edition::Java).unwrap();
         assert_eq!(load(&paths).unwrap().iter().map(|server| server.address.as_str()).collect::<Vec<_>>(), ["mc.example.com", "mc.example.com:25570"]);
         assert_eq!(first.name, "Survival");
 
         remove(&paths, &first.id).unwrap();
         assert_eq!(load(&paths).unwrap().len(), 1);
-        assert!(add(&paths, "", "x.com").is_err());
+        assert!(add(&paths, "", "x.com", Edition::Java).is_err());
     }
 
     #[test]
@@ -336,7 +423,7 @@ mod tests {
             stream.write_all(&packet(1, &0i64.to_be_bytes())).await.unwrap();
         });
 
-        let status = ping(&format!("127.0.0.1:{port}")).await.unwrap();
+        let status = ping(&format!("127.0.0.1:{port}"), Edition::Java).await.unwrap();
 
         assert_eq!(status.motd, "Hello");
         assert_eq!(status.version, "Paper 1.21.1");
@@ -347,6 +434,88 @@ mod tests {
     #[tokio::test]
     async fn reports_an_error_when_nothing_listens() {
         let free = std::net::TcpListener::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port();
-        assert!(ping(&format!("127.0.0.1:{free}")).await.is_err());
+        assert!(ping(&format!("127.0.0.1:{free}"), Edition::Java).await.is_err());
+    }
+
+    fn pong(text: &str) -> Vec<u8> {
+        let mut reply = vec![UNCONNECTED_PONG];
+        reply.extend_from_slice(&1234u64.to_be_bytes());
+        reply.extend_from_slice(&99u64.to_be_bytes());
+        reply.extend_from_slice(&RAKNET_MAGIC);
+        reply.extend_from_slice(&(text.len() as u16).to_be_bytes());
+        reply.extend_from_slice(text.as_bytes());
+        reply
+    }
+
+    #[test]
+    fn reads_what_a_bedrock_server_answers_with() {
+        // Taken from a real answer of a public server.
+        let status = bedrock_status(&pong("MCPE;§f§lHIVE-O-WEEN | BEDWARS S5;121;1.0;12136;100001;2561061765108221877;Hive Games;Survival"), Some(40)).unwrap();
+
+        assert_eq!(status.motd, "HIVE-O-WEEN | BEDWARS S5");
+        assert_eq!(status.version, "1.0");
+        assert_eq!((status.players_online, status.players_max, status.latency_ms), (12136, 100001, Some(40)));
+        assert!(status.favicon.is_none());
+    }
+
+    #[test]
+    fn refuses_answers_that_are_not_a_bedrock_status() {
+        assert!(bedrock_status(&[], None).is_err());
+        assert!(bedrock_status(&[UNCONNECTED_PONG; 10], None).is_err());
+        let mut wrong_magic = pong("MCPE;A;1;1.0;1;2");
+        wrong_magic[20] ^= 0xff;
+        assert!(bedrock_status(&wrong_magic, None).is_err());
+        let mut too_long = pong("MCPE;A;1;1.0;1;2");
+        too_long[33] = 0xff;
+        assert!(bedrock_status(&too_long, None).is_err());
+        assert!(bedrock_status(&pong("MCPE;only;three"), None).is_err());
+    }
+
+    #[test]
+    fn the_bedrock_query_has_the_shape_servers_expect() {
+        let query = bedrock_query(0x0102_0304_0506_0708);
+
+        assert_eq!(query.len(), 33);
+        assert_eq!(query[0], UNCONNECTED_PING);
+        assert_eq!(&query[1..9], [1, 2, 3, 4, 5, 6, 7, 8]);
+        assert_eq!(&query[9..25], RAKNET_MAGIC);
+    }
+
+    #[tokio::test]
+    async fn asks_a_bedrock_server_over_udp() {
+        let socket = UdpSocket::bind("127.0.0.1:0").await.unwrap();
+        let port = socket.local_addr().unwrap().port();
+        let server = tokio::spawn(async move {
+            let mut buffer = [0u8; 64];
+            let (read, from) = socket.recv_from(&mut buffer).await.unwrap();
+            assert_eq!(read, 33);
+            assert_eq!(buffer[0], UNCONNECTED_PING);
+            socket.send_to(&pong("MCPE;My world;800;1.26.50;3;10;77;Second line;Survival"), from).await.unwrap();
+        });
+
+        let status = ping(&format!("127.0.0.1:{port}"), Edition::Bedrock).await.unwrap();
+
+        server.await.unwrap();
+        assert_eq!((status.motd.as_str(), status.version.as_str()), ("My world", "1.26.50"));
+        assert_eq!((status.players_online, status.players_max), (3, 10));
+        assert!(status.latency_ms.is_some());
+    }
+
+    #[test]
+    fn lists_saved_before_bedrock_existed_are_java_servers() {
+        let entries: Vec<ServerEntry> = serde_json::from_str(r#"[{"id":"a","name":"Old","address":"mc.example.com"}]"#).unwrap();
+        assert_eq!(entries[0].edition, Edition::Java);
+    }
+
+    #[test]
+    fn keeps_the_edition_and_its_usual_port() {
+        let paths = scratch("edition");
+        let bedrock = add(&paths, "Hive", "geo.hivebedrock.network", Edition::Bedrock).unwrap();
+        add(&paths, "Other port", "geo.hivebedrock.network:19133", Edition::Bedrock).unwrap();
+
+        assert_eq!(bedrock.address, "geo.hivebedrock.network");
+        let saved = load(&paths).unwrap();
+        assert!(saved.iter().all(|server| server.edition == Edition::Bedrock));
+        assert_eq!(saved[1].address, "geo.hivebedrock.network:19133");
     }
 }

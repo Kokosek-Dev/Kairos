@@ -35,32 +35,16 @@ verify it yourself. See [docs/PRIVACY.md](docs/PRIVACY.md) for what Kairos does 
 - Kairos codes: share an instance as a short text code that a friend pastes to build the same game
 - Discord Rich Presence (optional, see [docs/DISCORD_SETUP.md](docs/DISCORD_SETUP.md))
 - Moments: snapshots of an instance (mods, settings, optionally worlds) saved before risky changes, with a one-click way back and a view of what changed
-- Play time statistics, crash analysis that explains what went wrong, problem reports without personal data
+- Mod detective: finds which mod breaks the game by switching mods off in halves
+- Journal: a calendar of the days you played, with streaks and time per instance
+- Server list with live status (players, ping, description)
+- Play time statistics, crash analysis that explains what went wrong, a panel to send feedback or report a problem (you choose what is sent)
+- Kairos mod for the game (Fabric 1.21.1): switch skins, voice chat for nearby players and play with friends without a server, see [mod/README.md](mod/README.md)
 - Choose where everything is stored, automatic Java download, live game log
-- English, Polish, German, Spanish, French, Brazilian Portuguese and Russian, accent colors and backgrounds
+- English, Polish, German, Spanish, French, Brazilian Portuguese and Russian, dark and light themes, accent colors and backgrounds
 
 You need a Microsoft account that owns Minecraft: Java Edition to play. Kairos does not bypass the game's licence.
 
 Kairos is not affiliated with Mojang or Microsoft, see [NOTICE.md](NOTICE.md). MIT licensed.
 
-## Building
-
-Requirements: Node.js, Rust (MSVC toolchain on Windows) and the Visual Studio C++ build tools.
-
-```
-npm install
-npm run tauri dev       # development
-npm run tauri build     # installer (NSIS) in src-tauri/target/release/bundle
-```
-
-`tauri build` signs the update package, so it needs the update signing key and its password in `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`.
-Releases are built by GitHub Actions, see [docs/RELEASING.md](docs/RELEASING.md).
-
-### Microsoft sign-in
-
-Sign-in needs an Azure application that Microsoft approved for Minecraft services. Register it once, put its
-Application (client) ID into `src-tauri/.cargo/config.toml` (`KAIROS_MS_CLIENT_ID`) and build. Players never see
-or enter this ID. Step by step: [docs/AZURE_SETUP.md](docs/AZURE_SETUP.md).
-
-For development without a Microsoft account, debug builds start with a placeholder identity when
-`KAIROS_DEV_SESSION=1` is set. That identity cannot join online servers and does not exist in release builds.
+Developers: build and release notes are in [docs/](docs/), and the in-game mod has its own [README](mod/README.md).
