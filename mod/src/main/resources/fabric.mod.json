@@ -1,0 +1,25 @@
+{
+	"schemaVersion": 1,
+	"id": "kairos",
+	"version": "${version}",
+	"name": "Kairos",
+	"description": "The in-game side of the Kairos launcher: switch skins, talk to nearby players and play with friends without a server.",
+	"authors": ["Kairos"],
+	"contact": {
+		"homepage": "https://kokosek-dev.github.io/Kairos/",
+		"sources": "https://github.com/Kokosek-Dev/Kairos"
+	},
+	"license": "MIT",
+	"icon": "assets/kairos/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["dev.kairos.mod.KairosMod"],
+		"client": ["dev.kairos.mod.client.KairosClient"]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

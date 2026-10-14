@@ -5,6 +5,8 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 const LAUNCHER_NAME: &str = "kairos";
+/// The game learns where Kairos keeps its data, so the Kairos mod can offer the saved skins.
+const DATA_DIRECTORY_PROPERTY: &str = "kairos.dir";
 const LEGACY_JVM_ARGUMENTS: [&str; 5] = [
     "-Djava.library.path=${natives_directory}",
     "-Dminecraft.launcher.brand=${launcher_name}",
@@ -127,6 +129,7 @@ pub fn build_command(spec: &LaunchSpec) -> LaunchCommand {
         .chain(jvm.iter().map(|arg| substitute(arg, &variables)))
         .chain(logging)
         .chain(spec.extra_jvm_args.iter().cloned())
+        .chain([format!("-D{DATA_DIRECTORY_PROPERTY}={}", spec.paths.root().display())])
         .chain([version.main_class.clone()])
         .chain(game.iter().map(|arg| substitute(arg, &variables)))
         .collect();
@@ -211,6 +214,14 @@ mod tests {
         assert!(logging < main);
         assert!(args.contains(&"-Dextra=1".to_owned()));
         assert!(!args.iter().any(|arg| arg.contains("${")));
+    }
+
+    #[test]
+    fn tells_the_game_where_the_data_folder_is_before_the_main_class() {
+        let command = build(&version(MODERN), &session());
+        let property = command.args.iter().position(|arg| arg == "-Dkairos.dir=data").expect("the data folder is passed on");
+        let main = command.args.iter().position(|arg| arg == "net.minecraft.client.main.Main").unwrap();
+        assert!(property < main);
     }
 
     #[test]
