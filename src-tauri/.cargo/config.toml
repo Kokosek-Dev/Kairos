@@ -13,3 +13,7 @@ KAIROS_DISCORD_APP_ID = { value = "", force = false }
 # KAIROS_NEWS_URL is the https address of the news list shown in the side panel (see docs/NEWS.md).
 # Leave it empty to show only the news that ships with the launcher.
 KAIROS_NEWS_URL = { value = "", force = false }
+
+# KAIROS_FEEDBACK_KEY is the public access key of the form service that delivers feedback to the developer (see docs/FEEDBACK.md).
+# Leave it empty and the feedback panel offers copying the report instead.
+KAIROS_FEEDBACK_KEY = { value = "", force = false }

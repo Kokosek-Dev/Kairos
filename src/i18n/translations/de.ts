@@ -2,6 +2,27 @@ import type { Translations } from "../locales";
 
 export const de: Translations = {
   nav: { home: "Start", library: "Bibliothek", textures: "Texturen", journal: "Tagebuch", servers: "Server", discover: "Entdecken", settings: "Einstellungen", recent: "Zuletzt" },
+  feedback: {
+    title: "Feedback senden",
+    subtitle: "Sag uns, was schiefgelaufen ist oder was du dir anders wünschst. Es geht direkt an den Entwickler.",
+    offline: "Diese Version kann Nachrichten nicht selbst senden. Kopiere deinen Bericht und gib ihn weiter, oder öffne ihn auf GitHub.",
+    tooShort: "Schreib etwas mehr, damit man damit arbeiten kann.",
+    contact: "Kontakt",
+    contactPlaceholder: "E-Mail oder Discord, nur wenn du eine Antwort möchtest (optional)",
+    includeDetails: "Technische Details beifügen",
+    showDetails: "Zeigen, was enthalten ist",
+    hideDetails: "Ausblenden",
+    send: "Senden",
+    sending: "Wird gesendet...",
+    sent: "Danke, es wurde gesendet.",
+    sentBody: "Deine Nachricht ist beim Entwickler angekommen. Wenn du einen Kontakt angegeben hast, bekommst du vielleicht eine Antwort.",
+    copy: "Bericht kopieren",
+    copied: "Bericht kopiert",
+    github: "Auf GitHub öffnen",
+    incognito: "Verlasse den Inkognito-Modus, um Nachrichten zu senden.",
+    kind: { bug: "Problem", idea: "Idee", other: "Sonstiges" },
+    placeholder: { bug: "Was ist passiert und was hast du erwartet? Schritte zum Nachstellen helfen am meisten.", idea: "Was würde Kairos für dich besser machen?", other: "Schreib, was du möchtest." },
+  },
   servers: {
     subtitle: "Deine Lieblingsserver mit aktuellem Status.",
     name: "Name",
@@ -240,6 +261,7 @@ export const de: Translations = {
     title: "Hilfe",
     hint: "Wenn etwas schiefgeht, speichere einen Problembericht und schicke ihn an die Person, die dir hilft. Er enthält Logs sowie eine Liste deiner Instanzen und Mods. Anmeldedaten und dein Benutzername werden entfernt.",
     saveReport: "Problembericht speichern",
+    sendFeedback: "Feedback senden oder ein Problem melden",
     saved: "Bericht gespeichert unter {{path}}",
   },
   updater: {

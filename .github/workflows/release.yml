@@ -53,6 +53,7 @@ jobs:
           KAIROS_MS_CLIENT_ID: ${{ secrets.KAIROS_MS_CLIENT_ID }}
           KAIROS_DISCORD_APP_ID: ${{ secrets.KAIROS_DISCORD_APP_ID }}
           KAIROS_NEWS_URL: ${{ vars.KAIROS_NEWS_URL }}
+          KAIROS_FEEDBACK_KEY: ${{ secrets.KAIROS_FEEDBACK_KEY }}
         with:
           tagName: v${{ env.VERSION }}
           releaseName: Kairos v${{ env.VERSION }}

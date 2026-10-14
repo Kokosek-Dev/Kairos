@@ -114,15 +114,29 @@ fn add(zip: &mut zip::ZipWriter<File>, name: &str, text: &str) -> AppResult<()> 
     Ok(())
 }
 
+/// The instance a report is about: the one asked for, or the one played last.
+fn chosen<'a>(instances: &'a [Instance], instance_id: Option<&str>) -> Option<&'a Instance> {
+    match instance_id {
+        Some(id) => instances.iter().find(|instance| instance.id == id),
+        None => instances.iter().max_by_key(|instance| instance.last_played_at),
+    }
+}
+
+fn hide(text: &str) -> String {
+    let home = std::env::var("USERPROFILE").or_else(|_| std::env::var("HOME")).ok();
+    redact(text, home.as_deref())
+}
+
+/// A short text about the system, the instances and the mods of one instance, with private values removed.
+pub fn overview(paths: &DataPaths, instance_id: Option<&str>, version: &str, total_mb: u64) -> AppResult<String> {
+    let instances = store::list(paths)?;
+    Ok(hide(&summary(paths, &instances, chosen(&instances, instance_id), version, total_mb)))
+}
+
 /// Writes a zip with what is needed to help with a problem: system and instance overview, mod names, the latest log and crash reports.
 pub fn write_report(paths: &DataPaths, instance_id: Option<&str>, destination: &Path, version: &str, total_mb: u64) -> AppResult<()> {
     let instances = store::list(paths)?;
-    let selected = match instance_id {
-        Some(id) => instances.iter().find(|instance| instance.id == id),
-        None => instances.iter().max_by_key(|instance| instance.last_played_at),
-    };
-    let home = std::env::var("USERPROFILE").or_else(|_| std::env::var("HOME")).ok();
-    let hide = |text: &str| redact(text, home.as_deref());
+    let selected = chosen(&instances, instance_id);
 
     let mut zip = zip::ZipWriter::new(File::create(destination)?);
     add(&mut zip, "report.txt", &hide(&summary(paths, &instances, selected, version, total_mb)))?;

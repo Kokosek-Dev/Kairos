@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { FileSearch, LifeBuoy, Search, Settings2 } from "lucide-react";
+import { FileSearch, LifeBuoy, MessageSquareText, Search, Settings2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { analyzeCrash, revealFile, type CrashKind } from "@/lib/tauri/crash";
 import { useDetectiveStore } from "@/features/detective/detectiveStore";
+import { useFeedbackStore } from "@/features/feedback/feedbackStore";
 import { useProblemReport } from "@/features/settings/useProblemReport";
 import { useGameStore } from "./gameStore";
 
@@ -69,6 +70,16 @@ export function CrashDialog() {
               {t("crash.openSettings")}
             </Button>
           )}
+          <Button
+            variant="secondary"
+            onClick={() => {
+              useFeedbackStore.getState().show("bug", crash?.instanceId ?? null);
+              dismissCrash();
+            }}
+          >
+            <MessageSquareText size={16} />
+            {t("help.sendFeedback")}
+          </Button>
           <Button variant="secondary" disabled={report.isPending} onClick={() => report.mutate(crash?.instanceId ?? null)}>
             <LifeBuoy size={16} />
             {t("help.saveReport")}

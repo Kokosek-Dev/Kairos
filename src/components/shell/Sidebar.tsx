@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { getVersion } from "@tauri-apps/api/app";
 import { motion } from "framer-motion";
-import { BookOpen, Compass, Home, Library, Server, Settings, Shirt, Terminal, type LucideIcon } from "lucide-react";
+import { BookOpen, Compass, Home, Library, MessageSquareText, Server, Settings, Shirt, Terminal, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { InstanceIcon } from "@/features/instances/InstanceIcon";
 import { useInstances } from "@/features/instances/useInstances";
+import { useFeedbackStore } from "@/features/feedback/feedbackStore";
 import { isBusy, useGameStore } from "@/features/launch/gameStore";
 import { cn } from "@/lib/utils";
 
@@ -74,10 +75,20 @@ function RecentInstances() {
 
 function Footer() {
   const version = useQuery({ queryKey: ["app-version"], queryFn: getVersion, staleTime: Infinity });
+  const { t } = useTranslation();
   return (
     <div className="flex items-center gap-2 px-3 pt-2 text-xs text-muted/70">
       <Logo className="size-4 opacity-70" />
       <span>Kairos {version.data ? `v${version.data}` : ""}</span>
+      <button
+        type="button"
+        aria-label={t("feedback.title")}
+        title={t("feedback.title")}
+        onClick={() => useFeedbackStore.getState().show()}
+        className="ml-auto rounded p-1 transition-colors hover:bg-surface-raised hover:text-foreground"
+      >
+        <MessageSquareText size={14} />
+      </button>
     </div>
   );
 }

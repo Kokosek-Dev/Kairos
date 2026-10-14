@@ -1,6 +1,7 @@
 mod auth;
 mod boost;
 mod crash;
+mod feedback;
 mod instances;
 mod journal;
 mod launch;
@@ -18,6 +19,7 @@ mod versions;
 pub use auth::*;
 pub use boost::*;
 pub use crash::*;
+pub use feedback::*;
 pub use instances::*;
 pub use journal::*;
 pub use launch::*;

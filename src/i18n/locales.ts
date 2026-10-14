@@ -16,6 +16,27 @@ export interface Translations {
 
 export const en: Translations = {
   nav: { home: "Home", library: "Library", textures: "Textures", journal: "Journal", servers: "Servers", discover: "Discover", settings: "Settings", recent: "Recent" },
+  feedback: {
+    title: "Send feedback",
+    subtitle: "Tell us what went wrong or what you would like changed. It goes straight to the developer.",
+    offline: "This build cannot send messages by itself. Copy your report and pass it on, or open it on GitHub.",
+    tooShort: "Write a little more, so there is something to act on.",
+    contact: "Contact",
+    contactPlaceholder: "Email or Discord, only if you want an answer (optional)",
+    includeDetails: "Include technical details",
+    showDetails: "Show what is included",
+    hideDetails: "Hide",
+    send: "Send",
+    sending: "Sending...",
+    sent: "Thank you, it was sent.",
+    sentBody: "Your message reached the developer. If you left a contact, you may get an answer.",
+    copy: "Copy report",
+    copied: "Report copied",
+    github: "Open on GitHub",
+    incognito: "Leave incognito mode to send messages.",
+    kind: { bug: "Problem", idea: "Idea", other: "Other" },
+    placeholder: { bug: "What happened, and what did you expect? Steps to repeat it help most.", idea: "What would make Kairos better for you?", other: "Write anything you like." },
+  },
   servers: {
     subtitle: "Your favourite servers with their live status.",
     name: "Name",
@@ -254,6 +275,7 @@ export const en: Translations = {
     title: "Help",
     hint: "If something goes wrong, save a problem report and send it to whoever is helping you. It holds logs and a list of your instances and mods. Sign-in data and your user name are removed.",
     saveReport: "Save a problem report",
+    sendFeedback: "Send feedback or report a problem",
     saved: "Report saved to {{path}}",
   },
   updater: {
@@ -670,6 +692,27 @@ export const en: Translations = {
 
 export const pl: Translations = {
   nav: { home: "Strona główna", library: "Biblioteka", textures: "Tekstury", journal: "Dziennik", servers: "Serwery", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
+  feedback: {
+    title: "Wyślij opinię",
+    subtitle: "Napisz, co poszło nie tak albo co chciałbyś zmienić. Wiadomość trafia prosto do twórcy.",
+    offline: "Ta wersja nie potrafi sama wysyłać wiadomości. Skopiuj raport i przekaż go dalej albo otwórz go na GitHubie.",
+    tooShort: "Napisz trochę więcej, żeby było z czym pracować.",
+    contact: "Kontakt",
+    contactPlaceholder: "E-mail lub Discord, tylko jeśli chcesz dostać odpowiedź (opcjonalnie)",
+    includeDetails: "Dołącz szczegóły techniczne",
+    showDetails: "Pokaż, co zostanie wysłane",
+    hideDetails: "Ukryj",
+    send: "Wyślij",
+    sending: "Wysyłanie...",
+    sent: "Dziękuję, wysłano.",
+    sentBody: "Wiadomość dotarła do twórcy. Jeśli zostawisz kontakt, możesz dostać odpowiedź.",
+    copy: "Kopiuj raport",
+    copied: "Skopiowano raport",
+    github: "Otwórz na GitHubie",
+    incognito: "Wyjdź z trybu incognito, żeby wysyłać wiadomości.",
+    kind: { bug: "Problem", idea: "Pomysł", other: "Inne" },
+    placeholder: { bug: "Co się stało i czego się spodziewałeś? Najbardziej pomagają kroki, żeby to powtórzyć.", idea: "Co sprawiłoby, że Kairos będzie dla Ciebie lepszy?", other: "Napisz, co chcesz." },
+  },
   servers: {
     subtitle: "Ulubione serwery z aktualnym statusem.",
     name: "Nazwa",
@@ -912,6 +955,7 @@ export const pl: Translations = {
     title: "Pomoc",
     hint: "Gdy coś pójdzie nie tak, zapisz raport o problemie i wyślij go osobie, która pomaga. Zawiera logi oraz listę instancji i modów. Dane logowania i nazwa użytkownika są usunięte.",
     saveReport: "Zapisz raport o problemie",
+    sendFeedback: "Wyślij opinię lub zgłoś problem",
     saved: "Raport zapisano w {{path}}",
   },
   updater: {

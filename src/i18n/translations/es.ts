@@ -2,6 +2,27 @@ import type { Translations } from "../locales";
 
 export const es: Translations = {
   nav: { home: "Inicio", library: "Biblioteca", textures: "Texturas", journal: "Diario", servers: "Servidores", discover: "Descubrir", settings: "Ajustes", recent: "Recientes" },
+  feedback: {
+    title: "Enviar comentarios",
+    subtitle: "Cuéntanos qué salió mal o qué te gustaría cambiar. Llega directamente al desarrollador.",
+    offline: "Esta versión no puede enviar mensajes por sí sola. Copia tu informe y pásalo, o ábrelo en GitHub.",
+    tooShort: "Escribe un poco más, para que haya algo con lo que trabajar.",
+    contact: "Contacto",
+    contactPlaceholder: "Correo o Discord, solo si quieres una respuesta (opcional)",
+    includeDetails: "Incluir detalles técnicos",
+    showDetails: "Mostrar qué se incluye",
+    hideDetails: "Ocultar",
+    send: "Enviar",
+    sending: "Enviando...",
+    sent: "Gracias, se envió.",
+    sentBody: "Tu mensaje llegó al desarrollador. Si dejaste un contacto, puede que recibas respuesta.",
+    copy: "Copiar informe",
+    copied: "Informe copiado",
+    github: "Abrir en GitHub",
+    incognito: "Sal del modo incógnito para enviar mensajes.",
+    kind: { bug: "Problema", idea: "Idea", other: "Otro" },
+    placeholder: { bug: "¿Qué pasó y qué esperabas? Los pasos para repetirlo ayudan mucho.", idea: "¿Qué haría que Kairos fuera mejor para ti?", other: "Escribe lo que quieras." },
+  },
   servers: {
     subtitle: "Tus servidores favoritos con su estado en directo.",
     name: "Nombre",
@@ -242,6 +263,7 @@ export const es: Translations = {
     title: "Ayuda",
     hint: "Si algo sale mal, guarda un informe del problema y envíaselo a quien te ayude. Contiene registros y una lista de tus instancias y mods. Se eliminan los datos de inicio de sesión y tu nombre de usuario.",
     saveReport: "Guardar un informe del problema",
+    sendFeedback: "Enviar comentarios o informar de un problema",
     saved: "Informe guardado en {{path}}",
   },
   updater: {

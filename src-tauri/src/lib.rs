@@ -6,6 +6,7 @@ mod diagnostics;
 mod download;
 mod crash;
 mod error;
+mod feedback;
 mod http;
 mod install;
 mod instances;
@@ -118,6 +119,9 @@ pub fn run() {
             commands::export_instance_code,
             commands::preview_instance_code,
             commands::import_instance_code,
+            commands::feedback_available,
+            commands::feedback_details,
+            commands::send_feedback,
             commands::list_sessions,
             commands::list_servers,
             commands::add_server,

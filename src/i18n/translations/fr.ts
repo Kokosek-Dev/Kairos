@@ -2,6 +2,27 @@ import type { Translations } from "../locales";
 
 export const fr: Translations = {
   nav: { home: "Accueil", library: "Bibliothèque", textures: "Textures", journal: "Journal", servers: "Serveurs", discover: "Découvrir", settings: "Paramètres", recent: "Récents" },
+  feedback: {
+    title: "Envoyer un avis",
+    subtitle: "Dis-nous ce qui n'a pas marché ou ce que tu voudrais changer. Le message va directement au développeur.",
+    offline: "Cette version ne peut pas envoyer de messages seule. Copie ton rapport et transmets-le, ou ouvre-le sur GitHub.",
+    tooShort: "Écris un peu plus, pour qu'il y ait de quoi travailler.",
+    contact: "Contact",
+    contactPlaceholder: "E-mail ou Discord, seulement si tu veux une réponse (facultatif)",
+    includeDetails: "Inclure les détails techniques",
+    showDetails: "Afficher ce qui est inclus",
+    hideDetails: "Masquer",
+    send: "Envoyer",
+    sending: "Envoi...",
+    sent: "Merci, c'est envoyé.",
+    sentBody: "Ton message est arrivé chez le développeur. Si tu as laissé un contact, tu peux recevoir une réponse.",
+    copy: "Copier le rapport",
+    copied: "Rapport copié",
+    github: "Ouvrir sur GitHub",
+    incognito: "Quitte le mode incognito pour envoyer des messages.",
+    kind: { bug: "Problème", idea: "Idée", other: "Autre" },
+    placeholder: { bug: "Que s'est-il passé et qu'attendais-tu ? Les étapes pour reproduire aident le plus.", idea: "Qu'est-ce qui rendrait Kairos meilleur pour toi ?", other: "Écris ce que tu veux." },
+  },
   servers: {
     subtitle: "Tes serveurs préférés avec leur état en direct.",
     name: "Nom",
@@ -242,6 +263,7 @@ export const fr: Translations = {
     title: "Aide",
     hint: "En cas de problème, enregistrez un rapport et envoyez-le à la personne qui vous aide. Il contient des journaux et la liste de vos instances et mods. Les données de connexion et votre nom d'utilisateur sont supprimés.",
     saveReport: "Enregistrer un rapport de problème",
+    sendFeedback: "Envoyer un avis ou signaler un problème",
     saved: "Rapport enregistré dans {{path}}",
   },
   updater: {

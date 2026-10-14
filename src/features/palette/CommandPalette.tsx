@@ -4,6 +4,7 @@ import {
   Compass,
   Home,
   Library,
+  MessageSquareText,
   Play,
   Search,
   Server,
@@ -18,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { InstanceIcon } from "@/features/instances/InstanceIcon";
 import { useInstances } from "@/features/instances/useInstances";
+import { useFeedbackStore } from "@/features/feedback/feedbackStore";
 import { useGameStore } from "@/features/launch/gameStore";
 import { cn } from "@/lib/utils";
 import { usePaletteStore } from "./paletteStore";
@@ -62,10 +64,9 @@ export function CommandPalette() {
       { id: "textures", label: t("nav.textures"), hint: t("palette.page"), icon: Shirt, run: go("/textures") },
       { id: "settings", label: t("nav.settings"), hint: t("palette.page"), icon: Settings, run: go("/settings") },
       { id: "editor", label: t("editor.title"), hint: t("palette.tool"), icon: Shirt, run: go("/skins/editor") },
-      { id: "servers", label: t("nav.servers"), hint: t("palette.page"), icon: Server, run: go("/servers") },
-      { id: "journal", label: t("nav.journal"), hint: t("palette.page"), icon: BookOpen, run: go("/journal") },
-      { id: "textures", label: t("textures.packs"), hint: t("palette.tool"), icon: Brush, run: go("/library") },
+      { id: "texture-packs", label: t("textures.packs"), hint: t("palette.tool"), icon: Brush, run: go("/library") },
       { id: "storage", label: t("storage.title"), hint: t("palette.page"), icon: SlidersHorizontal, run: go("/settings") },
+      { id: "feedback", label: t("feedback.title"), hint: t("palette.tool"), icon: MessageSquareText, run: () => useFeedbackStore.getState().show() },
     ];
     const games = (instances.data ?? []).flatMap<Entry>((instance) => [
       {

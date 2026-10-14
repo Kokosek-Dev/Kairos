@@ -21,6 +21,7 @@ import { OfflinePlayDialog } from "@/features/launch/OfflinePlayDialog";
 import { SignInDialog } from "@/features/accounts/SignInDialog";
 import { CommandPalette } from "@/features/palette/CommandPalette";
 import { CrashDialog } from "@/features/launch/CrashDialog";
+import { FeedbackDialog } from "@/features/feedback/FeedbackDialog";
 import { DetectiveDialog } from "@/features/detective/DetectiveDialog";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
 import { ServersPage } from "@/features/servers/ServersPage";
@@ -80,6 +81,7 @@ export function App() {
       <CommandPalette />
       </div>
       <DetectiveDialog />
+      <FeedbackDialog />
       <SignInDialog />
       <OfflinePlayDialog />
       <Toaster position="bottom-right" theme={resolvedTheme} toastOptions={{ style: { background: "var(--surface-raised)", color: "var(--foreground)", border: "1px solid var(--border)" } }} />
