@@ -92,3 +92,12 @@ Stan na koniec sesji: Azure czeka na odpowiedź szkoły (właściciel liczy na o
 - Nie uruchamiać dwóch kompilacji naraz (patrz sekcja 3).
 - W Git Bash ścieżki typu `/settings` są zamieniane na ścieżki Windows. Ustawić `MSYS_NO_PATHCONV=1` albo użyć PowerShell.
 - Pliki gry są duże. Wersji do testów (np. 1.21.1) nie zostawiać w katalogu danych po teście.
+
+## GitHub i wydania (stan na 2026-10-14)
+
+- Repozytorium: https://github.com/Kokosek-Dev/Kairos (publiczne). Strona pobierania: https://kokosek-dev.github.io/Kairos/
+- Każde wysłanie na `main` buduje i publikuje wydanie `v0.1.<numer>` (workflow `release.yml`), poza zmianami samych plików `.md` i `docs/`. Wysyłaj tylko sprawdzone zmiany.
+- GitHub CLI jest w `D:\Dev\tools\gh\bin\gh.exe`. Przed użyciem ustaw `GH_CONFIG_DIR=D:\Dev\tools\gh\config` (zalogowane jako Kokosek-Dev). Wysyłanie bez zmiany globalnej konfiguracji gita: `git -c credential.helper= -c "credential.helper=!D:/Dev/tools/gh/bin/gh.exe auth git-credential" push`.
+- Sekrety repozytorium: `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`, `KAIROS_MS_CLIENT_ID`. Ustawiaj je przez `gh secret set NAZWA --body `**wartość**, nigdy przez potok w Windows PowerShell (dokleja niewidoczny znacznik BOM i psuje klucz).
+- Commity mają adres `Kokosek-Dev@users.noreply.github.com`. Prawdziwy Gmail został usunięty z historii i nie może wrócić.
+- Logowanie do Minecrafta czeka na zgodę Mojang dla aplikacji `134e5e21-8f89-4bef-a98c-67aed2bd0c54` (formularz aka.ms/mce-reviewappid, do 2026-10-14 bez odpowiedzi).
