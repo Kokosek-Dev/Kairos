@@ -113,8 +113,12 @@ pub fn add(paths: &DataPaths, name: &str, address: &str, edition: Edition) -> Ap
     if servers.len() >= MAX_SERVERS {
         return Err(AppError::InvalidInput("too many servers".into()));
     }
+    let mut stamp = chrono::Utc::now().timestamp_millis();
+    while servers.iter().any(|server| server.id == format!("{stamp:x}")) {
+        stamp += 1;
+    }
     let entry = ServerEntry {
-        id: format!("{:x}", chrono::Utc::now().timestamp_millis()),
+        id: format!("{stamp:x}"),
         name: name.to_owned(),
         address: if port == edition.default_port() { host } else { format!("{host}:{port}") },
         edition,
@@ -375,6 +379,8 @@ mod tests {
         add(&paths, "Creative", "mc.example.com:25570", Edition::Java).unwrap();
         assert_eq!(load(&paths).unwrap().iter().map(|server| server.address.as_str()).collect::<Vec<_>>(), ["mc.example.com", "mc.example.com:25570"]);
         assert_eq!(first.name, "Survival");
+        let ids: std::collections::HashSet<_> = load(&paths).unwrap().into_iter().map(|server| server.id).collect();
+        assert_eq!(ids.len(), 2, "two servers added at once must not share an id");
 
         remove(&paths, &first.id).unwrap();
         assert_eq!(load(&paths).unwrap().len(), 1);
