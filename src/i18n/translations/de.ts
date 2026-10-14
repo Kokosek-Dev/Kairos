@@ -42,8 +42,8 @@ export const de: Translations = {
     edition: "Edition",
     java: "Java",
     bedrock: "Bedrock",
-    openBedrock: "Bedrock öffnen",
-    bedrockHint: "Bedrock wird von Microsofts eigener App gestartet. Öffne sie und füge diese Adresse unter Server hinzu.",
+    joinBedrock: "In Bedrock beitreten",
+    bedrockHint: "Startet Bedrock Edition und tritt diesem Server bei. Das Spiel selbst startet Microsofts App.",
     bedrockMissing: "Bedrock Edition ist auf diesem Computer nicht installiert.",
   },
   news: {

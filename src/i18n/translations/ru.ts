@@ -42,8 +42,8 @@ export const ru: Translations = {
     edition: "Издание",
     java: "Java",
     bedrock: "Bedrock",
-    openBedrock: "Открыть Bedrock",
-    bedrockHint: "Bedrock запускается приложением Microsoft. Открой его и добавь этот адрес в разделе «Серверы».",
+    joinBedrock: "Войти в Bedrock",
+    bedrockHint: "Запускает Bedrock Edition и заходит на этот сервер. Саму игру запускает приложение Microsoft.",
     bedrockMissing: "Bedrock Edition не установлена на этом компьютере.",
   },
   news: {

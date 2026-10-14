@@ -272,10 +272,17 @@ async fn ping_inner(host: &str, port: u16) -> AppResult<ServerStatus> {
     status_from(&json, latency_ms)
 }
 
+/// The link that makes Bedrock Edition start and join a server (checked against a public server; Mojang does not document it).
+pub fn bedrock_join_link(address: &str) -> AppResult<String> {
+    let (host, port) = parse_address(address, Edition::Bedrock)?;
+    Ok(format!("minecraft://connect/?serverUrl={host}&serverPort={port}"))
+}
+
 /// Bedrock Edition installs from the Microsoft Store into a per-user package folder.
 pub fn bedrock_installed() -> bool {
     std::env::var_os("LOCALAPPDATA").is_some_and(|local| std::path::Path::new(&local).join("Packages").join("Microsoft.MinecraftUWP_8wekyb3d8bbwe").is_dir())
 }
+
 /// The request a Bedrock game sends to fill its server list (a RakNet unconnected ping).
 fn bedrock_query(sent_at_ms: u64) -> Vec<u8> {
     let mut query = vec![UNCONNECTED_PING];
@@ -499,6 +506,13 @@ mod tests {
         assert_eq!((status.motd.as_str(), status.version.as_str()), ("My world", "1.26.50"));
         assert_eq!((status.players_online, status.players_max), (3, 10));
         assert!(status.latency_ms.is_some());
+    }
+
+    #[test]
+    fn builds_the_link_that_joins_a_bedrock_server() {
+        assert_eq!(bedrock_join_link("geo.hivebedrock.network").unwrap(), "minecraft://connect/?serverUrl=geo.hivebedrock.network&serverPort=19132");
+        assert_eq!(bedrock_join_link("Play.Example.net:19140").unwrap(), "minecraft://connect/?serverUrl=play.example.net&serverPort=19140");
+        assert!(bedrock_join_link("bad host&x=1").is_err());
     }
 
     #[test]

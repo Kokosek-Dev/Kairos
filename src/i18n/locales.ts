@@ -56,8 +56,8 @@ export const en: Translations = {
     edition: "Edition",
     java: "Java",
     bedrock: "Bedrock",
-    openBedrock: "Open Bedrock",
-    bedrockHint: "Bedrock is started by Microsoft's own app. Open it, then add this address under Servers.",
+    joinBedrock: "Join in Bedrock",
+    bedrockHint: "Starts Bedrock Edition and joins this server. The game itself is run by Microsoft's app.",
     bedrockMissing: "Bedrock Edition is not installed on this computer.",
   },
   news: {
@@ -738,8 +738,8 @@ export const pl: Translations = {
     edition: "Edycja",
     java: "Java",
     bedrock: "Bedrock",
-    openBedrock: "Otwórz Bedrock",
-    bedrockHint: "Bedrocka uruchamia aplikacja od Microsoftu. Otwórz go i dodaj ten adres w zakładce Serwery.",
+    joinBedrock: "Dołącz w Bedrocku",
+    bedrockHint: "Uruchamia Bedrock Edition i wchodzi na ten serwer. Samą grę uruchamia aplikacja Microsoftu.",
     bedrockMissing: "Bedrock Edition nie jest zainstalowany na tym komputerze.",
   },
   news: {

@@ -23,4 +23,4 @@ export const addServer = (name: string, address: string, edition: Edition) => in
 export const removeServer = (id: string) => invoke<void>("remove_server", { id });
 export const pingServer = (address: string, edition: Edition) => invoke<ServerStatus>("ping_server", { address, edition });
 export const bedrockInstalled = () => invoke<boolean>("bedrock_installed");
-export const openBedrock = () => invoke<void>("open_bedrock");
+export const joinBedrock = (address: string) => invoke<void>("join_bedrock", { address });

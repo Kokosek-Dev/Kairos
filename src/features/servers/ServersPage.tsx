@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/segmented";
 import { errorMessage } from "@/lib/tauri/errors";
-import { addServer, bedrockInstalled, listServers, openBedrock, pingServer, removeServer, type Edition, type ServerEntry } from "@/lib/tauri/servers";
+import { addServer, bedrockInstalled, joinBedrock, listServers, pingServer, removeServer, type Edition, type ServerEntry } from "@/lib/tauri/servers";
 import { cn } from "@/lib/utils";
 
 const SERVERS_KEY = ["servers"];
@@ -38,7 +38,7 @@ function ServerCard({ server, index }: { server: ServerEntry; index: number }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: SERVERS_KEY }),
   });
   const installed = useQuery({ queryKey: ["bedrock-installed"], queryFn: bedrockInstalled, staleTime: Infinity, enabled: server.edition === "bedrock" });
-  const open = useMutation({ mutationFn: openBedrock, onError: (error) => toast.error(errorMessage(t, error)) });
+  const open = useMutation({ mutationFn: () => joinBedrock(server.address), onError: (error) => toast.error(errorMessage(t, error)) });
   const data = status.data;
   const offline = status.isError;
   const bedrock = server.edition === "bedrock";
@@ -86,7 +86,7 @@ function ServerCard({ server, index }: { server: ServerEntry; index: number }) {
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <Button size="sm" variant="secondary" disabled={installed.data !== true || open.isPending} onClick={() => open.mutate()}>
               <ExternalLink size={14} />
-              {t("servers.openBedrock")}
+              {t("servers.joinBedrock")}
             </Button>
             <p className="basis-full text-xs text-muted">{installed.data === false ? t("servers.bedrockMissing") : t("servers.bedrockHint")}</p>
           </div>

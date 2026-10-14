@@ -33,9 +33,10 @@ pub fn bedrock_installed() -> bool {
     servers::bedrock_installed()
 }
 
-/// Starts Bedrock Edition. It opens its own launcher, because the Microsoft Store runs that game.
+/// Starts Bedrock Edition and joins the server. The Microsoft Store game runs itself, so this hands it a link.
 #[tauri::command]
-pub fn open_bedrock(app: tauri::AppHandle) -> AppResult<()> {
+pub fn join_bedrock(app: tauri::AppHandle, address: String) -> AppResult<()> {
     use tauri_plugin_opener::OpenerExt;
-    app.opener().open_url("minecraft:", None::<&str>).map_err(|error| crate::error::AppError::Internal(error.to_string()))
+    let link = servers::bedrock_join_link(&address)?;
+    app.opener().open_url(link, None::<&str>).map_err(|error| crate::error::AppError::Internal(error.to_string()))
 }
