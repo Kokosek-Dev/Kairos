@@ -2,7 +2,8 @@
 
 W launcherze jest panel **Wyślij opinię**: w Ustawieniach (Pomoc), w oknie po crashu, w Ctrl+K i pod ikoną w lewym dolnym rogu.
 Gracz wybiera Problem, Pomysł albo Inne, pisze wiadomość, opcjonalnie zostawia kontakt i może dołączyć szczegóły
-techniczne (system, instancje, lista modów). Szczegóły może wcześniej przeczytać, nazwa użytkownika i dane logowania są z nich usuwane.
+techniczne: system, pamięć oraz jedną instancję, której sprawa dotyczy, z listą jej modów (bez innych instancji i bez ścieżki folderu danych).
+Szczegóły są domyślnie włączone tylko dla zgłoszeń typu Problem, można je przeczytać przed wysłaniem i wyłączyć. Nazwa użytkownika i dane logowania są z nich usuwane.
 
 ## Jak wiadomości do Ciebie docierają
 

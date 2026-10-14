@@ -28,9 +28,12 @@ export function FeedbackDialog() {
   const [kind, setKind] = useState<FeedbackKind>("bug");
   const [message, setMessage] = useState("");
   const [contact, setContact] = useState("");
-  const [withDetails, setWithDetails] = useState(true);
+  const [detailsChoice, setDetailsChoice] = useState<boolean | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  /** Technical details help with a problem, so they start on there and off for ideas and other messages. */
+  const withDetails = detailsChoice ?? kind === "bug";
 
   const available = useQuery({ queryKey: ["feedback-available"], queryFn: feedbackAvailable, staleTime: Infinity });
   const details = useQuery({
@@ -131,7 +134,7 @@ export function FeedbackDialog() {
                       {showDetails ? t("feedback.hideDetails") : t("feedback.showDetails")}
                     </button>
                   </div>
-                  <Switch checked={withDetails} onChange={setWithDetails} label={t("feedback.includeDetails")} />
+                  <Switch checked={withDetails} onChange={setDetailsChoice} label={t("feedback.includeDetails")} />
                 </div>
                 {withDetails && showDetails && (
                   <pre className="mt-3 max-h-28 overflow-auto whitespace-pre-wrap break-words rounded-md border bg-background/60 p-2 font-mono text-[11px] text-muted select-text">

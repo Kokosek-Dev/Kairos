@@ -127,10 +127,36 @@ fn hide(text: &str) -> String {
     redact(text, home.as_deref())
 }
 
-/// A short text about the system, the instances and the mods of one instance, with private values removed.
+/// The least that helps with a message: the system and the one instance it is about with its mods.
+/// Other instances and the data folder are left out, since they say nothing about the problem.
+fn brief(paths: &DataPaths, selected: Option<&Instance>, version: &str, total_mb: u64) -> String {
+    let mut text = format!(
+        "Kairos {version}\nSystem: {} {} ({}), {total_mb} MB memory\n",
+        std::env::consts::OS,
+        std::env::consts::ARCH,
+        sysinfo::System::long_os_version().unwrap_or_default()
+    );
+    if let Some(instance) = selected {
+        let loader = instance.loader_version.as_deref().map(|loader| format!(" {loader}")).unwrap_or_default();
+        text.push_str(&format!(
+            "\nInstance: {} | Minecraft {} | {:?}{loader} | {} MB\nJVM arguments: {}\nMods:\n",
+            instance.name,
+            instance.game_version,
+            instance.loader,
+            instance.memory_mb,
+            instance.jvm_args.join(" ")
+        ));
+        for name in mod_names(&paths.instance_game_dir(&instance.id)) {
+            text.push_str(&format!("- {name}\n"));
+        }
+    }
+    text
+}
+
+/// A short text sent along with a message: the system and the instance concerned, with private values removed.
 pub fn overview(paths: &DataPaths, instance_id: Option<&str>, version: &str, total_mb: u64) -> AppResult<String> {
     let instances = store::list(paths)?;
-    Ok(hide(&summary(paths, &instances, chosen(&instances, instance_id), version, total_mb)))
+    Ok(hide(&brief(paths, chosen(&instances, instance_id), version, total_mb)))
 }
 
 /// Writes a zip with what is needed to help with a problem: system and instance overview, mod names, the latest log and crash reports.
@@ -171,6 +197,33 @@ mod tests {
         assert!(hidden.contains("--accessToken ***") && hidden.contains("--xuid=***") && hidden.contains("--version 1.21"));
         assert_eq!(redact("nothing secret", None), "nothing secret");
         assert_eq!(redact("--accessToken", None), "--accessToken");
+    }
+
+    #[test]
+    fn the_short_overview_names_only_the_instance_it_is_about() {
+        let paths = DataPaths::new(std::env::temp_dir().join(format!("kairos-diag-brief-{}", std::process::id())));
+        let _ = fs::remove_dir_all(paths.root());
+        let make = |name: &str| {
+            let new = NewInstance {
+                name: name.into(),
+                game_version: "1.21".into(),
+                icon: IconInput::Preset { key: "cube".into() },
+                loader: LoaderKind::Vanilla,
+                loader_version: None,
+            };
+            store::create(&paths, new).unwrap()
+        };
+        let wanted = make("Asked about");
+        make("Private secret world");
+        fs::create_dir_all(paths.instance_game_dir(&wanted.id).join("mods")).unwrap();
+        fs::write(paths.instance_game_dir(&wanted.id).join("mods/example.jar"), b"x").unwrap();
+
+        let text = overview(&paths, Some(&wanted.id), "9.9.9", 16384).unwrap();
+
+        assert!(text.contains("Kairos 9.9.9") && text.contains("Asked about") && text.contains("example.jar"));
+        assert!(!text.contains("Private secret world"), "{text}");
+        assert!(!text.contains(&paths.root().display().to_string()), "{text}");
+        let _ = fs::remove_dir_all(paths.root());
     }
 
     #[test]
