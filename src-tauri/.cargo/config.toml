@@ -14,6 +14,6 @@ KAIROS_DISCORD_APP_ID = { value = "", force = false }
 # Leave it empty to show only the news that ships with the launcher.
 KAIROS_NEWS_URL = { value = "", force = false }
 
-# KAIROS_FEEDBACK_KEY is the public access key of the form service that delivers feedback to the developer (see docs/FEEDBACK.md).
+# KAIROS_FEEDBACK_URL is the address of the Formspree form that delivers feedback to the developer (see docs/FEEDBACK.md).
 # Leave it empty and the feedback panel offers copying the report instead.
-KAIROS_FEEDBACK_KEY = { value = "", force = false }
+KAIROS_FEEDBACK_URL = { value = "", force = false }
