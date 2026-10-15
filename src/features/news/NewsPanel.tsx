@@ -13,9 +13,17 @@ const OPEN_WIDTH = 288;
 const CLOSED_WIDTH = 44;
 const REFRESH_MS = 30 * 60 * 1000;
 
-/** News that ship with the launcher, shown until (or instead of) a published list. */
-/** What the latest updates brought, newest first. Every release adds its entry here and drops the oldest when the list passes six. */
-const BUNDLED = ["studio", "bedrock", "feedback", "journal", "detective", "boost"] as const;
+const MAX_BUNDLED = 6;
+
+/** What the updates brought, with the day each shipped. Every release adds its entry here; only the six newest are shown. */
+const BUNDLED = [
+  { key: "boost", date: "2026-10-11" },
+  { key: "detective", date: "2026-10-11" },
+  { key: "journal", date: "2026-10-12" },
+  { key: "feedback", date: "2026-10-14" },
+  { key: "bedrock", date: "2026-10-14" },
+  { key: "studio", date: "2026-10-15" },
+] as const;
 
 function pick(text: LocalizedText, language: string): string {
   if (typeof text === "string") return text;
@@ -29,7 +37,7 @@ function NewsCard({ item, language }: { item: NewsItem; language: string }) {
     <article className={cn("rounded-xl border bg-surface/70 p-3", sponsored && "border-dashed")}>
       <div className="mb-1 flex items-center justify-between gap-2 text-[11px] text-muted">
         <span className={cn("uppercase tracking-wider", sponsored && "font-semibold text-accent")}>{sponsored ? t("news.sponsored") : t("news.label")}</span>
-        {item.date && <time dateTime={item.date}>{new Date(item.date).toLocaleDateString(language, { day: "numeric", month: "short" })}</time>}
+        {item.date && <time dateTime={item.date}>{new Date(item.date).toLocaleDateString(language, { day: "numeric", month: "short", year: "numeric" })}</time>}
       </div>
       <h3 className="font-semibold leading-snug">{pick(item.title, language)}</h3>
       <p className="mt-1 text-sm text-muted">{pick(item.body, language)}</p>
@@ -60,7 +68,11 @@ export function NewsPanel() {
 
   const items: NewsItem[] = published.data?.length
     ? published.data
-    : BUNDLED.map((key) => ({ id: key, kind: "news", date: null, title: t(`news.bundled.${key}.title`), body: t(`news.bundled.${key}.body`), url: null }));
+    : [...BUNDLED]
+        .reverse()
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, MAX_BUNDLED)
+        .map(({ key, date }) => ({ id: key, kind: "news", date, title: t(`news.bundled.${key}.title`), body: t(`news.bundled.${key}.body`), url: null }));
 
   return (
     <motion.aside

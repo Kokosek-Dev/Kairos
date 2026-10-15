@@ -129,6 +129,7 @@ pub fn run() {
             commands::remove_server,
             commands::ping_server,
             commands::bedrock_installed,
+            commands::open_bedrock,
             commands::join_bedrock,
             commands::fetch_news,
             commands::list_moments,

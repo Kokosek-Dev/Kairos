@@ -43,6 +43,7 @@ export const es: Translations = {
     java: "Java",
     bedrock: "Bedrock",
     joinBedrock: "Unirse en Bedrock",
+    openBedrock: "Abrir Bedrock Edition",
     bedrockHint: "Inicia Bedrock Edition y entra en este servidor. El juego lo ejecuta la aplicación de Microsoft.",
     bedrockMissing: "Bedrock Edition no está instalado en este equipo.",
   },

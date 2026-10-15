@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/segmented";
 import { errorMessage } from "@/lib/tauri/errors";
-import { addServer, bedrockInstalled, joinBedrock, listServers, pingServer, removeServer, type Edition, type ServerEntry } from "@/lib/tauri/servers";
+import { addServer, bedrockInstalled, joinBedrock, listServers, openBedrock, pingServer, removeServer, type Edition, type ServerEntry } from "@/lib/tauri/servers";
 import { cn } from "@/lib/utils";
 
 const SERVERS_KEY = ["servers"];
@@ -119,6 +119,7 @@ export function ServersPage() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const servers = useQuery({ queryKey: SERVERS_KEY, queryFn: listServers });
+  const installed = useQuery({ queryKey: ["bedrock-installed"], queryFn: bedrockInstalled, staleTime: Infinity })
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [edition, setEdition] = useState<Edition>("java");
@@ -135,7 +136,15 @@ export function ServersPage() {
 
   return (
     <div className="space-y-6 pb-6">
-      <PageHeader title={t("nav.servers")} subtitle={t("servers.subtitle")} />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <PageHeader title={t("nav.servers")} subtitle={t("servers.subtitle")} />
+        {installed.data && (
+          <Button variant="secondary" onClick={() => void openBedrock()}>
+            <ExternalLink size={15} />
+            {t("servers.openBedrock")}
+          </Button>
+        )}
+      </div>
 
       <form
         className="panel flex flex-wrap items-end gap-3 p-4"
