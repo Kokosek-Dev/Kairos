@@ -11,6 +11,10 @@ use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use zip::write::SimpleFileOptions;
 
+mod models;
+
+pub use models::BlockModel;
+
 const TEXTURES_ROOT: &str = "assets/minecraft/textures";
 const PNG_SIGNATURE: [u8; 8] = [0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
 const MAX_TEXTURE_BYTES: usize = 4 * 1024 * 1024;
@@ -236,6 +240,14 @@ pub fn read_texture(paths: &DataPaths, id: &str, path: &str) -> AppResult<Vec<u8
     let mut bytes = Vec::new();
     entry.read_to_end(&mut bytes)?;
     Ok(bytes)
+}
+
+/// The shape a block texture is drawn on in the game, read from the models inside the game jar.
+pub fn texture_model(paths: &DataPaths, id: &str, path: &str) -> AppResult<Option<BlockModel>> {
+    checked_texture_path(path)?;
+    let pack = info(paths, id)?;
+    let mut jar = open_jar(paths, &pack.game_version)?;
+    Ok(models::block_model(&mut jar, path.trim_end_matches(".png")))
 }
 
 fn validate_png(bytes: &[u8]) -> AppResult<()> {

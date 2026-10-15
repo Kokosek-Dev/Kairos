@@ -15,6 +15,25 @@ export interface TextureList {
   edited: string[];
 }
 
+export interface ModelFace {
+  direction: string;
+  texture: string;
+  uv: [number, number, number, number] | null;
+  rotation: number;
+  tinted: boolean;
+}
+
+export interface ModelElement {
+  from: [number, number, number];
+  to: [number, number, number];
+  rotation: { origin: [number, number, number]; axis: string; angle: number } | null;
+  faces: ModelFace[];
+}
+
+export interface BlockModel {
+  elements: ModelElement[];
+}
+
 export const getTexturePacksEverywhere = () => invoke<boolean>("get_texture_packs_everywhere");
 export const setTexturePacksEverywhere = (enabled: boolean) => invoke<void>("set_texture_packs_everywhere", { enabled });
 export const listTextureVersions = () => invoke<string[]>("list_texture_versions");
@@ -30,3 +49,4 @@ export const resetPackTexture = (packId: string, path: string) => invoke<void>("
 export const exportTexturePack = (packId: string) => invoke<string | null>("export_texture_pack", { packId });
 export const setTexturePackInstances = (packId: string, instanceIds: string[]) =>
   invoke<TexturePack>("use_texture_pack_in_instances", { packId, instanceIds });
+export const getTextureModel = (packId: string, path: string) => invoke<BlockModel | null>("get_texture_model", { packId, path });

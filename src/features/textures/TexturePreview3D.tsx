@@ -1,78 +1,97 @@
 import { useEffect, useRef } from "react";
-import {
-  AmbientLight,
-  BoxGeometry,
-  CanvasTexture,
-  DirectionalLight,
-  DoubleSide,
-  Mesh,
-  MeshBasicMaterial,
-  MeshLambertMaterial,
-  NearestFilter,
-  PerspectiveCamera,
-  PlaneGeometry,
-  Scene,
-  SRGBColorSpace,
-  WebGLRenderer,
-} from "three";
+import { AmbientLight, Box3, DirectionalLight, PerspectiveCamera, Scene, Vector3, WebGLRenderer, type CanvasTexture } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import type { PixelDocument } from "@/features/pixel/PixelDocument";
+import { loadImage } from "@/features/skins/editor/layout";
+import { readPackTexture, type BlockModel } from "@/lib/tauri/texturepacks";
+import { buildItem, buildModel, canvasTexture, cubeOf, showFirstFrame, squareOf, type Disposables } from "./modelMeshes";
 
-const ALPHA_CUTOFF = 0.1;
+const VIEW_DIRECTION = new Vector3(0.75, 0.55, 1).normalize();
+const FIT = 3.5;
 
 interface TexturePreview3DProps {
+  packId: string;
+  path: string;
   doc: PixelDocument;
-  /** A block is shown as a cube; anything else as a flat sprite. */
-  block: boolean;
+  /** The shape the game draws a block texture on; `undefined` while it is still being looked up. */
+  model: BlockModel | null | undefined;
 }
 
-/** The texture being drawn, on a cube or a sprite that turns and follows every stroke. */
-export function TexturePreview3D({ doc, block }: TexturePreview3DProps) {
+/** The texture being drawn, on the shape the game uses for it, turning and following every stroke. */
+export function TexturePreview3D({ packId, path, doc, model }: TexturePreview3DProps) {
   const host = useRef<HTMLDivElement>(null);
+  const isBlock = path.startsWith("block/");
+  const waiting = isBlock && model === undefined;
 
   useEffect(() => {
     const container = host.current;
-    if (!container) return;
+    if (!container || waiting) return;
+    let disposed = false;
 
     const renderer = new WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
 
-    const texture = new CanvasTexture(doc.canvas);
-    texture.magFilter = NearestFilter;
-    texture.minFilter = NearestFilter;
-    texture.colorSpace = SRGBColorSpace;
-    const frames = doc.height > doc.width && doc.height % doc.width === 0 ? doc.height / doc.width : 1;
-    if (frames > 1) {
-      texture.repeat.set(1, 1 / frames);
-      texture.offset.set(0, 1 - 1 / frames);
-    }
+    const textures: CanvasTexture[] = [];
+    const own: CanvasTexture[] = [];
+    const textureFor = (name: string): CanvasTexture => {
+      if (`${name}.png` === path) {
+        const texture = canvasTexture(doc.canvas);
+        own.push(texture);
+        textures.push(texture);
+        return texture;
+      }
+      const picture = document.createElement("canvas");
+      picture.width = 16;
+      picture.height = 16;
+      const texture = canvasTexture(picture);
+      textures.push(texture);
+      readPackTexture(packId, `${name}.png`)
+        .then(loadImage)
+        .then((image) => {
+          if (disposed) return;
+          picture.width = image.naturalWidth;
+          picture.height = image.naturalHeight;
+          picture.getContext("2d")?.drawImage(image, 0, 0);
+          showFirstFrame(texture, picture.width, picture.height);
+          texture.needsUpdate = true;
+        })
+        .catch(() => undefined);
+      return texture;
+    };
+
+    const stem = path.replace(/\.png$/, "");
+    const item = path.startsWith("item/") ? buildItem(doc.canvas) : null;
+    const built = item ?? buildModel(isBlock ? (model ?? cubeOf(stem)) : squareOf(stem), textureFor);
+    const disposables: Disposables = built.disposables;
 
     const scene = new Scene();
-    const geometry = block ? new BoxGeometry(1, 1, 1) : new PlaneGeometry(1, 1);
-    const material = block
-      ? new MeshLambertMaterial({ map: texture, transparent: true, alphaTest: ALPHA_CUTOFF })
-      : new MeshBasicMaterial({ map: texture, transparent: true, alphaTest: ALPHA_CUTOFF, side: DoubleSide });
-    scene.add(new Mesh(geometry, material));
+    scene.add(built.group);
     scene.add(new AmbientLight(0xffffff, 1.5));
     const sun = new DirectionalLight(0xffffff, 1.4);
     sun.position.set(2, 3, 2);
     scene.add(sun);
 
-    const camera = new PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 20);
-    camera.position.set(1.7, 1.3, 2.1);
-    camera.lookAt(0, 0, 0);
+    const bounds = new Box3().setFromObject(built.group);
+    const center = bounds.getCenter(new Vector3());
+    const reach = Math.max(...bounds.getSize(new Vector3()).toArray(), 0.5) * FIT;
+    const camera = new PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.05, 50);
+    camera.position.copy(center).addScaledVector(VIEW_DIRECTION, reach);
+    camera.lookAt(center);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = false;
+    controls.target.copy(center);
     controls.enablePan = false;
     controls.autoRotate = true;
     controls.autoRotateSpeed = 3;
     controls.enableDamping = true;
 
     const refresh = () => {
-      texture.needsUpdate = true;
+      own.forEach((texture) => {
+        texture.needsUpdate = true;
+      });
+      if (item) item.update();
     };
     const unsubscribe = doc.onPixels(refresh);
     renderer.setAnimationLoop(() => {
@@ -87,17 +106,17 @@ export function TexturePreview3D({ doc, block }: TexturePreview3DProps) {
     observer.observe(container);
 
     return () => {
+      disposed = true;
       observer.disconnect();
       unsubscribe();
       renderer.setAnimationLoop(null);
       controls.dispose();
-      geometry.dispose();
-      material.dispose();
-      texture.dispose();
+      disposables.dispose();
+      textures.forEach((texture) => texture.dispose());
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [doc, block]);
+  }, [doc, packId, path, model, isBlock, waiting]);
 
   return <div ref={host} className="absolute inset-0 cursor-grab active:cursor-grabbing [&>canvas]:size-full" />;
 }

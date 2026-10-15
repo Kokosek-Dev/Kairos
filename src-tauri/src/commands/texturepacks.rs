@@ -1,7 +1,7 @@
 use super::blocking;
 use crate::error::{AppError, AppResult};
 use crate::state::AppState;
-use crate::texturepacks::{self, PackInfo, TextureList};
+use crate::texturepacks::{self, BlockModel, PackInfo, TextureList};
 use base64::Engine;
 use std::path::PathBuf;
 use tauri::{AppHandle, State};
@@ -42,6 +42,12 @@ pub async fn read_pack_texture(state: State<'_, AppState>, pack_id: String, path
     let paths = state.paths.clone();
     let png = blocking(move || texturepacks::read_texture(&paths, &pack_id, &path)).await?;
     Ok(format!("data:image/png;base64,{}", base64::engine::general_purpose::STANDARD.encode(png)))
+}
+
+#[tauri::command]
+pub async fn get_texture_model(state: State<'_, AppState>, pack_id: String, path: String) -> AppResult<Option<BlockModel>> {
+    let paths = state.paths.clone();
+    blocking(move || texturepacks::texture_model(&paths, &pack_id, &path)).await
 }
 
 #[tauri::command]

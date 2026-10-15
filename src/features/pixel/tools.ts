@@ -1,12 +1,21 @@
 import type { PixelDocument, Rect } from "./PixelDocument";
 
-export type Tool = "pencil" | "eraser" | "fill" | "picker";
+export type Tool = "pencil" | "eraser" | "fill" | "picker" | "line" | "rect" | "ellipse";
+export type Mirror = "none" | "x" | "y" | "both";
 
 export interface BrushSettings {
   tool: Tool;
   color: string;
   size: number;
+  /** Everything drawn is repeated across the middle of the picture. */
+  mirror: Mirror;
+  /** Rectangles and ellipses are filled instead of just an outline. */
+  filled: boolean;
 }
+
+export const SHAPE_TOOLS: Tool[] = ["line", "rect", "ellipse"];
+
+type Point = [number, number];
 
 function toHex(r: number, g: number, b: number): string {
   return `#${[r, g, b].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
@@ -15,6 +24,22 @@ function toHex(r: number, g: number, b: number): string {
 function parseHex(color: string): [number, number, number] {
   const value = Number.parseInt(color.slice(1), 16);
   return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+}
+
+/** The point itself and where the mirror puts it. */
+function withMirror(doc: PixelDocument, mirror: Mirror, x: number, y: number): Point[] {
+  const across = doc.width - 1 - x;
+  const down = doc.height - 1 - y;
+  switch (mirror) {
+    case "x":
+      return [[x, y], [across, y]];
+    case "y":
+      return [[x, y], [x, down]];
+    case "both":
+      return [[x, y], [across, y], [x, down], [across, down]];
+    default:
+      return [[x, y]];
+  }
 }
 
 function stamp(doc: PixelDocument, x: number, y: number, size: number, color: string | null) {
@@ -65,20 +90,20 @@ function pick(doc: PixelDocument, x: number, y: number): string | null {
 /** Applies the active tool to one pixel. Returns the picked color for the picker tool. */
 export function applyTool(doc: PixelDocument, brush: BrushSettings, x: number, y: number): string | null {
   if (x < 0 || y < 0 || x >= doc.width || y >= doc.height) return null;
-  switch (brush.tool) {
-    case "picker":
-      return pick(doc, x, y);
-    case "fill": {
-      const region = doc.regionAt(x, y);
-      if (region) floodFill(doc, region, x, y, brush.color);
-      break;
+  if (brush.tool === "picker") return pick(doc, x, y);
+  for (const [column, row] of withMirror(doc, brush.mirror, x, y)) {
+    switch (brush.tool) {
+      case "fill": {
+        const region = doc.regionAt(column, row);
+        if (region) floodFill(doc, region, column, row, brush.color);
+        break;
+      }
+      case "eraser":
+        stamp(doc, column, row, brush.size, null);
+        break;
+      default:
+        stamp(doc, column, row, brush.size, brush.color);
     }
-    case "eraser":
-      stamp(doc, x, y, brush.size, null);
-      break;
-    case "pencil":
-      stamp(doc, x, y, brush.size, brush.color);
-      break;
   }
   doc.changed();
   return null;
@@ -90,4 +115,40 @@ export function forEachOnLine(x0: number, y0: number, x1: number, y1: number, vi
   for (let step = 0; step <= steps; step++) {
     visit(Math.round(x0 + ((x1 - x0) * step) / steps), Math.round(y0 + ((y1 - y0) * step) / steps));
   }
+}
+
+function forEachInRect(x0: number, y0: number, x1: number, y1: number, filled: boolean, visit: (x: number, y: number) => void) {
+  const [left, right] = [Math.min(x0, x1), Math.max(x0, x1)];
+  const [top, bottom] = [Math.min(y0, y1), Math.max(y0, y1)];
+  for (let y = top; y <= bottom; y++) {
+    for (let x = left; x <= right; x++) {
+      if (filled || x === left || x === right || y === top || y === bottom) visit(x, y);
+    }
+  }
+}
+
+/** The ellipse inside the box between two corners: a pixel belongs to it when it lies within half a pixel of the curve. */
+function forEachInEllipse(x0: number, y0: number, x1: number, y1: number, filled: boolean, visit: (x: number, y: number) => void) {
+  const [left, right] = [Math.min(x0, x1), Math.max(x0, x1)];
+  const [top, bottom] = [Math.min(y0, y1), Math.max(y0, y1)];
+  const radiusX = (right - left + 1) / 2;
+  const radiusY = (bottom - top + 1) / 2;
+  const inside = (x: number, y: number) => ((x + 0.5 - left - radiusX) / radiusX) ** 2 + ((y + 0.5 - top - radiusY) / radiusY) ** 2 <= 1;
+  for (let y = top; y <= bottom; y++) {
+    for (let x = left; x <= right; x++) {
+      if (!inside(x, y)) continue;
+      if (filled || !inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1)) visit(x, y);
+    }
+  }
+}
+
+/** Draws the shape the active tool makes between where the drag started and where it is now. */
+export function drawShape(doc: PixelDocument, brush: BrushSettings, from: Point, to: Point) {
+  const paint = (x: number, y: number) => {
+    for (const [column, row] of withMirror(doc, brush.mirror, x, y)) stamp(doc, column, row, brush.size, brush.color);
+  };
+  if (brush.tool === "line") forEachOnLine(from[0], from[1], to[0], to[1], paint);
+  else if (brush.tool === "rect") forEachInRect(from[0], from[1], to[0], to[1], brush.filled, paint);
+  else if (brush.tool === "ellipse") forEachInEllipse(from[0], from[1], to[0], to[1], brush.filled, paint);
+  doc.changed();
 }

@@ -1,13 +1,14 @@
-import { Eraser, Pencil, PaintBucket, Pipette, Redo2, Undo2, type LucideIcon } from "lucide-react";
+import { Circle, Eraser, Minus, Pencil, PaintBucket, Pipette, Redo2, Square, Undo2, type LucideIcon } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/segmented";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import type { PixelDocument } from "./PixelDocument";
-import type { Tool } from "./tools";
-import { TOOL_KEYS, type Brush } from "./useBrush";
+import type { Mirror, Tool } from "./tools";
+import { MAX_BRUSH, TOOL_KEYS, type Brush } from "./useBrush";
 
 const PALETTE = [
   "#000000", "#4b4b4b", "#9a9a9a", "#ffffff",
@@ -21,6 +22,12 @@ const TOOLS: { tool: Tool; icon: LucideIcon }[] = [
   { tool: "fill", icon: PaintBucket },
   { tool: "picker", icon: Pipette },
 ];
+const SHAPES: { tool: Tool; icon: LucideIcon }[] = [
+  { tool: "line", icon: Minus },
+  { tool: "rect", icon: Square },
+  { tool: "ellipse", icon: Circle },
+];
+const MIRRORS: Mirror[] = ["none", "x", "y", "both"];
 const SHORTCUT = Object.fromEntries(Object.entries(TOOL_KEYS).map(([key, tool]) => [tool, key.toUpperCase()]));
 
 function Swatches({ colors, active, onChoose }: { colors: string[]; active?: string; onChoose: (color: string) => void }) {
@@ -40,16 +47,16 @@ function Swatches({ colors, active, onChoose }: { colors: string[]; active?: str
   );
 }
 
-/** Tools, undo and redo, brush size and color: everything shared by the pixel editors. */
-export function BrushPanel({ doc, brush: state }: { doc: PixelDocument; brush: Brush }) {
+/** Tools, undo and redo, brush size and color: everything shared by the pixel editors. `advanced` adds shapes, mirroring and bigger brushes. */
+export function BrushPanel({ doc, brush: state, advanced = false }: { doc: PixelDocument; brush: Brush; advanced?: boolean }) {
   const { t } = useTranslation();
   useSyncExternalStore(doc.onHistory, () => doc.revision);
-  const { brush, setTool, setSize, chooseColor, recent } = state;
+  const { brush, setTool, setSize, setMirror, setFilled, chooseColor, recent } = state;
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-4 gap-2">
-        {TOOLS.map(({ tool, icon: Icon }) => (
+      <div className={cn("grid gap-2", advanced ? "grid-cols-7" : "grid-cols-4")}>
+        {(advanced ? [...TOOLS, ...SHAPES] : TOOLS).map(({ tool, icon: Icon }) => (
           <button
             key={tool}
             type="button"
@@ -65,6 +72,7 @@ export function BrushPanel({ doc, brush: state }: { doc: PixelDocument; brush: B
           </button>
         ))}
       </div>
+      <p className="-mt-3 text-xs text-muted">{t(`editor.toolHints.${brush.tool}`)}</p>
 
       <div className="grid grid-cols-2 gap-2">
         <Button variant="secondary" size="sm" disabled={!doc.canUndo} onClick={() => doc.undo()}>
@@ -78,8 +86,35 @@ export function BrushPanel({ doc, brush: state }: { doc: PixelDocument; brush: B
       </div>
 
       <Field label={t("editor.size")}>
-        <Segmented value={brush.size} onChange={setSize} options={[1, 2, 3].map((value) => ({ value, label: `${value} px` }))} />
+        {advanced ? (
+          <label className="flex items-center gap-3">
+            <input
+              type="range"
+              min={1}
+              max={MAX_BRUSH}
+              value={brush.size}
+              aria-label={t("editor.size")}
+              onChange={(event) => setSize(Number(event.target.value))}
+              className="h-2 flex-1 cursor-pointer accent-accent"
+            />
+            <span className="w-12 text-right font-mono text-sm text-muted">{brush.size} px</span>
+          </label>
+        ) : (
+          <Segmented value={brush.size} onChange={setSize} options={[1, 2, 3].map((value) => ({ value, label: `${value} px` }))} />
+        )}
       </Field>
+
+      {advanced && (
+        <>
+          <Field label={t("editor.mirror")} hint={t("editor.mirrorHint")}>
+            <Segmented value={brush.mirror} onChange={setMirror} options={MIRRORS.map((value) => ({ value, label: t(`editor.mirrors.${value}`) }))} />
+          </Field>
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span>{t("editor.filled")}</span>
+            <Switch checked={brush.filled} onChange={setFilled} label={t("editor.filled")} />
+          </div>
+        </>
+      )}
 
       <Field label={t("editor.color")}>
         <div className="space-y-3">

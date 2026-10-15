@@ -86,6 +86,17 @@ export class PixelDocument {
     this.pending = this.snapshot();
   }
 
+  /** Puts the picture back as it was when the stroke began, so a shape can be redrawn while it is dragged. */
+  revertStroke() {
+    if (this.pending) this.ctx.putImageData(this.pending, 0, 0);
+  }
+
+  /** For a picture that was changed outside of a stroke, such as a new size. */
+  markUnsaved() {
+    this.unsaved = true;
+    this.historyChanged();
+  }
+
   endStroke() {
     if (!this.pending) return;
     this.undoStack.push(this.pending);

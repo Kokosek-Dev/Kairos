@@ -110,6 +110,7 @@ pub fn run() {
             commands::export_texture_pack,
             commands::use_texture_pack_in_instances,
             commands::get_texture_packs_everywhere,
+            commands::get_texture_model,
             commands::set_texture_packs_everywhere,
             commands::get_data_location,
             commands::get_memory_advice,

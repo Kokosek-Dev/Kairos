@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Download, RotateCcw, Save, Search } from "lucide-react";
+import { ArrowLeft, Download, Maximize2, RotateCcw, Save, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
@@ -25,7 +25,9 @@ import {
 } from "@/lib/tauri/texturepacks";
 import { cn } from "@/lib/utils";
 import { InstanceChecklist } from "./InstanceChecklist";
-import { TexturePreview3D } from "./TexturePreview3D";
+import { TexturePreview } from "./TexturePreview";
+import { TextureStudio } from "./TextureStudio";
+import { TextureTools } from "./TextureTools";
 import { textureKey, TextureThumb } from "./TextureThumb";
 import { useEverywhere } from "./useEverywhere";
 import { PACKS_KEY } from "./usePacks";
@@ -33,7 +35,7 @@ import { usePacks } from "./usePacks";
 
 const PAGE_SIZE = 240;
 const ALL = "all";
-const EDITOR_SIZE = 288;
+const EDITOR_SIZE = 304;
 
 type Sort = "name" | "edited";
 
@@ -60,7 +62,10 @@ export function TexturePackPage() {
   const [shown, setShown] = useState(PAGE_SIZE);
   const [sort, setSort] = useState<Sort>("name");
   const [editedOnly, setEditedOnly] = useState(false);
-  const brush = useBrush(doc);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [tab, setTab] = useState<"draw" | "picture">("draw");
+  const [pixel, setPixel] = useState<{ x: number; y: number } | null>(null);
+  const brush = useBrush(doc, true);
   const everywhere = useEverywhere();
   useSyncExternalStore(doc.onHistory, () => doc.revision);
   const current = useRef({ doc, selected });
@@ -164,6 +169,11 @@ export function TexturePackPage() {
     return sort === "edited" ? [...found].sort((a, b) => Number(edited.has(b)) - Number(edited.has(a))) : found;
   }, [listing.data, category, query, editedOnly, sort, edited]);
 
+  const step = (direction: -1 | 1) => {
+    const next = matching[matching.indexOf(selected ?? "") + direction];
+    if (next) void open(next);
+  };
+
   if (packs.data && !pack) {
     return <p className="py-12 text-center text-muted">{t("textures.missing")}</p>;
   }
@@ -180,7 +190,7 @@ export function TexturePackPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
         <section className="panel flex min-h-[32rem] flex-col p-4 lg:max-h-[calc(100vh-12rem)]">
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <label className="flex h-9 min-w-40 flex-1 items-center gap-2 rounded-md border bg-surface px-3 focus-within:border-accent/60">
@@ -252,7 +262,7 @@ export function TexturePackPage() {
           </div>
         </section>
 
-        <aside className="space-y-4">
+        <aside className="space-y-4 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1">
           {selected ? (
             <div className="panel space-y-4 p-4">
               <div>
@@ -264,8 +274,13 @@ export function TexturePackPage() {
                   {doc.dirty && ` · ${t("textures.unsaved")}`}
                 </p>
               </div>
-              <PixelCanvas key={selected} doc={doc} brush={brush.brush} onPick={brush.pickColor} viewSize={EDITOR_SIZE} />
-              <div className="grid grid-cols-2 gap-2">
+              {fullscreen ? (
+                <div className="grid h-40 place-items-center rounded-lg border border-dashed text-sm text-muted">{t("textures.inFullscreen")}</div>
+              ) : (
+                <PixelCanvas key={selected} doc={doc} brush={brush.brush} onPick={brush.pickColor} viewSize={EDITOR_SIZE} onHover={setPixel} />
+              )}
+              {pixel && !fullscreen && <p className="-mt-2 text-center font-mono text-xs text-muted">{pixel.x}, {pixel.y}</p>}
+              <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
                 <Button disabled={!doc.dirty || save.isPending} onClick={() => save.mutate()}>
                   <Save size={16} />
                   {t("textures.save")}
@@ -274,23 +289,30 @@ export function TexturePackPage() {
                   <RotateCcw size={16} />
                   {t("textures.restore")}
                 </Button>
+                <Button variant="secondary" className="px-3" title={t("textures.fullscreen")} aria-label={t("textures.fullscreen")} onClick={() => setFullscreen(true)}>
+                  <Maximize2 size={16} />
+                </Button>
               </div>
             </div>
           ) : (
             <div className="panel p-6 text-center text-muted">{t("textures.pick")}</div>
           )}
 
+          {selected && !fullscreen && <TexturePreview packId={packId} path={selected} doc={doc} className="h-60" />}
+
           {selected && (
-            <div className="panel relative h-48 overflow-hidden">
-              <TexturePreview3D doc={doc} block={selected.startsWith("block/")} />
-              <p className="pointer-events-none absolute left-3 top-2 text-xs font-medium text-muted">{t("textures.preview")}</p>
-              <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs text-muted">{t("textures.previewHint")}</p>
+            <div className="panel space-y-4 p-4">
+              <Segmented
+                value={tab}
+                onChange={setTab}
+                options={[
+                  { value: "draw", label: t("textures.tabs.draw") },
+                  { value: "picture", label: t("textures.tabs.picture") },
+                ]}
+              />
+              {tab === "draw" ? <BrushPanel doc={doc} brush={brush} advanced /> : <TextureTools doc={doc} onResize={setDoc} />}
             </div>
           )}
-
-          <div className="panel p-4">
-            <BrushPanel doc={doc} brush={brush} />
-          </div>
 
           <div className="panel space-y-3 p-4">
             <Field label={t("textures.useIn")} hint={t("textures.useInHint")}>
@@ -314,6 +336,21 @@ export function TexturePackPage() {
           </div>
         </aside>
       </div>
+      {fullscreen && selected && (
+        <TextureStudio
+          packId={packId}
+          path={selected}
+          doc={doc}
+          brush={brush}
+          edited={edited.has(selected)}
+          busy={save.isPending || reset.isPending}
+          onSave={() => save.mutate()}
+          onRestore={() => reset.mutate(selected)}
+          onResize={setDoc}
+          onStep={step}
+          onClose={() => setFullscreen(false)}
+        />
+      )}
     </>
   );
 }
