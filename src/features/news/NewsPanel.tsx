@@ -17,12 +17,12 @@ const MAX_BUNDLED = 6;
 
 /** What the updates brought, with the day each shipped. Every release adds its entry here; only the six newest are shown. */
 const BUNDLED = [
-  { key: "boost", date: "2026-10-11" },
   { key: "detective", date: "2026-10-11" },
   { key: "journal", date: "2026-10-12" },
   { key: "feedback", date: "2026-10-14" },
   { key: "bedrock", date: "2026-10-14" },
   { key: "studio", date: "2026-10-15" },
+  { key: "bedrockSets", date: "2026-10-15" },
 ] as const;
 
 function pick(text: LocalizedText, language: string): string {

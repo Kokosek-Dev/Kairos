@@ -1,7 +1,26 @@
 import type { Translations } from "../locales";
 
 export const de: Translations = {
-  nav: { home: "Start", library: "Bibliothek", textures: "Texturen", journal: "Tagebuch", servers: "Server", discover: "Entdecken", settings: "Einstellungen", recent: "Zuletzt" },
+  nav: { home: "Start", library: "Bibliothek", textures: "Texturen", journal: "Tagebuch", servers: "Server", bedrock: "Bedrock", discover: "Entdecken", settings: "Einstellungen", recent: "Zuletzt" },
+  bedrock: {
+    subtitle: "Zusammenstellungen von Add-ons für Minecraft Bedrock Edition, jede mit einem Klick gestartet.",
+    note: "Bedrock Edition wird von Microsofts App gestartet und aktualisiert, daher kann Kairos keine Versionen installieren. Es kann aber getrennte Add-on-Sammlungen führen und beim Spielen die richtige in das Spiel legen.",
+    notInstalled: "Bedrock Edition ist auf diesem Computer nicht installiert oder wurde nie gestartet. Installiere es aus dem Microsoft Store und starte es einmal.",
+    name: "Name der Instanz",
+    create: "Instanz erstellen",
+    empty: "Noch keine Bedrock-Instanzen",
+    emptyHint: "Erstelle eine, füge Add-on-Dateien (.mcpack, .mcaddon) hinzu und drücke Spielen. Welten bleiben für alle Instanzen gemeinsam.",
+    noPacks: "Noch keine Pakete. Füge eine .mcpack- oder .mcaddon-Datei hinzu.",
+    addPack: "Paketdatei hinzufügen",
+    browse: "Add-ons finden",
+    play: "Spielen",
+    ready: "Die Pakete sind im Spiel. Schalte sie beim Erstellen oder Bearbeiten einer Welt ein.",
+    delete: "Instanz löschen",
+    removePack: "Paket entfernen",
+    resources: "Ressourcen",
+    behavior: "Verhalten",
+    packsCount: "Pakete: {{count}}",
+  },
   feedback: {
     title: "Feedback senden",
     subtitle: "Sag uns, was schiefgelaufen ist oder was du dir anders wünschst. Es geht direkt an den Entwickler.",
@@ -55,12 +74,12 @@ export const de: Translations = {
     collapse: "Neuigkeiten ausblenden",
     expand: "Neuigkeiten anzeigen",
     bundled: {
+      bedrockSets: { title: "Bedrock-Instanzen", body: "Erstelle Sammlungen von Bedrock-Add-ons und starte das Spiel mit der gewählten." },
       studio: { title: "Texturen-Editor neu gebaut", body: "Vollbild, Blöcke und Gegenstände wie im Spiel, Spiegeln, Formen und jede Auflösung." },
       bedrock: { title: "Bedrock-Server", body: "Füge Bedrock-Server neben Java-Servern hinzu, sieh, wer online ist, und tritt mit einem Klick bei." },
       feedback: { title: "Sag, was besser werden soll", body: "Die Sprechblase in der Ecke schickt einen Fehlerbericht oder eine Idee direkt an den Entwickler." },
       journal: { title: "Dein Spielkalender", body: "Das neue Tagebuch lässt für jeden Spieltag ein Kästchen aufleuchten und zählt deine Serie." },
       detective: { title: "Mod-Detektiv", body: "Absturz mit vielen Mods? Kairos schaltet Mods hälftig aus und findet den Schuldigen für dich." },
-      boost: { title: "Boost mit einem Klick", body: "Installiert Leistungs-Mods und stellt Java und Speicher für eine Instanz ein, nachdem ein Wiederherstellungspunkt gespeichert wurde." },
     },
   },
   journal: {

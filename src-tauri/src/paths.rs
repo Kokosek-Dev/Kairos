@@ -86,6 +86,10 @@ impl DataPaths {
         self.root.join("texturepacks")
     }
 
+    pub fn bedrock_instances(&self) -> PathBuf {
+        self.root.join("bedrock")
+    }
+
     pub fn instances(&self) -> PathBuf {
         self.root.join("instances")
     }

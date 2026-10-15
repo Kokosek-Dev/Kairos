@@ -1,7 +1,26 @@
 import type { Translations } from "../locales";
 
 export const es: Translations = {
-  nav: { home: "Inicio", library: "Biblioteca", textures: "Texturas", journal: "Diario", servers: "Servidores", discover: "Descubrir", settings: "Ajustes", recent: "Recientes" },
+  nav: { home: "Inicio", library: "Biblioteca", textures: "Texturas", journal: "Diario", servers: "Servidores", bedrock: "Bedrock", discover: "Descubrir", settings: "Ajustes", recent: "Recientes" },
+  bedrock: {
+    subtitle: "Conjuntos de complementos para Minecraft Bedrock Edition, cada uno se inicia con un clic.",
+    note: "Bedrock Edition la ejecuta y actualiza la aplicación de Microsoft, así que Kairos no instala versiones. Sí puede guardar conjuntos de complementos separados y poner el correcto en el juego al pulsar Jugar.",
+    notInstalled: "Bedrock Edition no está instalado en este equipo o nunca se ha iniciado. Instálalo desde Microsoft Store e inícialo una vez.",
+    name: "Nombre de la instancia",
+    create: "Crear instancia",
+    empty: "Aún no hay instancias de Bedrock",
+    emptyHint: "Crea una, añade archivos de complementos (.mcpack, .mcaddon) y pulsa Jugar. Los mundos se comparten entre instancias.",
+    noPacks: "Aún no hay paquetes. Añade un archivo .mcpack o .mcaddon.",
+    addPack: "Añadir archivo de paquete",
+    browse: "Buscar complementos",
+    play: "Jugar",
+    ready: "Los paquetes están en el juego. Actívalos al crear o editar un mundo.",
+    delete: "Eliminar instancia",
+    removePack: "Quitar paquete",
+    resources: "Recursos",
+    behavior: "Comportamiento",
+    packsCount: "Paquetes: {{count}}",
+  },
   feedback: {
     title: "Enviar comentarios",
     subtitle: "Cuéntanos qué salió mal o qué te gustaría cambiar. Llega directamente al desarrollador.",
@@ -55,12 +74,12 @@ export const es: Translations = {
     collapse: "Ocultar novedades",
     expand: "Mostrar novedades",
     bundled: {
+      bedrockSets: { title: "Instancias de Bedrock", body: "Crea conjuntos de complementos de Bedrock e inicia el juego con el que elijas." },
       studio: { title: "Editor de texturas renovado", body: "Pantalla completa, bloques y objetos como en el juego, espejo, formas y cualquier resolución." },
       bedrock: { title: "Servidores Bedrock", body: "Añade servidores Bedrock junto a los de Java, mira quién está conectado y entra con un clic." },
       feedback: { title: "Cuéntanos qué mejorar", body: "El globo de la esquina envía un informe de error o una idea directamente al desarrollador." },
       journal: { title: "Tu calendario de juego", body: "El nuevo Diario ilumina un cuadrado por cada día que juegas y cuenta tu racha." },
       detective: { title: "Detective de mods", body: "¿Un fallo con muchos mods? Kairos desactiva mods por mitades y encuentra al culpable por ti." },
-      boost: { title: "Boost con un clic", body: "Instala mods de rendimiento y ajusta Java y la memoria de una instancia, tras guardar un punto de restauración." },
     },
   },
   journal: {

@@ -1,5 +1,6 @@
 mod app_id;
 mod auth;
+mod bedrock;
 mod boost;
 mod commands;
 mod diagnostics;
@@ -111,6 +112,12 @@ pub fn run() {
             commands::use_texture_pack_in_instances,
             commands::get_texture_packs_everywhere,
             commands::get_texture_model,
+            commands::list_bedrock_instances,
+            commands::create_bedrock_instance,
+            commands::delete_bedrock_instance,
+            commands::add_bedrock_pack,
+            commands::remove_bedrock_pack,
+            commands::play_bedrock_instance,
             commands::set_texture_packs_everywhere,
             commands::get_data_location,
             commands::get_memory_advice,

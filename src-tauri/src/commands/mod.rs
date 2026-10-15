@@ -1,4 +1,5 @@
 mod auth;
+mod bedrock;
 mod boost;
 mod crash;
 mod feedback;
@@ -17,6 +18,7 @@ mod texturepacks;
 mod versions;
 
 pub use auth::*;
+pub use bedrock::*;
 pub use boost::*;
 pub use crash::*;
 pub use feedback::*;

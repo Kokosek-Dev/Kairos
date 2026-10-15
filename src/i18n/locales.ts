@@ -15,7 +15,26 @@ export interface Translations {
 }
 
 export const en: Translations = {
-  nav: { home: "Home", library: "Library", textures: "Textures", journal: "Journal", servers: "Servers", discover: "Discover", settings: "Settings", recent: "Recent" },
+  nav: { home: "Home", library: "Library", textures: "Textures", journal: "Journal", servers: "Servers", bedrock: "Bedrock", discover: "Discover", settings: "Settings", recent: "Recent" },
+  bedrock: {
+    subtitle: "Sets of add-ons for Minecraft Bedrock Edition, each started with one click.",
+    note: "Bedrock Edition is run and updated by Microsoft's app, so Kairos cannot install versions. What it can do is keep separate sets of add-ons and put the right set into the game when you press Play.",
+    notInstalled: "Bedrock Edition is not installed on this computer, or has never been started. Install it from the Microsoft Store and start it once.",
+    name: "Instance name",
+    create: "Create instance",
+    empty: "No Bedrock instances yet",
+    emptyHint: "Create one, add add-on files (.mcpack, .mcaddon) and press Play. Worlds stay shared between instances.",
+    noPacks: "No packs yet. Add a .mcpack or .mcaddon file.",
+    addPack: "Add pack file",
+    browse: "Find add-ons",
+    play: "Play",
+    ready: "The packs are in the game. Switch them on when you create or edit a world.",
+    delete: "Delete instance",
+    removePack: "Remove pack",
+    resources: "Resources",
+    behavior: "Behavior",
+    packsCount: "Packs: {{count}}",
+  },
   feedback: {
     title: "Send feedback",
     subtitle: "Tell us what went wrong or what you would like changed. It goes straight to the developer.",
@@ -69,12 +88,12 @@ export const en: Translations = {
     collapse: "Hide news",
     expand: "Show news",
     bundled: {
+      bedrockSets: { title: "Bedrock instances", body: "Make sets of Bedrock add-ons and start the game with the one you pick." },
       studio: { title: "Texture editor, rebuilt", body: "Full screen, blocks and items shown as in the game, mirror, shapes and any resolution." },
       bedrock: { title: "Bedrock servers", body: "Add Bedrock servers next to Java ones, see who is online and join with one click." },
       feedback: { title: "Tell us what to fix", body: "The speech bubble in the corner sends a bug report or an idea straight to the developer." },
       journal: { title: "Your play calendar", body: "The new Journal lights up a square for every day you play and counts your streak." },
       detective: { title: "Mod detective", body: "A crash with lots of mods? Kairos switches mods off in halves and finds the culprit for you." },
-      boost: { title: "Boost in one click", body: "Installs performance mods and tunes Java and memory for an instance, after saving a restore point." },
     },
   },
   journal: {
@@ -722,7 +741,26 @@ export const en: Translations = {
 };
 
 export const pl: Translations = {
-  nav: { home: "Strona główna", library: "Biblioteka", textures: "Tekstury", journal: "Dziennik", servers: "Serwery", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
+  nav: { home: "Strona główna", library: "Biblioteka", textures: "Tekstury", journal: "Dziennik", servers: "Serwery", bedrock: "Bedrock", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
+  bedrock: {
+    subtitle: "Zestawy dodatków do Minecraft Bedrock Edition, każdy uruchamiany jednym kliknięciem.",
+    note: "Bedrock Edition uruchamia i aktualizuje aplikacja Microsoftu, więc Kairos nie instaluje wersji. Może za to trzymać osobne zestawy dodatków i po kliknięciu Graj wkładać do gry właściwy zestaw.",
+    notInstalled: "Bedrock Edition nie jest zainstalowany na tym komputerze albo nigdy go nie uruchomiono. Zainstaluj go ze sklepu Microsoft i uruchom raz.",
+    name: "Nazwa instancji",
+    create: "Utwórz instancję",
+    empty: "Brak instancji Bedrock",
+    emptyHint: "Utwórz jedną, dodaj pliki dodatków (.mcpack, .mcaddon) i kliknij Graj. Światy są wspólne dla wszystkich instancji.",
+    noPacks: "Brak paczek. Dodaj plik .mcpack albo .mcaddon.",
+    addPack: "Dodaj plik paczki",
+    browse: "Znajdź dodatki",
+    play: "Graj",
+    ready: "Paczki są w grze. Włącz je przy tworzeniu lub edycji świata.",
+    delete: "Usuń instancję",
+    removePack: "Usuń paczkę",
+    resources: "Zasoby",
+    behavior: "Zachowania",
+    packsCount: "Paczki: {{count}}",
+  },
   feedback: {
     title: "Wyślij opinię",
     subtitle: "Napisz, co poszło nie tak albo co chciałbyś zmienić. Wiadomość trafia prosto do twórcy.",
@@ -776,12 +814,12 @@ export const pl: Translations = {
     collapse: "Ukryj nowości",
     expand: "Pokaż nowości",
     bundled: {
+      bedrockSets: { title: "Instancje Bedrock", body: "Twórz zestawy dodatków do Bedrocka i uruchamiaj grę z wybranym." },
       studio: { title: "Nowy edytor tekstur", body: "Pełny ekran, bloki i przedmioty jak w grze, lustro, kształty i dowolna rozdzielczość." },
       bedrock: { title: "Serwery Bedrock", body: "Dodawaj serwery Bedrock obok Javy, zobacz, kto jest online, i wejdź jednym kliknięciem." },
       feedback: { title: "Napisz, co poprawić", body: "Dymek w rogu wysyła zgłoszenie błędu albo pomysł prosto do twórcy." },
       journal: { title: "Twój kalendarz grania", body: "Nowy Dziennik zapala kwadracik za każdy dzień grania i liczy Twoją serię." },
       detective: { title: "Detektyw modów", body: "Crash przy wielu modach? Kairos wyłącza mody połówkami i sam znajduje winowajcę." },
-      boost: { title: "Boost jednym kliknięciem", body: "Instaluje mody wydajnościowe i ustawia Javę oraz pamięć dla instancji, po zapisaniu punktu przywracania." },
     },
   },
   journal: {
