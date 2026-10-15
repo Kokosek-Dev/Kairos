@@ -3,9 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kairos</title>
+  <title>Kairos: an independent Minecraft launcher</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <meta name="description" content="Kairos is an independent, open source launcher for Minecraft: Java Edition." />
+  <meta name="description" content="Kairos is a free, independent, open source Minecraft launcher with Java and Bedrock instances, a mod detective, texture and skin editors and automatic updates." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Kairos: an independent Minecraft launcher" />
+  <meta property="og:description" content="Free and open source. Java and Bedrock instances, a mod detective, texture and skin editors with a 3D preview, automatic updates." />
+  <meta property="og:image" content="https://kokosek-dev.github.io/Kairos/img/texture-editor.png" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="color-scheme" content="dark" />
   <style>
     :root {
@@ -55,6 +60,10 @@
     .card { background: color-mix(in srgb, var(--surface) 90%, transparent); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem; }
     .card h3 { margin: 0 0 .4rem; font-size: 1.05rem; }
     .card p { margin: 0; color: var(--muted); font-size: .95rem; }
+    .shots { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); }
+    .shots figure { margin: 0; }
+    .shots img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+    .shots figcaption { margin-top: .5rem; color: var(--muted); font-size: .9rem; }
     section { margin-bottom: 3rem; }
     h2 { font-size: 1.6rem; margin: 0 0 1rem; }
     ul { padding-left: 1.2rem; color: var(--muted); }
@@ -64,6 +73,7 @@
     summary { cursor: pointer; font-weight: 600; }
     details p { color: var(--muted); margin: .6rem 0 0; }
     footer { border-top: 1px solid var(--border); padding: 1.5rem 0 3rem; color: var(--muted); font-size: .9rem; }
+    footer a { margin-left: 1rem; }
   </style>
 </head>
 <body>
@@ -79,7 +89,7 @@
     <main>
       <div class="hero">
         <h1 data-t="title">A launcher that feels alive</h1>
-        <p class="lead" data-t="lead">An independent, open source launcher for Minecraft: Java Edition. Your skin in 3D, mods, modpacks and your own textures in one place.</p>
+        <p class="lead" data-t="lead">An independent, open source launcher for Minecraft. Java and Bedrock instances, your skin in 3D, mods, modpacks and your own textures in one place.</p>
         <a class="button" id="download" href="#download">
           <span data-t="download">Download for Windows</span>
         </a>
@@ -92,6 +102,16 @@
         <div class="card"><h3 data-t="f3h">Helps when it breaks</h3><p data-t="f3p">Crash analysis explains what went wrong, and one click saves a report with no personal data.</p></div>
         <div class="card"><h3 data-t="f4h">Yours to arrange</h3><p data-t="f4p">Choose where everything is stored, pick colors and backgrounds, English and Polish.</p></div>
       </div>
+
+      <section>
+        <h2 data-t="galh">A look inside</h2>
+        <div class="shots">
+          <figure><img src="img/texture-editor.png" alt="The Kairos texture editor with a 3D preview of a crafting table" loading="lazy" /><figcaption data-t="cap1">Texture editor with a 3D preview of the block as the game draws it</figcaption></figure>
+          <figure><img src="img/new-bedrock.png" alt="Creating a Bedrock instance in Kairos" loading="lazy" /><figcaption data-t="cap2">Create Java or Bedrock instances from the same window</figcaption></figure>
+          <figure><img src="img/servers.png" alt="The Kairos server list with live status" loading="lazy" /><figcaption data-t="cap3">Server list with live status</figcaption></figure>
+          <figure><img src="img/journal.png" alt="The Kairos journal with a calendar of play days" loading="lazy" /><figcaption data-t="cap4">Journal: a calendar of the days you played</figcaption></figure>
+        </div>
+      </section>
 
       <section>
         <h2 data-t="safeh">Safe and private</h2>
@@ -124,7 +144,12 @@
       en: {},
       pl: {
         title: "Launcher, który żyje",
-        lead: "Niezależny launcher z otwartym kodem do Minecraft: Java Edition. Twój skin w 3D, mody, modpacki i własne tekstury w jednym miejscu.",
+        lead: "Niezależny launcher z otwartym kodem do Minecrafta. Instancje Java i Bedrock, Twój skin w 3D, mody, modpacki i własne tekstury w jednym miejscu.",
+        galh: "Zobacz, jak wygląda",
+        cap1: "Edytor tekstur z podglądem 3D bloku tak, jak rysuje go gra",
+        cap2: "Twórz instancje Java albo Bedrock z jednego okna",
+        cap3: "Lista serwerów ze statusem na żywo",
+        cap4: "Dziennik: kalendarz dni, w których grałeś",
         download: "Pobierz dla Windows",
         f1h: "Skiny i tekstury", f1p: "Rysuj skiny na płaskiej teksturze albo prosto na modelu 3D i przerysuj dowolną teksturę gry.",
         f2h: "Mody bez kłopotu", f2p: "Fabric, Quilt, Forge i NeoForge, instalacja z zależnościami i automatyczne aktualizacje modów.",
@@ -167,7 +192,8 @@
       const meta = document.getElementById("meta");
       if (!release) return void (meta.textContent = "");
       const megabytes = (release.size / 1048576).toFixed(1);
-      meta.textContent = `${release.version} · ${megabytes} MB · Windows 10/11`;
+      const downloads = release.downloads > 0 ? ` · ${release.downloads.toLocaleString(lang)} ${lang === "pl" ? "pobrań" : "downloads"}` : "";
+      meta.textContent = `${release.version} · ${megabytes} MB · Windows 10/11${downloads}`;
     };
 
     async function loadRelease() {
@@ -177,13 +203,16 @@
       source.href = `https://github.com/${owner}/${repo}`;
       button.href = `https://github.com/${owner}/${repo}/releases/latest`;
       try {
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`);
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases?per_page=100`);
         if (!response.ok) return;
-        const data = await response.json();
-        const asset = data.assets.find((item) => item.name.endsWith("-setup.exe"));
-        if (!asset) return;
+        const releases = (await response.json()).filter((item) => !item.draft && !item.prerelease);
+        const installers = (item) => item.assets.filter((asset) => asset.name.endsWith("-setup.exe"));
+        const data = releases.find((item) => installers(item).length > 0);
+        if (!data) return;
+        const asset = installers(data)[0];
         button.href = asset.browser_download_url;
-        release = { version: data.tag_name, size: asset.size };
+        const downloads = releases.flatMap(installers).reduce((sum, item) => sum + item.download_count, 0);
+        release = { version: data.tag_name, size: asset.size, downloads };
         renderMeta();
       } catch {
         // The button keeps pointing at the releases page.

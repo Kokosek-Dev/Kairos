@@ -4,6 +4,11 @@ An independent launcher for Minecraft, built with Tauri 2 (Rust) and React. Java
 
 💬 **Community:** [Discord server](https://discord.gg/H3Mecyf3H9) · [Website](https://kokosek-dev.github.io/Kairos/) · made by [Kokosek-Dev](https://github.com/Kokosek-Dev)
 
+<p align="center">
+  <img src="docs/img/texture-editor.png" alt="Kairos texture editor with a 3D preview" width="49%" />
+  <img src="docs/img/new-bedrock.png" alt="Creating a Bedrock instance in Kairos" width="49%" />
+</p>
+
 ## Download
 
 Get the latest installer from the **Releases** page of this repository (`Kairos_x.y.z_x64-setup.exe`). The installer
