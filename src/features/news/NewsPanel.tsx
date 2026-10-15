@@ -14,7 +14,8 @@ const CLOSED_WIDTH = 44;
 const REFRESH_MS = 30 * 60 * 1000;
 
 /** News that ship with the launcher, shown until (or instead of) a published list. */
-const BUNDLED = ["journal", "detective", "boost"] as const;
+/** What the latest updates brought, newest first. Every release adds its entry here and drops the oldest when the list passes six. */
+const BUNDLED = ["studio", "bedrock", "feedback", "journal", "detective", "boost"] as const;
 
 function pick(text: LocalizedText, language: string): string {
   if (typeof text === "string") return text;

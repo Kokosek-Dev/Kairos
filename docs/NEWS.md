@@ -1,7 +1,8 @@
 # Newsy w launcherze
 
-Po prawej stronie okna jest zwijany panel z newsami. Bez dodatkowej konfiguracji pokazuje trzy newsy
-wbudowane w launcher. Żeby pokazywać własne, bez wydawania nowej wersji, podaj adres listy.
+Po prawej stronie okna jest zwijany panel z newsami. Bez dodatkowej konfiguracji pokazuje newsy
+wbudowane w launcher: co przyniosły ostatnie aktualizacje (`BUNDLED` w `NewsPanel.tsx`, najnowszy pierwszy, do sześciu).
+Każda nowa wersja dopisuje tam swój wpis w 7 językach. Żeby pokazywać własne, bez wydawania nowej wersji, podaj adres listy.
 
 ## Jak podłączyć własną listę
 

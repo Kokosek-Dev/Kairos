@@ -54,6 +54,9 @@ export const fr: Translations = {
     collapse: "Masquer les actualités",
     expand: "Afficher les actualités",
     bundled: {
+      studio: { title: "Éditeur de textures refait", body: "Plein écran, blocs et objets comme dans le jeu, miroir, formes et toute résolution." },
+      bedrock: { title: "Serveurs Bedrock", body: "Ajoute des serveurs Bedrock à côté de ceux de Java, vois qui est en ligne et rejoins en un clic." },
+      feedback: { title: "Dis-nous quoi améliorer", body: "La bulle dans le coin envoie un rapport de bug ou une idée directement au développeur." },
       journal: { title: "Ton calendrier de jeu", body: "Le nouveau Journal allume un carré pour chaque jour de jeu et compte ta série." },
       detective: { title: "Détective de mods", body: "Un plantage avec beaucoup de mods ? Kairos désactive les mods par moitiés et trouve le coupable pour toi." },
       boost: { title: "Boost en un clic", body: "Installe des mods de performance et règle Java et la mémoire d'une instance, après avoir enregistré un point de restauration." },

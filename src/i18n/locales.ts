@@ -68,6 +68,9 @@ export const en: Translations = {
     collapse: "Hide news",
     expand: "Show news",
     bundled: {
+      studio: { title: "Texture editor, rebuilt", body: "Full screen, blocks and items shown as in the game, mirror, shapes and any resolution." },
+      bedrock: { title: "Bedrock servers", body: "Add Bedrock servers next to Java ones, see who is online and join with one click." },
+      feedback: { title: "Tell us what to fix", body: "The speech bubble in the corner sends a bug report or an idea straight to the developer." },
       journal: { title: "Your play calendar", body: "The new Journal lights up a square for every day you play and counts your streak." },
       detective: { title: "Mod detective", body: "A crash with lots of mods? Kairos switches mods off in halves and finds the culprit for you." },
       boost: { title: "Boost in one click", body: "Installs performance mods and tunes Java and memory for an instance, after saving a restore point." },
@@ -771,6 +774,9 @@ export const pl: Translations = {
     collapse: "Ukryj nowości",
     expand: "Pokaż nowości",
     bundled: {
+      studio: { title: "Nowy edytor tekstur", body: "Pełny ekran, bloki i przedmioty jak w grze, lustro, kształty i dowolna rozdzielczość." },
+      bedrock: { title: "Serwery Bedrock", body: "Dodawaj serwery Bedrock obok Javy, zobacz, kto jest online, i wejdź jednym kliknięciem." },
+      feedback: { title: "Napisz, co poprawić", body: "Dymek w rogu wysyła zgłoszenie błędu albo pomysł prosto do twórcy." },
       journal: { title: "Twój kalendarz grania", body: "Nowy Dziennik zapala kwadracik za każdy dzień grania i liczy Twoją serię." },
       detective: { title: "Detektyw modów", body: "Crash przy wielu modach? Kairos wyłącza mody połówkami i sam znajduje winowajcę." },
       boost: { title: "Boost jednym kliknięciem", body: "Instaluje mody wydajnościowe i ustawia Javę oraz pamięć dla instancji, po zapisaniu punktu przywracania." },

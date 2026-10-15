@@ -126,7 +126,9 @@ export function TexturePackPage() {
     },
     onSuccess: async (path) => {
       const image = await loadImage(await readPackTexture(packId, path));
-      doc.load((ctx) => ctx.drawImage(image, 0, 0));
+      const original = new PixelDocument(image.naturalWidth, image.naturalHeight);
+      original.load((ctx) => ctx.drawImage(image, 0, 0));
+      setDoc(original);
     },
     onError: (error) => toast.error(errorMessage(t, error)),
   });
