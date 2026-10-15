@@ -1,15 +1,13 @@
 import type { Translations } from "../locales";
 
 export const fr: Translations = {
-  nav: { home: "Accueil", library: "Bibliothèque", textures: "Textures", journal: "Journal", servers: "Serveurs", bedrock: "Bedrock", discover: "Découvrir", settings: "Paramètres", recent: "Récents" },
+  nav: { home: "Accueil", library: "Bibliothèque", textures: "Textures", journal: "Journal", servers: "Serveurs", discover: "Découvrir", settings: "Paramètres", recent: "Récents" },
   bedrock: {
-    subtitle: "Des ensembles de modules pour Minecraft Bedrock Edition, chacun lancé en un clic.",
+    newSubtitle: "Choisis un nom. La version du jeu vient du Microsoft Store.",
+    manage: "Gérer les packs",
+    deleteBody: "Cela retire l'instance et ses packs de Kairos. Tes mondes et le jeu restent intacts.",
     note: "Bedrock Edition est lancé et mis à jour par l'application de Microsoft, donc Kairos ne peut pas installer de versions. Il peut en revanche garder des ensembles de modules séparés et mettre le bon dans le jeu quand tu appuies sur Jouer.",
     notInstalled: "Bedrock Edition n'est pas installé sur cet ordinateur ou n'a jamais été lancé. Installe-le depuis le Microsoft Store et lance-le une fois.",
-    name: "Nom de l'instance",
-    create: "Créer l'instance",
-    empty: "Aucune instance Bedrock",
-    emptyHint: "Crée-en une, ajoute des fichiers de modules (.mcpack, .mcaddon) et appuie sur Jouer. Les mondes restent partagés entre les instances.",
     noPacks: "Aucun pack. Ajoute un fichier .mcpack ou .mcaddon.",
     addPack: "Ajouter un fichier de pack",
     browse: "Trouver des modules",

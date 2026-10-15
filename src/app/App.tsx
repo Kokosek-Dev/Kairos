@@ -24,7 +24,6 @@ import { CrashDialog } from "@/features/launch/CrashDialog";
 import { FeedbackDialog } from "@/features/feedback/FeedbackDialog";
 import { DetectiveDialog } from "@/features/detective/DetectiveDialog";
 import { ConsoleDrawer } from "@/features/launch/ConsoleDrawer";
-import { BedrockPage } from "@/features/bedrock/BedrockPage";
 import { ServersPage } from "@/features/servers/ServersPage";
 import { JournalPage } from "@/features/journal/JournalPage";
 import { LaunchSplash } from "@/features/launch/LaunchSplash";
@@ -67,7 +66,6 @@ export function App() {
                 <Route path="/instances/:id/content" element={<ContentPage />} />
                 <Route path="/journal" element={<JournalPage />} />
                 <Route path="/servers" element={<ServersPage />} />
-                <Route path="/bedrock" element={<BedrockPage />} />
                 <Route path="/discover" element={<DiscoverPage />} />
                 <Route path="/discover/:projectId" element={<ProjectPage />} />
                 <Route path="/settings" element={<SettingsPage />} />

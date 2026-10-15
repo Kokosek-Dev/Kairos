@@ -1,15 +1,13 @@
 import type { Translations } from "../locales";
 
 export const ru: Translations = {
-  nav: { home: "Главная", library: "Библиотека", textures: "Текстуры", journal: "Дневник", servers: "Серверы", bedrock: "Bedrock", discover: "Обзор", settings: "Настройки", recent: "Недавние" },
+  nav: { home: "Главная", library: "Библиотека", textures: "Текстуры", journal: "Дневник", servers: "Серверы", discover: "Обзор", settings: "Настройки", recent: "Недавние" },
   bedrock: {
-    subtitle: "Наборы дополнений для Minecraft Bedrock Edition, каждый запускается одним щелчком.",
+    newSubtitle: "Выбери название. Версия игры берётся из Microsoft Store.",
+    manage: "Управлять пакетами",
+    deleteBody: "Это удалит экземпляр и его пакеты из Kairos. Твои миры и сама игра не затрагиваются.",
     note: "Bedrock Edition запускает и обновляет приложение Microsoft, поэтому Kairos не устанавливает версии. Зато он хранит отдельные наборы дополнений и кладёт нужный в игру, когда ты нажимаешь «Играть».",
     notInstalled: "Bedrock Edition не установлена на этом компьютере или ни разу не запускалась. Установи её из Microsoft Store и запусти один раз.",
-    name: "Название экземпляра",
-    create: "Создать экземпляр",
-    empty: "Экземпляров Bedrock пока нет",
-    emptyHint: "Создай один, добавь файлы дополнений (.mcpack, .mcaddon) и нажми «Играть». Миры общие для всех экземпляров.",
     noPacks: "Пакетов пока нет. Добавь файл .mcpack или .mcaddon.",
     addPack: "Добавить файл пакета",
     browse: "Найти дополнения",

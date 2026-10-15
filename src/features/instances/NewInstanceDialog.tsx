@@ -1,11 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { Brush } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Field, Input } from "@/components/ui/input";
+import { Segmented } from "@/components/ui/segmented";
 import { CreatePackDialog } from "@/features/textures/CreatePackDialog";
+import { BEDROCK_KEY } from "@/features/bedrock/useBedrockInstances";
+import { createBedrockInstance } from "@/lib/tauri/bedrock";
 import { errorMessage } from "@/lib/tauri/errors";
 import { createInstance, type IconInput, type LoaderKind } from "@/lib/tauri/instances";
 import { PlaceholderTile, PresetTile } from "./InstanceIcon";
@@ -19,6 +23,8 @@ interface NewInstanceDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+type Edition = "java" | "bedrock";
+
 const DEFAULT_ICON: IconInput = { kind: "preset", key: DEFAULT_PRESET.key };
 
 function fileName(path: string): string {
@@ -28,7 +34,10 @@ function fileName(path: string): string {
 export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const manifest = useVersionManifest();
+  const [edition, setEdition] = useState<Edition>("java");
+  const [bedrockName, setBedrockName] = useState("");
   const [name, setName] = useState("");
   const [nameEdited, setNameEdited] = useState(false);
   const [gameVersion, setGameVersion] = useState("");
@@ -53,7 +62,10 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
     setIcon(DEFAULT_ICON);
     setLoader("vanilla");
     setLoaderVersion(null);
+    setEdition("java");
+    setBedrockName("");
     create.reset();
+    createBedrock.reset();
   };
 
   const create = useMutation({
@@ -65,12 +77,44 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
     },
   });
 
+  const createBedrock = useMutation({
+    mutationFn: () => createBedrockInstance(bedrockName),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: BEDROCK_KEY });
+      onOpenChange(false);
+      reset();
+      navigate("/library");
+    },
+  });
+
+  const bedrock = edition === "bedrock";
+  const failure = bedrock ? createBedrock.error : create.error;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogTitle>{t("instances.newTitle")}</DialogTitle>
-        <DialogDescription>{t("instances.newSubtitle")}</DialogDescription>
+        <DialogDescription>{bedrock ? t("bedrock.newSubtitle") : t("instances.newSubtitle")}</DialogDescription>
 
+        <div className="mt-4">
+          <Segmented
+            value={edition}
+            onChange={setEdition}
+            options={[
+              { value: "java", label: t("servers.java") },
+              { value: "bedrock", label: t("servers.bedrock") },
+            ]}
+          />
+        </div>
+
+        {bedrock ? (
+          <div className="mt-5 flex-1 space-y-4">
+            <Field label={t("instances.name")}>
+              <Input value={bedrockName} maxLength={48} autoFocus onChange={(event) => setBedrockName(event.target.value)} />
+            </Field>
+            <p className="rounded-lg border bg-surface/50 p-3 text-sm text-muted">{t("bedrock.note")}</p>
+          </div>
+        ) : (
         <div className="mt-5 flex-1 space-y-5 overflow-y-auto pr-1">
           <div className="flex items-end gap-4">
             {icon.kind === "preset" ? (
@@ -112,22 +156,27 @@ export function NewInstanceDialog({ open, onOpenChange }: NewInstanceDialogProps
             />
           </Field>
         </div>
+        )}
 
-        {create.isError && <p className="mt-3 text-sm text-danger">{errorMessage(t, create.error)}</p>}
+        {failure && <p className="mt-3 text-sm text-danger">{errorMessage(t, failure)}</p>}
 
         <div className="mt-5 flex items-center justify-between gap-2">
-          <Button variant="ghost" onClick={() => setTexturesOpen(true)}>
-            <Brush size={16} />
-            {t("textures.createOwn")}
-            <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">{t("textures.beta")}</span>
-          </Button>
+          {bedrock ? (
+            <span />
+          ) : (
+            <Button variant="ghost" onClick={() => setTexturesOpen(true)}>
+              <Brush size={16} />
+              {t("textures.createOwn")}
+              <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">{t("textures.beta")}</span>
+            </Button>
+          )}
           <div className="flex gap-2">
             <Button variant="ghost" onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
           <Button
-            disabled={!name.trim() || !gameVersion || (loader !== "vanilla" && !loaderVersion) || create.isPending}
-            onClick={() => create.mutate()}
+            disabled={bedrock ? !bedrockName.trim() || createBedrock.isPending : !name.trim() || !gameVersion || (loader !== "vanilla" && !loaderVersion) || create.isPending}
+            onClick={() => (bedrock ? createBedrock.mutate() : create.mutate())}
           >
             {t("instances.create")}
           </Button>

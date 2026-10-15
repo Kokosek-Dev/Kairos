@@ -15,15 +15,13 @@ export interface Translations {
 }
 
 export const en: Translations = {
-  nav: { home: "Home", library: "Library", textures: "Textures", journal: "Journal", servers: "Servers", bedrock: "Bedrock", discover: "Discover", settings: "Settings", recent: "Recent" },
+  nav: { home: "Home", library: "Library", textures: "Textures", journal: "Journal", servers: "Servers", discover: "Discover", settings: "Settings", recent: "Recent" },
   bedrock: {
-    subtitle: "Sets of add-ons for Minecraft Bedrock Edition, each started with one click.",
+    newSubtitle: "Pick a name. The game version comes from the Microsoft Store.",
+    manage: "Manage packs",
+    deleteBody: "This removes the instance and its packs from Kairos. Your worlds and the game itself are not touched.",
     note: "Bedrock Edition is run and updated by Microsoft's app, so Kairos cannot install versions. What it can do is keep separate sets of add-ons and put the right set into the game when you press Play.",
     notInstalled: "Bedrock Edition is not installed on this computer, or has never been started. Install it from the Microsoft Store and start it once.",
-    name: "Instance name",
-    create: "Create instance",
-    empty: "No Bedrock instances yet",
-    emptyHint: "Create one, add add-on files (.mcpack, .mcaddon) and press Play. Worlds stay shared between instances.",
     noPacks: "No packs yet. Add a .mcpack or .mcaddon file.",
     addPack: "Add pack file",
     browse: "Find add-ons",
@@ -741,15 +739,13 @@ export const en: Translations = {
 };
 
 export const pl: Translations = {
-  nav: { home: "Strona główna", library: "Biblioteka", textures: "Tekstury", journal: "Dziennik", servers: "Serwery", bedrock: "Bedrock", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
+  nav: { home: "Strona główna", library: "Biblioteka", textures: "Tekstury", journal: "Dziennik", servers: "Serwery", discover: "Odkrywaj", settings: "Ustawienia", recent: "Ostatnie" },
   bedrock: {
-    subtitle: "Zestawy dodatków do Minecraft Bedrock Edition, każdy uruchamiany jednym kliknięciem.",
+    newSubtitle: "Wybierz nazwę. Wersja gry pochodzi ze sklepu Microsoft.",
+    manage: "Zarządzaj paczkami",
+    deleteBody: "To usuwa instancję i jej paczki z Kairosa. Twoje światy i sama gra zostają nietknięte.",
     note: "Bedrock Edition uruchamia i aktualizuje aplikacja Microsoftu, więc Kairos nie instaluje wersji. Może za to trzymać osobne zestawy dodatków i po kliknięciu Graj wkładać do gry właściwy zestaw.",
     notInstalled: "Bedrock Edition nie jest zainstalowany na tym komputerze albo nigdy go nie uruchomiono. Zainstaluj go ze sklepu Microsoft i uruchom raz.",
-    name: "Nazwa instancji",
-    create: "Utwórz instancję",
-    empty: "Brak instancji Bedrock",
-    emptyHint: "Utwórz jedną, dodaj pliki dodatków (.mcpack, .mcaddon) i kliknij Graj. Światy są wspólne dla wszystkich instancji.",
     noPacks: "Brak paczek. Dodaj plik .mcpack albo .mcaddon.",
     addPack: "Dodaj plik paczki",
     browse: "Znajdź dodatki",

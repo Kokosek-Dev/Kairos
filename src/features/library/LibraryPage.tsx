@@ -3,6 +3,10 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { Button } from "@/components/ui/button";
+import { BedrockCard } from "@/features/bedrock/BedrockCard";
+import { BedrockPacksDialog } from "@/features/bedrock/BedrockPacksDialog";
+import { DeleteBedrockDialog } from "@/features/bedrock/DeleteBedrockDialog";
+import { useBedrockInstances } from "@/features/bedrock/useBedrockInstances";
 import { ImportCodeDialog } from "@/features/share/ImportCodeDialog";
 import { useJobsStore } from "@/features/discover/jobsStore";
 import { pickMrpackFile } from "@/lib/tauri/modrinth";
@@ -12,26 +16,35 @@ import { NewInstanceDialog } from "@/features/instances/NewInstanceDialog";
 import { useInstances } from "@/features/instances/useInstances";
 import { errorMessage } from "@/lib/tauri/errors";
 import { LOADER_HUE, loaderChipStyle } from "@/lib/loaderColors";
+import type { BedrockInstance } from "@/lib/tauri/bedrock";
 import type { Instance, LoaderKind } from "@/lib/tauri/instances";
 import { cn } from "@/lib/utils";
 
 type SortKey = "recent" | "name" | "version";
 
+/** A Java instance or a Bedrock one: the library shows them side by side. */
+type Entry = { kind: "java"; instance: Instance } | { kind: "bedrock"; instance: BedrockInstance };
+type Filter = LoaderKind | "bedrock" | null;
+
 const SORT_KEYS: SortKey[] = ["recent", "name", "version"];
 const LOADERS = Object.keys(LOADER_HUE) as LoaderKind[];
 
-function sortInstances(list: Instance[], key: SortKey): Instance[] {
+const versionOf = (entry: Entry) => (entry.kind === "java" ? entry.instance.gameVersion : "");
+const lastUsedOf = (entry: Entry) => (entry.kind === "java" ? (entry.instance.lastPlayedAt ?? "") : entry.instance.createdAt);
+
+function sortEntries(list: Entry[], key: SortKey): Entry[] {
   const sorted = [...list];
-  if (key === "name") return sorted.sort((a, b) => a.name.localeCompare(b.name));
-  if (key === "version") {
-    return sorted.sort((a, b) => b.gameVersion.localeCompare(a.gameVersion, undefined, { numeric: true }));
-  }
-  return sorted.sort((a, b) => (b.lastPlayedAt ?? "").localeCompare(a.lastPlayedAt ?? ""));
+  if (key === "name") return sorted.sort((a, b) => a.instance.name.localeCompare(b.instance.name));
+  if (key === "version") return sorted.sort((a, b) => versionOf(b).localeCompare(versionOf(a), undefined, { numeric: true }));
+  return sorted.sort((a, b) => lastUsedOf(b).localeCompare(lastUsedOf(a)));
 }
 
 export function LibraryPage() {
   const { t } = useTranslation();
   const instances = useInstances();
+  const bedrock = useBedrockInstances();
+  const [managing, setManaging] = useState<BedrockInstance | null>(null);
+  const [deletingBedrock, setDeletingBedrock] = useState<BedrockInstance | null>(null);
   const [creating, setCreating] = useState(false);
   const [importingCode, setImportingCode] = useState(false);
   const [deleting, setDeleting] = useState<Instance | null>(null);
@@ -39,17 +52,22 @@ export function LibraryPage() {
   const importing = jobs["mrpack-import"] !== undefined;
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("recent");
-  const [loader, setLoader] = useState<LoaderKind | null>(null);
+  const [loader, setLoader] = useState<Filter>(null);
 
+  const total = (instances.data?.length ?? 0) + (bedrock.data?.length ?? 0);
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    const matching = (instances.data ?? []).filter(
-      (instance) =>
-        (loader === null || instance.loader === loader) &&
-        (needle === "" || `${instance.name} ${instance.gameVersion}`.toLowerCase().includes(needle)),
+    const entries: Entry[] = [
+      ...(instances.data ?? []).map((instance): Entry => ({ kind: "java", instance })),
+      ...(bedrock.data ?? []).map((instance): Entry => ({ kind: "bedrock", instance })),
+    ];
+    const matching = entries.filter(
+      (entry) =>
+        (loader === null || (loader === "bedrock" ? entry.kind === "bedrock" : entry.kind === "java" && entry.instance.loader === loader)) &&
+        (needle === "" || `${entry.instance.name} ${versionOf(entry)}`.toLowerCase().includes(needle)),
     );
-    return sortInstances(matching, sort);
-  }, [instances.data, query, sort, loader]);
+    return sortEntries(matching, sort);
+  }, [instances.data, bedrock.data, query, sort, loader]);
 
   const importPack = async () => {
     const path = await pickMrpackFile();
@@ -94,7 +112,7 @@ export function LibraryPage() {
         </div>
       )}
 
-      {instances.data?.length === 0 && (
+      {instances.data && bedrock.data && total === 0 && (
         <div className="grid place-items-center rounded-xl border border-dashed py-20 text-center">
           <Boxes size={40} className="mb-4 text-accent" />
           <h2 className="text-lg font-semibold">{t("library.emptyTitle")}</h2>
@@ -106,7 +124,7 @@ export function LibraryPage() {
         </div>
       )}
 
-      {instances.data && instances.data.length > 0 && (
+      {total > 0 && (
         <>
           <div className="mb-5 flex flex-wrap items-center gap-3">
             <label className="panel flex h-10 min-w-56 flex-1 items-center gap-2 px-3 focus-within:border-accent/60">
@@ -135,18 +153,18 @@ export function LibraryPage() {
             </div>
           </div>
           <div className="mb-5 flex flex-wrap gap-2">
-            {[null, ...LOADERS].map((kind) => (
+            {([null, ...LOADERS, "bedrock"] as Filter[]).map((kind) => (
               <button
                 key={kind ?? "all"}
                 type="button"
                 onClick={() => setLoader(kind)}
-                style={kind !== null && loader === kind ? loaderChipStyle(kind) : undefined}
+                style={kind !== null && kind !== "bedrock" && loader === kind ? loaderChipStyle(kind) : undefined}
                 className={cn(
                   "rounded-full border px-3 py-1 text-xs font-medium transition-colors hover:border-accent/50",
                   loader === kind ? "border-accent/60 bg-accent/15 text-foreground" : "text-muted",
                 )}
               >
-                {kind === null ? t("library.allLoaders") : t(`instances.loader.${kind}`)}
+                {kind === null ? t("library.allLoaders") : kind === "bedrock" ? t("servers.bedrock") : t(`instances.loader.${kind}`)}
               </button>
             ))}
           </div>
@@ -154,9 +172,13 @@ export function LibraryPage() {
             <p className="py-12 text-center text-muted">{t("library.noMatches")}</p>
           ) : (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-4">
-              {visible.map((instance, index) => (
-                <InstanceCard key={instance.id} instance={instance} index={index} onDelete={setDeleting} />
-              ))}
+              {visible.map((entry, index) =>
+                entry.kind === "java" ? (
+                  <InstanceCard key={entry.instance.id} instance={entry.instance} index={index} onDelete={setDeleting} />
+                ) : (
+                  <BedrockCard key={entry.instance.id} instance={entry.instance} index={index} onManage={setManaging} onDelete={setDeletingBedrock} />
+                ),
+              )}
             </div>
           )}
         </>
@@ -165,6 +187,8 @@ export function LibraryPage() {
       <ImportCodeDialog open={importingCode} onOpenChange={setImportingCode} />
       <NewInstanceDialog open={creating} onOpenChange={setCreating} />
       <DeleteInstanceDialog instance={deleting} onClose={() => setDeleting(null)} />
+      <BedrockPacksDialog instance={bedrock.data?.find((item) => item.id === managing?.id) ?? null} onClose={() => setManaging(null)} />
+      <DeleteBedrockDialog instance={deletingBedrock} onClose={() => setDeletingBedrock(null)} />
     </>
   );
 }

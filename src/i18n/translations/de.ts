@@ -1,15 +1,13 @@
 import type { Translations } from "../locales";
 
 export const de: Translations = {
-  nav: { home: "Start", library: "Bibliothek", textures: "Texturen", journal: "Tagebuch", servers: "Server", bedrock: "Bedrock", discover: "Entdecken", settings: "Einstellungen", recent: "Zuletzt" },
+  nav: { home: "Start", library: "Bibliothek", textures: "Texturen", journal: "Tagebuch", servers: "Server", discover: "Entdecken", settings: "Einstellungen", recent: "Zuletzt" },
   bedrock: {
-    subtitle: "Zusammenstellungen von Add-ons für Minecraft Bedrock Edition, jede mit einem Klick gestartet.",
+    newSubtitle: "Wähle einen Namen. Die Spielversion kommt aus dem Microsoft Store.",
+    manage: "Pakete verwalten",
+    deleteBody: "Das entfernt die Instanz und ihre Pakete aus Kairos. Deine Welten und das Spiel selbst bleiben unberührt.",
     note: "Bedrock Edition wird von Microsofts App gestartet und aktualisiert, daher kann Kairos keine Versionen installieren. Es kann aber getrennte Add-on-Sammlungen führen und beim Spielen die richtige in das Spiel legen.",
     notInstalled: "Bedrock Edition ist auf diesem Computer nicht installiert oder wurde nie gestartet. Installiere es aus dem Microsoft Store und starte es einmal.",
-    name: "Name der Instanz",
-    create: "Instanz erstellen",
-    empty: "Noch keine Bedrock-Instanzen",
-    emptyHint: "Erstelle eine, füge Add-on-Dateien (.mcpack, .mcaddon) hinzu und drücke Spielen. Welten bleiben für alle Instanzen gemeinsam.",
     noPacks: "Noch keine Pakete. Füge eine .mcpack- oder .mcaddon-Datei hinzu.",
     addPack: "Paketdatei hinzufügen",
     browse: "Add-ons finden",

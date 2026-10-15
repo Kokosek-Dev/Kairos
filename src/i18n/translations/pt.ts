@@ -1,15 +1,13 @@
 import type { Translations } from "../locales";
 
 export const pt: Translations = {
-  nav: { home: "Início", library: "Biblioteca", textures: "Texturas", journal: "Diário", servers: "Servidores", bedrock: "Bedrock", discover: "Descobrir", settings: "Configurações", recent: "Recentes" },
+  nav: { home: "Início", library: "Biblioteca", textures: "Texturas", journal: "Diário", servers: "Servidores", discover: "Descobrir", settings: "Configurações", recent: "Recentes" },
   bedrock: {
-    subtitle: "Conjuntos de complementos para o Minecraft Bedrock Edition, cada um iniciado com um clique.",
+    newSubtitle: "Escolha um nome. A versão do jogo vem da Microsoft Store.",
+    manage: "Gerenciar pacotes",
+    deleteBody: "Isso remove a instância e seus pacotes do Kairos. Seus mundos e o jogo não são alterados.",
     note: "O Bedrock Edition é iniciado e atualizado pelo aplicativo da Microsoft, então o Kairos não instala versões. Ele pode manter conjuntos de complementos separados e colocar o certo no jogo quando você clica em Jogar.",
     notInstalled: "O Bedrock Edition não está instalado neste computador ou nunca foi iniciado. Instale-o pela Microsoft Store e inicie uma vez.",
-    name: "Nome da instância",
-    create: "Criar instância",
-    empty: "Nenhuma instância Bedrock ainda",
-    emptyHint: "Crie uma, adicione arquivos de complementos (.mcpack, .mcaddon) e clique em Jogar. Os mundos são compartilhados entre as instâncias.",
     noPacks: "Nenhum pacote ainda. Adicione um arquivo .mcpack ou .mcaddon.",
     addPack: "Adicionar arquivo de pacote",
     browse: "Encontrar complementos",
