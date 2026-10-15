@@ -2,7 +2,7 @@
 
 An independent launcher for Minecraft, built with Tauri 2 (Rust) and React. Java Edition instances with mods and loaders, and Bedrock Edition instances for add-on packs.
 
-💬 **Community:** [Discord server](
+💬 **Community:** [Discord server](https://discord.gg/H3Mecyf3H9) · [Website](https://kokosek-dev.github.io/Kairos/) · made by [Kokosek-Dev](https://github.com/Kokosek-Dev)
 
 ## Download
 
